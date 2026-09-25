@@ -34,6 +34,7 @@ TypeScript, Next.js, React, Tailwind, Vercel, GitHub, testing, security, perform
 
 - Emplacement : `.opencode/skills/<name>/SKILL.md` — chemin project par défaut, aucun changement de config nécessaire.
 - Chargé au démarrage d'OpenCode : **redémarrer OpenCode** pour que les nouveaux skills soient visibles.
+- Copie identique dans `.claude/skills/<name>/SKILL.md` pour Claude Code (même format de frontmatter). Les deux copies doivent rester synchronisées : toute modification d'un skill se fait dans les deux dossiers.
 
 ## Vérification du format
 
