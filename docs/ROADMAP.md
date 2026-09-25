@@ -45,7 +45,7 @@ Nom technique temporaire: atelierflow
 | 07 | Architecture | FAIT | `docs/ARCHITECTURE.md` |
 | 08 | Design system | FAIT | app Next.js + `src/ui/*` + `src/app/page.tsx` |
 | 09 | Database | FAIT (local) | `supabase/migrations/0000-0008` + `docs/DATABASE.md` |
-| 10 | Auth / RLS / multitenant | FAIT (local) | `supabase/migrations/0007-0008` + `docs/SECURITY.md` (22/22 scénarios d'isolation PASS) |
+| 10 | Auth / RLS / multitenant | FAIT (code) — hook à activer | `supabase/migrations/0007-0008`, `0011`, `0015-0016` + `docs/SECURITY.md` §8 : `/connexion` (connexion, inscription), `/bienvenue` (création d'atelier via `create_owner_tenant`), `AuthGate` : tenant issu du claim JWT `tenant_id`, facades scopées par session (identifiants de démo supprimés), jeton transmis à `/api/sync`, reprise hors ligne, mode DEMO explicite sans Supabase. Rejeux réels 23/23 RLS + 27/27 sync. Reste : activer le hook dans le dashboard, invitation d'équipe par lien (INVITED → ACTIVE). |
 | 11 | Offline sync | FAIT (local) | `src/domain/sync` + `src/application/sync/engine.ts` + `src/repository/local/indexeddb` + `docs/SYNC.md` (19/19 tests) |
 | 12 | PWA | FAIT (local) | `public/sw.js` + `public/pwa/manifest.webmanifest` + `src/features/pwa/*` + `docs/PWA.md` |
 | 13 | Clients / mesures | FAIT (local) | `src/domain/clients` + `src/application/clients` + `/clients` + `docs/CLIENTS.md` (57 tests) |

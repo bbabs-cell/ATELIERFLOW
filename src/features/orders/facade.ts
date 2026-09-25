@@ -13,7 +13,7 @@ import {
 import { makeLocalPaymentsRepository } from "@/repository/local/payments";
 import { makeLocalReceiptsRepository } from "@/repository/local/receipts";
 import { createIndexedDbCache } from "@/repository/local/indexeddb/cache";
-import { ORDERS_DEMO_PROFILE_ID, ORDERS_DEMO_TENANT_ID } from "./constants";
+import { scopedToSession } from "@/application/auth/session";
 
 export interface OrdersFacade {
   orders: OrderService;
@@ -60,17 +60,13 @@ export function createOrdersFacade(input: {
   return { orders, payments, receipts };
 }
 
-let singleton: OrdersFacade | null = null;
+const scopedOrdersFacade = scopedToSession((session) =>
+  createOrdersFacade({ tenantId: session.tenantId, profileId: session.profileId }),
+);
 
 export function getOrdersFacade(): OrdersFacade {
   if (typeof window === "undefined") {
     throw new Error("ORDERS_FACADE_SERVER_SIDE");
   }
-  if (singleton === null) {
-    singleton = createOrdersFacade({
-      tenantId: ORDERS_DEMO_TENANT_ID,
-      profileId: ORDERS_DEMO_PROFILE_ID,
-    });
-  }
-  return singleton;
+  return scopedOrdersFacade();
 }

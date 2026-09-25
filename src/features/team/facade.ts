@@ -3,7 +3,7 @@ import { createTeamService } from "@/application/team/teamService";
 import { getClientsFacade } from "@/features/clients/facade";
 import { makeLocalTeamRepository } from "@/repository/local/team";
 import { createIndexedDbCache } from "@/repository/local/indexeddb/cache";
-import { TEAM_DEMO_PROFILE_ID, TEAM_DEMO_TENANT_ID } from "./constants";
+import { scopedToSession } from "@/application/auth/session";
 
 export interface TeamFacade {
   team: TeamService;
@@ -26,17 +26,13 @@ export function createTeamFacade(input: {
   return { team };
 }
 
-let singleton: TeamFacade | null = null;
+const scopedTeamFacade = scopedToSession((session) =>
+  createTeamFacade({ tenantId: session.tenantId, profileId: session.profileId }),
+);
 
 export function getTeamFacade(): TeamFacade {
   if (typeof window === "undefined") {
     throw new Error("TEAM_FACADE_SERVER_SIDE");
   }
-  if (singleton === null) {
-    singleton = createTeamFacade({
-      tenantId: TEAM_DEMO_TENANT_ID,
-      profileId: TEAM_DEMO_PROFILE_ID,
-    });
-  }
-  return singleton;
+  return scopedTeamFacade();
 }

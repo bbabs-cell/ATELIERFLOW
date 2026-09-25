@@ -2,9 +2,6 @@ import type { BadgeTone } from "@/ui";
 import { PAYMENT_MODES } from "@/domain/orders/payments";
 import type { PaymentMethod } from "@/domain/orders/payments";
 
-export const DASHBOARD_DEMO_TENANT_ID = "0171c000-0000-4000-8000-000000000001";
-export const DASHBOARD_DEMO_PROFILE_ID = "0171c000-0000-4000-8000-000000000002";
-
 export const DASHBOARD_PERIOD_OPTIONS = [
   { days: 7, label: "7 derniers jours" },
   { days: 30, label: "30 derniers jours" },

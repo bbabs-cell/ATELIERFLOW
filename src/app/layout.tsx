@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import { PwaProvider } from "@/features/pwa/PwaProvider";
+import { AuthGate } from "@/features/auth/AuthGate";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -51,7 +52,9 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${inter.variable} ${display.variable}`}>
       <body>
-        <PwaProvider>{children}</PwaProvider>
+        <PwaProvider>
+          <AuthGate>{children}</AuthGate>
+        </PwaProvider>
       </body>
     </html>
   );

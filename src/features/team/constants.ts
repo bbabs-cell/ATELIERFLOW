@@ -5,13 +5,6 @@ import {
   TENANT_ROLE_CODES,
 } from "@/domain/team/roles";
 import type { MembershipStatus } from "@/domain/team/teamMember";
-import {
-  ORDERS_DEMO_PROFILE_ID,
-  ORDERS_DEMO_TENANT_ID,
-} from "@/features/orders/constants";
-
-export const TEAM_DEMO_TENANT_ID = ORDERS_DEMO_TENANT_ID;
-export const TEAM_DEMO_PROFILE_ID = ORDERS_DEMO_PROFILE_ID;
 
 export const ROLE_META: Record<TenantRoleCode, { label: string; tone: BadgeTone }> = {
   OWNER: { label: ROLE_LABELS.OWNER, tone: "danger" },

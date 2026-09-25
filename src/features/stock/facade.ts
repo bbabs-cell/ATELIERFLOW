@@ -3,7 +3,7 @@ import { createStockService } from "@/application/stock/stockService";
 import { getClientsFacade } from "@/features/clients/facade";
 import { makeLocalInventoryStores } from "@/repository/local/inventory";
 import { createIndexedDbCache } from "@/repository/local/indexeddb/cache";
-import { STOCK_DEMO_PROFILE_ID, STOCK_DEMO_TENANT_ID } from "./constants";
+import { scopedToSession } from "@/application/auth/session";
 
 export interface StockFacade {
   stock: StockService;
@@ -28,17 +28,13 @@ export function createStockFacade(input: {
   return { stock };
 }
 
-let singleton: StockFacade | null = null;
+const scopedStockFacade = scopedToSession((session) =>
+  createStockFacade({ tenantId: session.tenantId, profileId: session.profileId }),
+);
 
 export function getStockFacade(): StockFacade {
   if (typeof window === "undefined") {
     throw new Error("STOCK_FACADE_SERVER_SIDE");
   }
-  if (singleton === null) {
-    singleton = createStockFacade({
-      tenantId: STOCK_DEMO_TENANT_ID,
-      profileId: STOCK_DEMO_PROFILE_ID,
-    });
-  }
-  return singleton;
+  return scopedStockFacade();
 }

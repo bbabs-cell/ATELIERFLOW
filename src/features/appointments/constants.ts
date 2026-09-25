@@ -7,13 +7,6 @@ import type {
   AppointmentStatus,
   AppointmentType,
 } from "@/domain/appointments/appointments";
-import {
-  ORDERS_DEMO_PROFILE_ID,
-  ORDERS_DEMO_TENANT_ID,
-} from "@/features/orders/constants";
-
-export const APPOINTMENTS_DEMO_TENANT_ID = ORDERS_DEMO_TENANT_ID;
-export const APPOINTMENTS_DEMO_PROFILE_ID = ORDERS_DEMO_PROFILE_ID;
 
 export const APPOINTMENT_STATUS_META: Record<
   AppointmentStatus,

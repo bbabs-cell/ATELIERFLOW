@@ -5,13 +5,6 @@ import {
   STOCK_MOVEMENT_TYPES,
   type StockMovementType,
 } from "@/domain/inventory/stock";
-import {
-  ORDERS_DEMO_PROFILE_ID,
-  ORDERS_DEMO_TENANT_ID,
-} from "@/features/orders/constants";
-
-export const STOCK_DEMO_TENANT_ID = ORDERS_DEMO_TENANT_ID;
-export const STOCK_DEMO_PROFILE_ID = ORDERS_DEMO_PROFILE_ID;
 
 export const FABRIC_STATUS_META: Record<
   FabricStatus,

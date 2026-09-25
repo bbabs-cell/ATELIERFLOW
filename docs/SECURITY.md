@@ -70,3 +70,19 @@ Harness local (cluster jetable) : `auth schema` + `auth.users` + `auth.jwt()/aut
 - configurer le hook JWT custom (claim `tenant_id`) à la connexion ;
 - supprimer les blocs d'inférence intermédiaires si GoTrue ne connaît pas encore le claim (`tenant_memberships` reste la source) ;
 - rejouer les 22 scénarios de `rls_validation.sql` connecté en réel.
+## 8. Authentification applicative (phase 10)
+
+Parcours :
+1. `/connexion` : e-mail + mot de passe (`signInWithPassword`) ou création de compte (`signUp`, confirmation e-mail selon la configuration Supabase).
+2. `/bienvenue` : sans membership ACTIVE, le JWT n'a pas de `tenant_id` ; l'utilisateur nomme son atelier → RPC `create_owner_tenant` (0011/0015 : tenant + OWNER ACTIVE) → `refreshSession()` → le hook `custom_access_token_hook` pose `tenant_id` et `membership_role`.
+3. Application : `AuthGate` (`src/features/auth/AuthGate.tsx`) lit le claim `tenant_id` du jeton (`src/domain/auth/claims.ts`) et pose la session active (`src/application/auth/session.ts`). Toutes les facades métier en dérivent (`scopedToSession`) : une instance par (tenant, profil), aucune ne peut être créée sans session.
+
+Règles :
+- Le tenant vient uniquement du claim JWT posé par le hook ; aucune saisie client ne le remplace. Le décodage côté navigateur ne vérifie pas la signature : il sert au routage et à l'affichage ; PostgREST + RLS vérifient le jeton à chaque requête.
+- Synchronisation : `remoteHttp` envoie `Authorization: Bearer <access_token>` à `/api/sync`, qui le relaie à `sync_push`. Sans jeton, le lot n'est pas envoyé et reste en file.
+- Hors ligne : la dernière identité vérifiée (`atelier.lastIdentity`, sans jeton) permet de rouvrir l'atelier local ; rien n'est synchronisé avant une session valide.
+- Déconnexion : `signOut({ scope: "local" })` (fonctionne hors ligne), effacement de l'identité mémorisée et de la session active.
+- Mode DEMO : uniquement si `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` sont absents ; bandeau explicite, données locales uniquement, aucune synchronisation.
+- Les variables `NEXT_PUBLIC_*` sont lues par accès littéral `process.env.NEXT_PUBLIC_X` (`src/infrastructure/supabase/env.ts`), seule forme que Next.js injecte dans le bundle navigateur.
+
+Prérequis Supabase : hook activé dans Auth → Hooks → « Customize Access Token » → `public.custom_access_token_hook`. Sans lui, `/bienvenue` affiche un message explicite après la création de l'atelier.

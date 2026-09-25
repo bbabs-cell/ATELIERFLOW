@@ -27,6 +27,13 @@ export class SyncHttpError extends Error {
 export interface HttpRemoteSyncOptions {
   endpoint?: string;
   fetchImpl?: typeof fetch;
+  /**
+   * Fournit le jeton de session transmis en `Authorization: Bearer` : la
+   * passerelle `/api/sync` le relaie tel quel au RPC `sync_push`, qui
+   * résout le tenant depuis ce jeton. Sans jeton, le lot n'est pas envoyé
+   * et reste en file.
+   */
+  getAccessToken?: () => Promise<string | null>;
 }
 
 export function createHttpRemoteSync(
@@ -37,11 +44,19 @@ export function createHttpRemoteSync(
 
   return {
     async push(request: SyncPushRequest): Promise<SyncPushResponse> {
+      const headers: Record<string, string> = { "content-type": "application/json" };
+      if (options.getAccessToken) {
+        const token = await options.getAccessToken();
+        if (!token) {
+          throw new SyncHttpError(401, "UNAUTHENTICATED", "Session requise pour synchroniser.");
+        }
+        headers.authorization = `Bearer ${token}`;
+      }
       let response: Response;
       try {
         response = await fetchImpl(endpoint, {
           method: "POST",
-          headers: { "content-type": "application/json" },
+          headers,
           body: JSON.stringify(request),
         });
       } catch (error) {
