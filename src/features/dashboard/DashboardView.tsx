@@ -18,7 +18,7 @@ import {
 import { Badge, Button, Select, StateView } from "@/ui";
 import type { DashboardKpis } from "@/domain/dashboard/kpis";
 import { dayDateRange } from "@/domain/dashboard/kpis";
-import { formatEuros } from "@/domain/money";
+import { formatFcfa } from "@/domain/money";
 import { formatCentiUnits } from "@/domain/inventory/units";
 import type { SearchHit } from "@/domain/dashboard/search";
 import { APPOINTMENT_TYPE_META } from "@/features/appointments/constants";
@@ -213,19 +213,19 @@ export function DashboardView(): React.ReactElement {
               <KpiCard
                 icon={<Wallet className="size-5" aria-hidden="true" />}
                 title="Encaissé (période)"
-                value={formatEuros(kpis.money.revenuePeriodCents)}
+                value={formatFcfa(kpis.money.revenuePeriod)}
                 hint={`sur ${rangeLabel}`}
               />
               <KpiCard
                 icon={<Banknote className="size-5" aria-hidden="true" />}
                 title="Facturé (période)"
-                value={formatEuros(kpis.money.invoicedPeriodCents)}
+                value={formatFcfa(kpis.money.invoicedPeriod)}
                 hint="commandes créées sur la période"
               />
               <KpiCard
                 icon={<CircleDollarSign className="size-5" aria-hidden="true" />}
                 title="Reste à encaisser"
-                value={formatEuros(kpis.money.outstandingCents)}
+                value={formatFcfa(kpis.money.outstanding)}
                 hint="hors commandes annulées"
               />
               <KpiCard
@@ -264,7 +264,7 @@ export function DashboardView(): React.ReactElement {
               <section className="rounded-lg border border-outline bg-surface p-4 lg:col-span-2">
                 <h2 className="font-display text-lg text-ink">Encaissements — période</h2>
                 <p className="text-xs text-ink-faint">{rangeLabel}</p>
-                {kpis.revenue.every((p) => p.cents === 0) ? (
+                {kpis.revenue.every((p) => p.amount === 0) ? (
                   <p className="mt-4 rounded-md bg-surface-2 p-3 text-sm text-ink-soft">
                     Aucun encaissement sur la période.
                   </p>
@@ -285,17 +285,17 @@ export function DashboardView(): React.ReactElement {
                     </svg>
                     <div className="mt-1 flex items-end gap-1" role="img" aria-label="Barres d'encaisse par période">
                       {kpis.revenue.map((p, i) => {
-                        const maxCents = Math.max(...kpis.revenue.map((x) => x.cents), 1);
-                        const h = Math.round((p.cents / maxCents) * 110);
+                        const maxAmount = Math.max(...kpis.revenue.map((x) => x.amount), 1);
+                        const h = Math.round((p.amount / maxAmount) * 110);
                         return (
                           <div key={i} className="flex-1 text-center">
                             <div
                               className="mx-auto w-full max-w-10 rounded-t-sm bg-chocolat-500 opacity-85 transition-opacity hover:opacity-100"
                               style={{ height: `${Math.max(h, 2)}px` }}
-                              title={`${p.label} : ${formatEuros(p.cents)}`}
+                              title={`${p.label} : ${formatFcfa(p.amount)}`}
                             />
                             <p className="mt-1 text-[0.65rem] text-ink-faint">
-                              {formatEuros(p.cents)}
+                              {formatFcfa(p.amount)}
                             </p>
                           </div>
                         );
@@ -324,7 +324,7 @@ export function DashboardView(): React.ReactElement {
                             {meta?.label ?? group.method}
                           </Badge>
                           <span className="ml-auto font-medium text-ink">
-                            {formatEuros(group.cents)}
+                            {formatFcfa(group.amount)}
                           </span>
                           <span className="w-10 text-right text-xs text-ink-faint">
                             ×{group.count}

@@ -1,4 +1,4 @@
-import { sumCentimes } from "@/domain/money";
+import { sumAmounts } from "@/domain/money";
 import type { AppointmentRecord } from "@/domain/appointments/appointments";
 import type { AppointmentType } from "@/domain/appointments/appointments";
 import type { Customer } from "@/domain/clients/customer";
@@ -17,13 +17,13 @@ export interface DateRange {
 
 export interface RevenuePoint {
   label: string;
-  cents: number;
+  amount: number;
 }
 
 export interface DashboardMoneyKpis {
-  revenuePeriodCents: number;
-  invoicedPeriodCents: number;
-  outstandingCents: number;
+  revenuePeriod: number;
+  invoicedPeriod: number;
+  outstanding: number;
   ordersActive: number;
   ordersReadyPickup: number;
   ordersLate: number;
@@ -51,7 +51,7 @@ export interface AppointmentTypeBucket {
 
 export interface PaymentMethodBucket {
   method: string;
-  cents: number;
+  amount: number;
   count: number;
 }
 
@@ -105,17 +105,17 @@ export function buildRevenuePoints(
   for (let i = 0; i < buckets; i += 1) {
     const start = from + i * size;
     const end = i === buckets - 1 ? to : start + size - 1;
-    let cents = 0;
+    let amount = 0;
     for (const payment of payments) {
       if (!isValidPayment(payment)) continue;
       const at = new Date(payment.created_at).getTime();
-      if (at >= start && at <= end) cents += payment.amount;
+      if (at >= start && at <= end) amount += payment.amount;
     }
     const label = new Date(start + size / 2).toLocaleDateString("fr-FR", {
       day: "2-digit",
       month: "short",
     });
-    points.push({ label, cents });
+    points.push({ label, amount });
   }
   return points;
 }
@@ -132,8 +132,8 @@ export function aggregateDashboardKpis(input: DashboardInput): DashboardKpis {
     );
   }
 
-  let invoicedPeriodCents = 0;
-  let outstandingCents = 0;
+  let invoicedPeriod = 0;
+  let outstanding = 0;
   let ordersActive = 0;
   let ordersReadyPickup = 0;
   let ordersLate = 0;
@@ -143,12 +143,12 @@ export function aggregateDashboardKpis(input: DashboardInput): DashboardKpis {
     if (order.status === "CANCELLED") continue;
     const created = new Date(order.created_at).getTime();
     if (created >= fromMs && created <= toMs) {
-      invoicedPeriodCents += order.total_price;
+      invoicedPeriod += order.total_price;
     }
     const total = order.total_price;
     const paid = paidByOrder.get(order.id) ?? 0;
     const balance = total - paid;
-    if (balance > 0) outstandingCents += balance;
+    if (balance > 0) outstanding += balance;
     if (isUnpaidOrder(order)) {
       ordersActive += 1;
       if (order.status === "READY_FOR_PICKUP") ordersReadyPickup += 1;
@@ -166,7 +166,7 @@ export function aggregateDashboardKpis(input: DashboardInput): DashboardKpis {
     );
   }
 
-  const revenuePeriodCents = sumCentimes(
+  const revenuePeriod = sumAmounts(
     validPayments
       .filter((p) => {
         const at = new Date(p.created_at).getTime();
@@ -212,12 +212,12 @@ export function aggregateDashboardKpis(input: DashboardInput): DashboardKpis {
     );
   }
 
-  const paymentsByMethodCents = new Map<string, number>();
+  const paymentsByMethodTotals = new Map<string, number>();
   const paymentsByMethodCount = new Map<string, number>();
   for (const p of validPayments) {
-    paymentsByMethodCents.set(
+    paymentsByMethodTotals.set(
       p.method,
-      (paymentsByMethodCents.get(p.method) ?? 0) + p.amount,
+      (paymentsByMethodTotals.get(p.method) ?? 0) + p.amount,
     );
     paymentsByMethodCount.set(
       p.method,
@@ -227,9 +227,9 @@ export function aggregateDashboardKpis(input: DashboardInput): DashboardKpis {
 
   return {
     money: {
-      revenuePeriodCents,
-      invoicedPeriodCents,
-      outstandingCents,
+      revenuePeriod,
+      invoicedPeriod,
+      outstanding,
       ordersActive,
       ordersReadyPickup,
       ordersLate,
@@ -250,13 +250,13 @@ export function aggregateDashboardKpis(input: DashboardInput): DashboardKpis {
     appointmentsByType: [...appointmentsByTypeCount.entries()]
       .map(([type, count]) => ({ type, count }))
       .sort((a, b) => b.count - a.count),
-    paymentsByMethod: [...paymentsByMethodCents.entries()]
-      .map(([method, cents]) => ({
+    paymentsByMethod: [...paymentsByMethodTotals.entries()]
+      .map(([method, amount]) => ({
         method,
-        cents,
+        amount,
         count: paymentsByMethodCount.get(method) ?? 0,
       }))
-      .sort((a, b) => b.cents - a.cents),
+      .sort((a, b) => b.amount - a.amount),
   };
 }
 

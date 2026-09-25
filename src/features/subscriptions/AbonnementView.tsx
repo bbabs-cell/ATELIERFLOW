@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { Badge, Button, StateView } from "@/ui";
 import { Check, CreditCard, X } from "lucide-react";
 import type { SubscriptionOverview } from "@/application/subscriptions/subscriptionService";
-import { getPlan, formatXof, RESOURCE_LABELS } from "@/domain/subscriptions/plans";
+import { getPlan, RESOURCE_LABELS } from "@/domain/subscriptions/plans";
+import { formatFcfa } from "@/domain/money";
 import type { ResourceKind } from "@/domain/subscriptions/plans";
 import { getSubscriptionsFacade } from "./facade";
 import {
@@ -103,7 +104,7 @@ export function AbonnementView(): React.ReactElement {
                       </Badge>
                     </div>
                     <p className="mt-1 text-sm text-ink-faint">
-                      {formatXof(overview.currentPlan.priceMonthlyCents)}{" "}
+                      {formatFcfa(overview.currentPlan.priceMonthly)}{" "}
                       / mois · {overview.currentPlan.description}
                     </p>
                   </div>
@@ -209,7 +210,7 @@ export function AbonnementView(): React.ReactElement {
                       </div>
                       <p className="mt-1 text-sm text-ink-faint">{plan.description}</p>
                       <p className="mt-3 font-display text-2xl text-ink">
-                        {formatXof(plan.price_monthly_cents)}
+                        {formatFcfa(plan.price_monthly)}
                         <span className="text-sm font-normal text-ink-faint"> / mois</span>
                       </p>
                       {isCurrent ? (

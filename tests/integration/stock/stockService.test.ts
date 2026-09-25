@@ -44,7 +44,7 @@ async function createWax(h: ReturnType<typeof makeHarness>) {
     name: "Wax bleu",
     color: "Bleu cobalt",
     supplier: "Maison du tissu",
-    unitPriceEuros: "25,50",
+    unitPriceInput: "2 550",
     initialMeters: "10",
   });
   if (!created.ok) return null;

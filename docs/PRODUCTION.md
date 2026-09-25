@@ -10,7 +10,7 @@ d'accès externes est déjà livré et vérifié localement.
 |---|---|
 | Application locale (14 routes) | 180 tests / typecheck / lint / build verts |
 | Offline-first + sync | `SyncEngine` événementiel, idempotence `pushedCount=2 / appliedCount=1`, conflits (tests) |
-| Finance | centimes, INSERT immuable, solde exact, reçus `REC-YYYY-XXXXXX`, `idempotency_key` |
+| Finance | F CFA entiers, INSERT immuable, solde exact, reçus `REC-YYYY-XXXXXX`, `idempotency_key` |
 | Multitenant / RLS | 26 tables isolées, 22 scénarios d'isolation PASS, `docs/SECURITY.md` |
 | Audits | `SECURITY_AUDIT.md`, `RESPONSIVE_AUDIT.md`, `PERFORMANCE_AUDIT.md` (0 critique, 8 recommandations) |
 

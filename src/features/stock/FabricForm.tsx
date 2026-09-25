@@ -8,7 +8,7 @@ export interface FabricFormValues {
   name: string;
   color: string;
   supplier: string;
-  unitPriceEuros: string;
+  unitPriceInput: string;
   initialMeters: string;
 }
 
@@ -28,7 +28,7 @@ export function FabricForm({
   const [name, setName] = useState("");
   const [color, setColor] = useState("");
   const [supplier, setSupplier] = useState("");
-  const [unitPriceEuros, setUnitPriceEuros] = useState("");
+  const [unitPriceInput, setUnitPriceInput] = useState("");
   const [initialMeters, setInitialMeters] = useState("");
 
   return (
@@ -44,7 +44,7 @@ export function FabricForm({
         className="flex flex-col gap-5"
         onSubmit={(e) => {
           e.preventDefault();
-          void onSubmit({ name, color, supplier, unitPriceEuros, initialMeters });
+          void onSubmit({ name, color, supplier, unitPriceInput, initialMeters });
         }}
         noValidate
       >
@@ -79,17 +79,17 @@ export function FabricForm({
 
         <div className="grid gap-4 min-[480px]:grid-cols-2">
           <Field
-            label="Prix au mètre (€)"
+            label="Prix au mètre (F CFA)"
             htmlFor="fabric-price"
             error={errors?.unitPrice}
             hint="Optionnel"
           >
             <Input
               id="fabric-price"
-              inputMode="decimal"
-              value={unitPriceEuros}
-              onChange={(e) => setUnitPriceEuros(e.target.value)}
-              placeholder="25,50"
+              inputMode="numeric"
+              value={unitPriceInput}
+              onChange={(e) => setUnitPriceInput(e.target.value)}
+              placeholder="Ex : 15 000"
               invalid={Boolean(errors?.unitPrice)}
             />
           </Field>

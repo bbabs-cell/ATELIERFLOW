@@ -41,7 +41,7 @@ Suite **Vitest** (`npm test`). Typecheck (`npm run typecheck`) et ESLint
 - Harness : `uniqueTenant()` du style `00000000-0000-4000-8000-00000000XX`,
   horloge `t = 1_767_225_599_000`, uuid client `20000000-…`, engine
   `30000000-…`, `createFakeSyncServer().pushed()`.
-- Argent/stock : entiers **centimes / centi-units** — jamais de `float` ;
+- Argent/stock : entiers **F CFA / centi-units (mètres)** — jamais de `float` ;
   les assertions vérifient les totaux exacts (`41_000`, `750`).
 - Permissions : les rôles reflètent le seed `0007_rbac.sql` (EMPLOYEE a
   `reports.read` mais pas `subscriptions.view`/`team.read` …) ; les refus

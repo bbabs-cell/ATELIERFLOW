@@ -204,9 +204,9 @@ describe("createDashboardService", () => {
     const result = await svc.getKpis();
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.kpis.money.revenuePeriodCents).toBe(50_000);
-    expect(result.kpis.money.invoicedPeriodCents).toBe(70_000);
-    expect(result.kpis.money.outstandingCents).toBe(20_000);
+    expect(result.kpis.money.revenuePeriod).toBe(50_000);
+    expect(result.kpis.money.invoicedPeriod).toBe(70_000);
+    expect(result.kpis.money.outstanding).toBe(20_000);
     expect(result.kpis.money.ordersActive).toBe(1);
     expect(result.kpis.money.ordersLate).toBe(0);
     expect(result.kpis.context.customersActive).toBe(2);

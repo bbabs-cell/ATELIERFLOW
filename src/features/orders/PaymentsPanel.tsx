@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Banknote, FileText, ReceiptText, Undo2, Wallet } from "lucide-react";
 import { Badge, Button, Dialog, Field, Input, Select, Textarea, StateView } from "@/ui";
-import { formatEuros, parseEurosToCentimes } from "@/domain/money";
+import { formatFcfa, parseFcfa } from "@/domain/money";
 import {
   PAYMENT_MODES,
   formatPaymentMethodLabel,
@@ -32,7 +32,7 @@ export function PaymentsPanel({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [recordOpen, setRecordOpen] = useState(false);
-  const [amountEuros, setAmountEuros] = useState("");
+  const [amountInput, setAmountInput] = useState("");
   const [method, setMethod] = useState<PaymentMethod>("CASH");
   const [note, setNote] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, string> | null>(null);
@@ -67,7 +67,7 @@ export function PaymentsPanel({
   }, [reload]);
 
   function openRecord() {
-    setAmountEuros("");
+    setAmountInput("");
     setMethod("CASH");
     setNote("");
     setFormErrors(null);
@@ -78,7 +78,7 @@ export function PaymentsPanel({
     setSaving(true);
     setFormErrors(null);
     try {
-      const amount = parseEurosToCentimes(amountEuros);
+      const amount = parseFcfa(amountInput);
       const result = await getOrdersFacade().payments.recordPayment({
         orderId,
         amount: amount ?? 0,
@@ -175,12 +175,12 @@ export function PaymentsPanel({
       <dl className="grid grid-cols-2 gap-3 min-[420px]:grid-cols-4">
         <div className="rounded-lg bg-ivoire-100 px-3 py-2">
           <dt className="text-xs uppercase tracking-wide text-ink-faint">Total</dt>
-          <dd className="font-display text-lg text-ink">{formatEuros(orderTotal)}</dd>
+          <dd className="font-display text-lg text-ink">{formatFcfa(orderTotal)}</dd>
         </div>
         <div className="rounded-lg bg-success-soft px-3 py-2">
           <dt className="text-xs uppercase tracking-wide text-success">Payé</dt>
           <dd className="font-display text-lg text-success">
-            {formatEuros(balance?.totalPaid ?? 0)}
+            {formatFcfa(balance?.totalPaid ?? 0)}
           </dd>
         </div>
         <div className="rounded-lg bg-anthracite-50 px-3 py-2">
@@ -188,20 +188,20 @@ export function PaymentsPanel({
             {balance && balance.surplus > 0 ? "Restant" : "Reste à payer"}
           </dt>
           <dd className="font-display text-lg text-ink">
-            {formatEuros(balance?.remaining ?? orderTotal)}
+            {formatFcfa(balance?.remaining ?? orderTotal)}
           </dd>
         </div>
         <div className="rounded-lg bg-warning-soft px-3 py-2">
           <dt className="text-xs uppercase tracking-wide text-warning">Surplus</dt>
           <dd className="font-display text-lg text-warning">
-            {formatEuros(balance?.surplus ?? 0)}
+            {formatFcfa(balance?.surplus ?? 0)}
           </dd>
         </div>
       </dl>
 
       {balance && balance.surplus > 0 ? (
         <p className="rounded-md bg-warning-soft px-3 py-2 text-sm text-warning">
-          Crédit de {formatEuros(balance.surplus)} reporté sur la fiche — à utiliser ou
+          Crédit de {formatFcfa(balance.surplus)} reporté sur la fiche — à utiliser ou
           rembourser, jamais détruit.
         </p>
       ) : null}
@@ -214,7 +214,7 @@ export function PaymentsPanel({
         <ul className="divide-y divide-anthracite-100 rounded-lg border border-outline bg-surface">
           {payments.map((p) => (
             <li key={p.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2">
-              <span className="font-display text-lg text-ink">{formatEuros(p.amount)}</span>
+              <span className="font-display text-lg text-ink">{formatFcfa(p.amount)}</span>
               <Badge tone={p.status === "VALID" ? "success" : "neutral"}>
                 {p.status === "VALID" ? "Validé" : "Annulé"}
               </Badge>
@@ -289,7 +289,7 @@ export function PaymentsPanel({
                 {r.method ? (
                   <span className="text-sm text-ink-soft">{formatPaymentMethodLabel(r.method)}</span>
                 ) : null}
-                <span className="ml-auto text-sm font-medium text-ink">{formatEuros(r.amount)}</span>
+                <span className="ml-auto text-sm font-medium text-ink">{formatFcfa(r.amount)}</span>
                 <span className="text-xs text-ink-faint">
                   {new Date(r.issued_at).toLocaleDateString("fr-FR")}
                 </span>
@@ -311,13 +311,13 @@ export function PaymentsPanel({
               {formErrors.generic}
             </p>
           ) : null}
-          <Field label="Montant (€)" required htmlFor="pay-amount" error={formErrors?.amount}>
+          <Field label="Montant (F CFA)" required htmlFor="pay-amount" error={formErrors?.amount}>
             <Input
               id="pay-amount"
-              inputMode="decimal"
-              value={amountEuros}
-              onChange={(e) => setAmountEuros(e.target.value)}
-              placeholder="0,00"
+              inputMode="numeric"
+              value={amountInput}
+              onChange={(e) => setAmountInput(e.target.value)}
+              placeholder="Ex : 20 000"
               invalid={Boolean(formErrors?.amount)}
             />
           </Field>

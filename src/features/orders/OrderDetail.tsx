@@ -2,7 +2,7 @@
 
 import { CalendarClock, Flag, UserRound, XCircle } from "lucide-react";
 import { Badge, Button, Timeline } from "@/ui";
-import { formatEuros } from "@/domain/money";
+import { formatFcfa } from "@/domain/money";
 import {
   availableTransitions,
   isTerminal,
@@ -81,16 +81,16 @@ export function OrderDetail({
                 <p className="truncate text-sm font-medium text-ink">{item.description}</p>
                 <p className="text-xs text-ink-soft">
                   {item.garment_type ? `${item.garment_type} · ` : ""}
-                  {item.quantity} × {formatEuros(item.unit_price)}
+                  {item.quantity} × {formatFcfa(item.unit_price)}
                 </p>
               </div>
-              <p className="text-sm font-medium text-ink">{formatEuros(item.quantity * item.unit_price)}</p>
+              <p className="text-sm font-medium text-ink">{formatFcfa(item.quantity * item.unit_price)}</p>
             </li>
           ))}
         </ul>
         <div className="mt-2 flex items-center justify-between px-3">
           <span className="text-sm text-ink-soft">Total</span>
-          <span className="font-display text-xl text-ink">{formatEuros(order.total_price)}</span>
+          <span className="font-display text-xl text-ink">{formatFcfa(order.total_price)}</span>
         </div>
       </div>
 

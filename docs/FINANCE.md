@@ -17,8 +17,8 @@ Vérifié : typecheck, lint, build prod, 94 tests verts (dont 11 nouveaux pour l
 
 ## 2. Règles financières (zone critique)
 
-- Montants en **entiers** (`bigint` côté serveur, centimes côté client) ; `parseEurosToCentimes`,
-  `lineTotal`, `sumCentimes` déjà en place (Prompt 14). Jamais de float.
+- Montants en **F CFA entiers** (XOF, sans sous-unité), même unité en base (`bigint`), dans IndexedDB et dans la synchro : aucune conversion. `parseFcfa`, `formatFcfa`,
+  `lineTotal`, `sumAmounts` (`src/domain/money.ts`). Jamais de float.
 - `paymentBalance(orderTotal, payments)` :
   - `total_paid` = somme des paiements `VALID` (chaque montant vérifié sûr) ;
   - `remaining = max(total - total_paid, 0)`, `surplus = max(total_paid - total, 0)` ;
@@ -48,7 +48,7 @@ chronologique et déduplique par `idempotency_key`.
 ## 4. UI
 
 Panneau « Paiements » dans la fiche commande : Total / Payé / Reste à payer / Surplus,
-liste des paiements (badge Validé/Annulé + raison), bouton « Encaisser » (montant en €,
+liste des paiements (badge Validé/Annulé + raison), bouton « Encaisser » (montant en F CFA,
 mode, note), bouton « Annuler » par paiement (raison obligatoire). Bloqué sur une commande
 `CANCELLED` (lecture seule).
 

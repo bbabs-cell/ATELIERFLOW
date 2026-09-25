@@ -1,6 +1,6 @@
 import { SyncEngine } from "@/application/sync/engine";
 import { newIdempotencyKey } from "@/domain/ids/idempotency";
-import { lineTotal, sumCentimes } from "@/domain/money";
+import { lineTotal, sumAmounts } from "@/domain/money";
 import {
   isOrderReference,
   newOrderReference,
@@ -236,7 +236,7 @@ export function createOrderService(deps: OrderServiceDeps): OrderService {
 
       if (drafts.length > 0 && !hasItemError) {
         const totals = drafts.map((d) => lineTotal({ quantity: d.quantity, unitPrice: d.unit_price }));
-        const total = sumCentimes(totals as number[]);
+        const total = sumAmounts(totals as number[]);
         if (total === null && drafts.length > 0) {
           errors.total = "Montant de la commande invalide.";
         }

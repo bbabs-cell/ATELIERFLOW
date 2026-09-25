@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { CalendarClock, Search, Scissors } from "lucide-react";
 import { Badge, Input, StateView, Skeleton } from "@/ui";
-import { formatEuros } from "@/domain/money";
+import { formatFcfa } from "@/domain/money";
 import type { OrderWithCustomer } from "@/application/orders/orderService";
 import { getClientsFacade } from "@/features/clients/facade";
 import {
@@ -115,7 +115,7 @@ export function OrdersList({
                     </span>
                   </span>
                   <span className="font-display text-lg text-ink">
-                    {formatEuros(order.total_price)}
+                    {formatFcfa(order.total_price)}
                   </span>
                 </button>
               </li>

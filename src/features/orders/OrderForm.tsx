@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ClipboardList, Plus, Trash2 } from "lucide-react";
 import { Button, Field, Input, Select, Textarea } from "@/ui";
 import type { Customer } from "@/domain/clients/customer";
-import { parseEurosToCentimes, lineTotal, sumCentimes, formatEuros } from "@/domain/money";
+import { parseFcfa, lineTotal, sumAmounts, formatFcfa } from "@/domain/money";
 import { ORDER_PRIORITIES, type OrderItemDraft, type OrderPriority } from "@/domain/orders/order";
 import { GARMENT_TYPES, ORDER_PRIORITY_LABELS } from "./constants";
 
@@ -29,7 +29,7 @@ interface ItemRow {
   description: string;
   garmentType: string;
   quantity: number;
-  unitPriceEuros: string;
+  unitPriceInput: string;
 }
 
 let nextKey = 1;
@@ -40,7 +40,7 @@ function blankRow(): ItemRow {
     description: "",
     garmentType: "",
     quantity: 1,
-    unitPriceEuros: "",
+    unitPriceInput: "",
   };
 }
 
@@ -72,14 +72,14 @@ export function OrderForm({
 
   const parsed = rows.map((r) => ({
     row: r,
-    unitPrice: parseEurosToCentimes(r.unitPriceEuros),
+    unitPrice: parseFcfa(r.unitPriceInput),
   }));
   const totals = parsed
     .map(({ row, unitPrice }) =>
       unitPrice === null ? null : lineTotal({ quantity: row.quantity, unitPrice }),
     )
     .filter((t): t is number => t !== null);
-  const grandTotal = sumCentimes(totals);
+  const grandTotal = sumAmounts(totals);
 
   function submit() {
     const errs: Record<string, string> = {};
@@ -235,20 +235,20 @@ export function OrderForm({
                     onChange={(e) => updateRow(row.key, { quantity: Number(e.target.value) })}
                   />
                 </Field>
-                <Field label="Prix unitaire (€)" htmlFor={`item-${row.key}-price`}>
+                <Field label="Prix unitaire (F CFA)" htmlFor={`item-${row.key}-price`}>
                   <Input
                     id={`item-${row.key}-price`}
-                    inputMode="decimal"
-                    value={row.unitPriceEuros}
-                    onChange={(e) => updateRow(row.key, { unitPriceEuros: e.target.value })}
-                    placeholder="25,50"
-                    invalid={parsed[index].unitPrice === null && row.unitPriceEuros !== ""}
+                    inputMode="numeric"
+                    value={row.unitPriceInput}
+                    onChange={(e) => updateRow(row.key, { unitPriceInput: e.target.value })}
+                    placeholder="Ex : 15 000"
+                    invalid={parsed[index].unitPrice === null && row.unitPriceInput !== ""}
                   />
                 </Field>
                 <p className="py-2 text-right text-sm font-medium text-ink">
                   {parsed[index].unitPrice === null
                     ? "—"
-                    : formatEuros(
+                    : formatFcfa(
                         lineTotal({ quantity: row.quantity, unitPrice: parsed[index].unitPrice }) ?? 0,
                       )}
                 </p>
@@ -267,7 +267,7 @@ export function OrderForm({
 
           <div className="flex items-center justify-between border-t border-anthracite-100 pt-3">
             <span className="text-sm text-ink-soft">Total de la commande</span>
-            <span className="font-display text-xl text-ink">{formatEuros(grandTotal ?? 0)}</span>
+            <span className="font-display text-xl text-ink">{formatFcfa(grandTotal ?? 0)}</span>
           </div>
         </div>
 

@@ -5,7 +5,7 @@ import { Archive, PackagePlus, Shirt, TrendingDown, TrendingUp, Scale } from "lu
 import { Badge, Button, Dialog, Drawer, Field, Input, Select, StateView, Textarea } from "@/ui";
 import type { FabricRecord } from "@/domain/inventory/fabrics";
 import type { StockMovementRecord, StockMovementType } from "@/domain/inventory/stock";
-import { formatEuros } from "@/domain/money";
+import { formatFcfa } from "@/domain/money";
 import { formatCentiUnits, formatMeters } from "@/domain/inventory/units";
 import { getStockFacade } from "./facade";
 import {
@@ -76,7 +76,7 @@ export function StockView(): React.ReactElement {
         name: values.name,
         color: values.color || null,
         supplier: values.supplier || null,
-        unitPriceEuros: values.unitPriceEuros,
+        unitPriceInput: values.unitPriceInput,
         initialMeters: values.initialMeters,
       });
       if (!result.ok) {
@@ -241,7 +241,7 @@ export function StockView(): React.ReactElement {
                             {low ? <Badge tone="warning">Stock bas</Badge> : null}
                           </span>
                           <span className="mt-0.5 block text-sm text-ink-faint">
-                            {[fabric.supplier, formatEuros(fabric.unit_price)].filter(Boolean).join(" · ") ||
+                            {[fabric.supplier, formatFcfa(fabric.unit_price)].filter(Boolean).join(" · ") ||
                               "Prix non renseigné"}
                           </span>
                         </span>
@@ -428,7 +428,7 @@ export function StockView(): React.ReactElement {
               <p className="text-ink-soft">Fournisseur</p>
               <p className="font-medium text-ink">{detail.supplier ?? "—"}</p>
               <p className="text-ink-soft">Prix au mètre</p>
-              <p className="font-medium text-ink">{formatEuros(detail.unit_price)}</p>
+              <p className="font-medium text-ink">{formatFcfa(detail.unit_price)}</p>
               <p className="text-ink-soft">Stock</p>
               <p className="font-display text-xl text-ink">{formatMeters(detail.quantity)}</p>
             </div>

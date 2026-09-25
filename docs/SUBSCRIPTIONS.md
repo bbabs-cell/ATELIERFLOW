@@ -14,7 +14,7 @@ l'attribution sont gérés côté service plateforme (phase 04).
 | `PRO` | 10 000 F CFA | 15 | 5 000 | 20 000 | 10 Go | ✓ | ✓ | ✓ |
 
 Catalogue : `src/domain/subscriptions/plans.ts` (`PLANS`, `getPlan`,
-`isFeatureEnabled`). Montants en **centimes** (`price_monthly_cents`),
+`isFeatureEnabled`). Montants en **F CFA entiers** (`price_monthly`, comme la colonne en base),
 jamais de float ; les drapeaux `whatsapp` / `stock` / `audit` sont des limites
 booléennes du plan.
 
