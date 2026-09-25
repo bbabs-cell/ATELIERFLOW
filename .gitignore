@@ -29,3 +29,7 @@ yarn-error.log*
 
 # Vercel
 .vercel/
+.vs/
+node_modules/
+.env
+.env.*

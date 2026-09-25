@@ -1,86 +1,16 @@
 -- =====================================================================
--- 0010_server_sync.sql
--- Relais serveur de synchronisation : RPC `sync_push(p_batch jsonb)`.
--- Applique les lots offline-first du PWA de façon IDEMPOTENTE, tenant-
--- scopée (claim JWT) et perm-scopée (has_permission_in), en sous-
--- transactions par opération (jamais un lot qui rejette tout).
--- Références ORD/REC allouées par le serveur (compteurs). Détails :
--- docs/SERVER_SYNC.md.
+-- 0014_fix_sync_to_jsonb.sql
+-- Réparation applicative : les appliquants de synchro (0010) utilisaient
+-- `RETURNING to_jsonb(t)`. En PostgreSQL le retour de LIGNE PLEINE dans
+-- RETURNING doit référencer la TABLE (`to_jsonb(<table>)`), pas un alias
+-- postal `t` → toute écriture sync finit en `INTERNAL: column "t" does
+-- not exist`. 0010 étant déjà appliquée (fichier verrouillé), on
+-- réécrit ici les 15 fonctions par `create or replace`. Aucun changement
+-- de contrat ; le reste de payas (sync_apply, sync_push, ledger) est
+-- inchangé.
 -- =====================================================================
 
 begin;
-
--- ---------------------------------------------------------------------
--- 0) Ledger : conserver l'outcome canonique pour le re-ACK.
--- ---------------------------------------------------------------------
-alter table public.sync_operations
-  add column if not exists outcome jsonb;
-
--- ---------------------------------------------------------------------
--- 1) Helpers de sortie (contrat avec le client, cf. unions de results)
--- ---------------------------------------------------------------------
-create or replace function public.sync_out(
-  p_kind    text,
-  p_record  jsonb default null,
-  p_message text default null
-) returns jsonb
-language sql
-stable
-as $$
-  select case p_kind
-    when 'SYNCED'   then jsonb_build_object('kind', 'SYNCED',   'record', p_record)
-    when 'CONFLICT' then jsonb_build_object('kind', 'CONFLICT', 'reason', coalesce(p_message, 'CONFLICT'))
-    else                 jsonb_build_object('kind', 'FAILED',   'error',  coalesce(p_message, 'UNKNOWN_ERROR'))
-  end;
-$$;
-
--- ---------------------------------------------------------------------
--- 2) Allocateur de séquence de référence (ORD/REC) par tenant/année.
---    Upsert incrémental atomique borné par counters.unique
---    (tenant_id, kind, label_year).
--- ---------------------------------------------------------------------
-create or replace function public.next_reference_sequence(
-  p_tenant uuid,
-  p_kind   text,
-  p_year   text
-) returns bigint
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  v_seq bigint;
-begin
-  insert into public.counters (tenant_id, kind, label_year, value, upserted_at)
-  values (p_tenant, p_kind, p_year, 1, now())
-  on conflict (tenant_id, kind, label_year)
-  do update set value = public.counters.value + 1, upserted_at = now()
-  returning value into v_seq;
-  return v_seq;
-end;
-$$;
-
--- ---------------------------------------------------------------------
--- 3) Extracteurs typés (défensifs, lèvent → subtransaction par op)
--- ---------------------------------------------------------------------
-create or replace function public.sync_text(p jsonb, p_field text, p_default text default null)
-returns text language sql immutable as $$
-  select coalesce(p->>p_field, p_default);
-$$;
-
-create or replace function public.sync_bigint(p jsonb, p_field text, p_default bigint default 0)
-returns bigint language sql immutable as $$
-  select coalesce(nullif(p->>p_field, '')::bigint, p_default);
-$$;
-
-create or replace function public.sync_uuid(p jsonb, p_field text)
-returns uuid language sql immutable as $$
-  select (p->>p_field)::uuid;
-$$;
-
--- ---------------------------------------------------------------------
--- 4) Applicateurs par entité (return null = entité NON gérée via sync)
--- ---------------------------------------------------------------------
 
 -- --- customers --------------------------------------------------------
 create or replace function public.sync_apply_customers(
@@ -108,7 +38,7 @@ begin
        public.sync_text(v_p, 'notes'), public.sync_text(v_p, 'photo_key'),
        coalesce(nullif(btrim(public.sync_text(v_p, 'status', 'ACTIVE')), ''), 'ACTIVE'),
        auth.uid())
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(customers) into v_rec;
     return public.sync_out('SYNCED', v_rec);
   elsif v_ope = 'UPDATE' then
     if not public.has_permission_in('customers.write', p_tenant) then
@@ -124,7 +54,7 @@ begin
       photo_key  = public.sync_text(v_p, 'photo_key'),
       status     = coalesce(nullif(btrim(public.sync_text(v_p, 'status')), ''), status)
     where id = v_eid and tenant_id = p_tenant
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(customers) into v_rec;
     if v_rec is null then
       return public.sync_out('FAILED', null, 'NOT_FOUND:customers');
     end if;
@@ -137,7 +67,7 @@ begin
     set status = 'ARCHIVED', deleted_at = coalesce(deleted_at, now())
     where id = v_eid and tenant_id = p_tenant
       and deleted_at is null
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(customers) into v_rec;
     if v_rec is null then
       return public.sync_out('FAILED', null, 'NOT_FOUND:customers');
     end if;
@@ -165,7 +95,7 @@ begin
     end if;
     insert into public.measurement_profiles (id, tenant_id, name, fields, created_by)
     values (v_eid, p_tenant, btrim(public.sync_text(v_p, 'name')), coalesce(v_p->'fields', '[]'::jsonb), auth.uid())
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(measurement_profiles) into v_rec;
     return public.sync_out('SYNCED', v_rec);
   elsif v_ope = 'UPDATE' then
     if not public.has_permission_in('measurements.write', p_tenant) then
@@ -175,7 +105,7 @@ begin
       name   = btrim(public.sync_text(v_p, 'name')),
       fields = coalesce(v_p->'fields', fields)
     where id = v_eid and tenant_id = p_tenant
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(measurement_profiles) into v_rec;
     if v_rec is null then
       return public.sync_out('FAILED', null, 'NOT_FOUND:measurement_profiles');
     end if;
@@ -187,7 +117,7 @@ begin
     update public.measurement_profiles
     set deleted_at = coalesce(deleted_at, now())
     where id = v_eid and tenant_id = p_tenant and deleted_at is null
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(measurement_profiles) into v_rec;
     if v_rec is null then
       return public.sync_out('FAILED', null, 'NOT_FOUND:measurement_profiles');
     end if;
@@ -236,7 +166,7 @@ begin
      public.sync_text(v_p, 'notes'),
      coalesce(nullif(v_p->>'taken_at', '')::timestamptz, now()),
      auth.uid())
-  returning to_jsonb(t) into v_rec;
+  returning to_jsonb(measurement_snapshots) into v_rec;
   return public.sync_out('SYNCED', v_rec);
 end;
 $$;
@@ -266,7 +196,7 @@ begin
        coalesce(nullif(public.sync_text(v_p, 'unit', 'm'), ''), 'm'),
        public.sync_bigint(v_p, 'unit_price'), public.sync_text(v_p, 'photo_key'),
        coalesce(nullif(public.sync_text(v_p, 'status', 'ACTIVE'), ''), 'ACTIVE'))
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(fabrics) into v_rec;
     return public.sync_out('SYNCED', v_rec);
   elsif v_ope = 'UPDATE' then
     if not public.has_permission_in('fabrics.write', p_tenant) then
@@ -282,7 +212,7 @@ begin
       photo_key  = public.sync_text(v_p, 'photo_key'),
       status     = coalesce(nullif(public.sync_text(v_p, 'status'), ''), status)
     where id = v_eid and tenant_id = p_tenant
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(fabrics) into v_rec;
     if v_rec is null then
       return public.sync_out('FAILED', null, 'NOT_FOUND:fabrics');
     end if;
@@ -294,7 +224,7 @@ begin
     update public.fabrics
     set status = 'ARCHIVED', deleted_at = coalesce(deleted_at, now())
     where id = v_eid and tenant_id = p_tenant and deleted_at is null
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(fabrics) into v_rec;
     if v_rec is null then
       return public.sync_out('FAILED', null, 'NOT_FOUND:fabrics');
     end if;
@@ -344,7 +274,7 @@ begin
     (v_eid, p_tenant, v_fab, v_type, v_qty, v_balance,
      public.sync_text(v_p, 'reason'),
      nullif(v_p->>'order_item_id', '')::uuid, auth.uid())
-  returning to_jsonb(t) into v_rec;
+  returning to_jsonb(stock_movements) into v_rec;
   return public.sync_out('SYNCED', v_rec);
 end;
 $$;
@@ -397,7 +327,7 @@ begin
        nullif(v_p->>'delivered_at', '')::timestamptz,
        nullif(v_p->>'employee_id', '')::uuid,
        public.sync_text(v_p, 'notes'), auth.uid())
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(orders) into v_rec;
     return public.sync_out('SYNCED', v_rec);
   elsif v_ope = 'UPDATE' then
     if not public.has_permission_in('orders.write', p_tenant) then
@@ -412,7 +342,7 @@ begin
       employee_id  = coalesce(nullif(v_p->>'employee_id', '')::uuid, employee_id),
       notes        = public.sync_text(v_p, 'notes')
     where id = v_eid and tenant_id = p_tenant
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(orders) into v_rec;
     if v_rec is null then
       return public.sync_out('FAILED', null, 'NOT_FOUND:orders');
     end if;
@@ -470,7 +400,7 @@ begin
        v_qty, public.sync_bigint(v_p, 'unit_price'),
        public.sync_text(v_p, 'notes'),
        public.sync_bigint(v_p, 'sort_order'))
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(order_items) into v_rec;
     return public.sync_out('SYNCED', v_rec);
   elsif v_ope = 'UPDATE' then
     update public.order_items set
@@ -484,7 +414,7 @@ begin
       notes                  = public.sync_text(v_p, 'notes'),
       sort_order             = public.sync_bigint(v_p, 'sort_order')
     where id = v_eid and order_id = v_order and tenant_id = p_tenant
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(order_items) into v_rec;
     if v_rec is null then
       return public.sync_out('FAILED', null, 'NOT_FOUND:order_items');
     end if;
@@ -493,7 +423,7 @@ begin
     update public.order_items
     set deleted_at = coalesce(deleted_at, now())
     where id = v_eid and order_id = v_order and tenant_id = p_tenant and deleted_at is null
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(order_items) into v_rec;
     if v_rec is null then
       return public.sync_out('FAILED', null, 'NOT_FOUND:order_items');
     end if;
@@ -531,7 +461,7 @@ begin
      nullif(v_p->>'from_status', '')::text,
      btrim(public.sync_text(v_p, 'to_status')),
      auth.uid(), public.sync_text(v_p, 'note'))
-  returning to_jsonb(t) into v_rec;
+  returning to_jsonb(order_status_history) into v_rec;
   return public.sync_out('SYNCED', v_rec);
 end;
 $$;
@@ -562,7 +492,7 @@ begin
        public.sync_bigint(v_p, 'price'),
        coalesce(nullif(public.sync_text(v_p, 'status', 'PENDING'), ''), 'PENDING'),
        auth.uid())
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(alterations) into v_rec;
     return public.sync_out('SYNCED', v_rec);
   elsif v_ope = 'UPDATE' then
     update public.alterations set
@@ -570,7 +500,7 @@ begin
       price       = public.sync_bigint(v_p, 'price'),
       status      = coalesce(nullif(public.sync_text(v_p, 'status'), ''), status)
     where id = v_eid and tenant_id = p_tenant
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(alterations) into v_rec;
     if v_rec is null then
       return public.sync_out('FAILED', null, 'NOT_FOUND:alterations');
     end if;
@@ -579,7 +509,7 @@ begin
     update public.alterations
     set status = 'CANCELLED', deleted_at = coalesce(deleted_at, now())
     where id = v_eid and tenant_id = p_tenant and deleted_at is null
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(alterations) into v_rec;
     if v_rec is null then
       return public.sync_out('FAILED', null, 'NOT_FOUND:alterations');
     end if;
@@ -622,7 +552,7 @@ begin
        nullif(v_p->>'ends_at', '')::timestamptz,
        coalesce(nullif(public.sync_text(v_p, 'status', 'SCHEDULED'), ''), 'SCHEDULED'),
        public.sync_text(v_p, 'note'), auth.uid())
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(appointments) into v_rec;
     return public.sync_out('SYNCED', v_rec);
   elsif v_ope = 'UPDATE' then
     update public.appointments set
@@ -634,7 +564,7 @@ begin
       status    = coalesce(nullif(public.sync_text(v_p, 'status'), ''), status),
       note      = public.sync_text(v_p, 'note')
     where id = v_eid and tenant_id = p_tenant
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(appointments) into v_rec;
     if v_rec is null then
       return public.sync_out('FAILED', null, 'NOT_FOUND:appointments');
     end if;
@@ -643,7 +573,7 @@ begin
     update public.appointments
     set status = 'CANCELLED', deleted_at = coalesce(deleted_at, now())
     where id = v_eid and tenant_id = p_tenant and deleted_at is null
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(appointments) into v_rec;
     if v_rec is null then
       return public.sync_out('FAILED', null, 'NOT_FOUND:appointments');
     end if;
@@ -674,7 +604,7 @@ begin
   where id = v_eid
     and tenant_id = p_tenant
     and recipient_profile_id = auth.uid()
-  returning to_jsonb(t) into v_rec;
+  returning to_jsonb(notifications) into v_rec;
   if v_rec is null then
     return public.sync_out('FAILED', null, 'NOT_FOUND:notifications');
   end if;
@@ -705,7 +635,7 @@ begin
     phone  = public.sync_text(v_p, 'phone'),
     locale = coalesce(nullif(public.sync_text(v_p, 'locale'), ''), locale)
   where id = v_eid
-  returning to_jsonb(t) into v_rec;
+  returning to_jsonb(profiles) into v_rec;
   if v_rec is null then
     return public.sync_out('FAILED', null, 'NOT_FOUND:profiles');
   end if;
@@ -731,7 +661,7 @@ begin
   update public.tenant_memberships
   set status = 'ACTIVE', joined_at = coalesce(joined_at, now())
   where id = v_eid and profile_id = auth.uid() and tenant_id = p_tenant and status = 'INVITED'
-  returning to_jsonb(t) into v_rec;
+  returning to_jsonb(tenant_memberships) into v_rec;
   if v_rec is null then
     return public.sync_out('FAILED', null, 'NOT_FOUND:tenant_memberships');
   end if;
@@ -753,7 +683,6 @@ declare
   v_order uuid := public.sync_uuid(v_p, 'order_id');
   v_amount bigint := public.sync_bigint(v_p, 'amount', -1);
   v_method text := coalesce(nullif(public.sync_text(v_p, 'method'), ''), 'CASH');
-  v_claimed uuid;
 begin
   if v_ope = 'INSERT' then
     if not public.has_permission_in('payments.write', p_tenant) then
@@ -775,7 +704,7 @@ begin
       (v_eid, p_tenant, v_order, v_amount, v_method, 'VALID', p_key,
        public.sync_text(v_p, 'note'), auth.uid())
     on conflict (idempotency_key) do update set updated_at = now()
-    returning to_jsonb(t) into v_rec;
+    returning to_jsonb(payments) into v_rec;
     if v_rec is null then
       -- paiement déjà appliqué (autre clé localement) : retrouver
       select to_jsonb(t) into v_rec from public.payments t
@@ -799,7 +728,7 @@ begin
           cancelled_by = auth.uid(),
           cancellation_reason = public.sync_text(v_p, 'cancellation_reason')
       where id = v_eid and tenant_id = p_tenant and status = 'VALID'
-      returning to_jsonb(t) into v_rec;
+      returning to_jsonb(payments) into v_rec;
       if v_rec is null then
         return public.sync_out('FAILED', null, 'NOT_FOUND:payments');
       end if;
@@ -872,178 +801,9 @@ begin
                         'remaining', greatest(v_diff, 0), 'surplus', greatest(-v_diff, 0)),
      v_correction, auth.uid(),
      coalesce(nullif(v_p->>'issued_at', '')::timestamptz, now()))
-  returning to_jsonb(t) into v_rec;
+  returning to_jsonb(receipts) into v_rec;
   return public.sync_out('SYNCED', v_rec);
 end;
 $$;
-
--- ---------------------------------------------------------------------
--- 5) Dispatch principal (return null = entité non gérée via sync)
--- ---------------------------------------------------------------------
-create or replace function public.sync_apply(
-  p_op jsonb, p_tenant uuid, p_key uuid
-) returns jsonb
-language plpgsql security definer set search_path = public
-as $$
-declare
-  v_entity text := public.sync_text(p_op, 'entity');
-begin
-  return case v_entity
-    when 'customers'                then public.sync_apply_customers(p_op, p_tenant, p_key)
-    when 'measurement_profiles'     then public.sync_apply_measurement_profiles(p_op, p_tenant, p_key)
-    when 'measurement_snapshots'    then public.sync_apply_measurement_snapshots(p_op, p_tenant, p_key)
-    when 'fabrics'                  then public.sync_apply_fabrics(p_op, p_tenant, p_key)
-    when 'stock_movements'          then public.sync_apply_stock_movements(p_op, p_tenant, p_key)
-    when 'orders'                   then public.sync_apply_orders(p_op, p_tenant, p_key)
-    when 'order_items'              then public.sync_apply_order_items(p_op, p_tenant, p_key)
-    when 'order_status_history'     then public.sync_apply_order_status_history(p_op, p_tenant, p_key)
-    when 'alterations'              then public.sync_apply_alterations(p_op, p_tenant, p_key)
-    when 'appointments'             then public.sync_apply_appointments(p_op, p_tenant, p_key)
-    when 'notifications'            then public.sync_apply_notifications(p_op, p_tenant, p_key)
-    when 'profiles'                 then public.sync_apply_profiles(p_op, p_tenant, p_key)
-    when 'tenant_memberships'       then public.sync_apply_tenant_memberships(p_op, p_tenant, p_key)
-    when 'payments'                 then public.sync_apply_payments(p_op, p_tenant, p_key)
-    when 'receipts'                 then public.sync_apply_receipts(p_op, p_tenant, p_key)
-    when 'counters'                 then public.sync_out('CONFLICT', null, 'RPC_ONLY')
-    when 'files'                    then public.sync_out('FAILED', null, 'FILES_SERVER_MANAGED')
-    when 'subscriptions'            then public.sync_out('FAILED', null, 'UNSUPPORTED_ENTITY')
-    when 'plans'                    then public.sync_out('FAILED', null, 'UNSUPPORTED_ENTITY')
-    when 'audit_log'                then public.sync_out('FAILED', null, 'UNSUPPORTED_ENTITY')
-    when 'sync_operations'          then public.sync_out('FAILED', null, 'UNSUPPORTED_ENTITY')
-    when 'tenants'                  then public.sync_out('FAILED', null, 'UNSUPPORTED_ENTITY')
-    when 'roles'                    then public.sync_out('FAILED', null, 'UNSUPPORTED_ENTITY')
-    when 'permissions'              then public.sync_out('FAILED', null, 'UNSUPPORTED_ENTITY')
-    when 'role_permissions'         then public.sync_out('FAILED', null, 'UNSUPPORTED_ENTITY')
-    when 'platform_members'         then public.sync_out('FAILED', null, 'UNSUPPORTED_ENTITY')
-    else public.sync_out('FAILED', null, 'UNKNOWN_ENTITY')
-  end;
-end;
-$$;
-
--- ---------------------------------------------------------------------
--- 6) RPC d'entrée : lot -> per-op (claim + apply atomique, re-ACK)
--- ---------------------------------------------------------------------
-create or replace function public.sync_push(p_batch jsonb)
-returns jsonb
-language plpgsql security definer set search_path = public
-as $$
-declare
-  v_tenant uuid := public.tenant_claim();
-  v_results jsonb := '[]'::jsonb;
-  v_i integer; v_n integer;
-  v_op jsonb;
-  v_key_text text; v_key uuid; v_ent text; v_eid uuid; v_ope text; v_payload jsonb;
-  v_claimed uuid; v_status text; v_outcome jsonb; v_err text;
-begin
-  if auth.uid() is null then
-    raise exception 'unauthenticated' using errcode = '42501';
-  end if;
-  if v_tenant is null then
-    raise exception 'no tenant in session' using errcode = '42501';
-  end if;
-  if jsonb_typeof(p_batch) <> 'array' then
-    raise exception 'p_batch doit etre un tableau' using errcode = '22000';
-  end if;
-  v_n := jsonb_array_length(p_batch);
-  if v_n > 500 then
-    raise exception 'lot trop grand' using errcode = '22000';
-  end if;
-
-  for v_i in 0 .. v_n - 1 loop
-    v_op := p_batch->v_i;
-    v_results := v_results || jsonb_build_array(jsonb_build_object(
-      'idempotencyKey', coalesce(v_op->>'idempotencyKey', nullif(v_i::text, '')),
-      'outcome', jsonb_build_object('kind', 'FAILED', 'error', 'PENDING')
-    ));
-    begin
-      -- --- extraction du contrat ---------------------------------
-      if jsonb_typeof(v_op) <> 'object' then
-        raise exception 'op non-objet';
-      end if;
-      v_key_text := v_op->>'idempotencyKey';
-      if v_key_text is null
-         or not v_key_text ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$' then
-        raise exception 'idempotencyKey invalide';
-      end if;
-      v_key := v_key_text::uuid;
-      v_ent := v_op->>'entity';
-      v_eid := nullif(v_op->>'entityId', '')::uuid;
-      v_ope := v_op->>'operation';
-      v_payload := v_op->'payload';
-      if v_ent is null or v_eid is null or v_ope not in ('INSERT', 'UPDATE', 'DELETE')
-         or jsonb_typeof(v_payload) <> 'object' then
-        raise exception 'operation invalide';
-      end if;
-      -- tenant client = tenant de session (sinon refus net)
-      if v_op->>'tenantId' is null or (v_op->>'tenantId')::uuid <> v_tenant then
-        raise exception 'TENANT_MISMATCH';
-      end if;
-      -- --- idempotence : claim gagné = application dans cette tx --
-      insert into public.sync_operations
-        (idempotency_key, tenant_id, profile_id, entity, entity_id, operation, payload, status)
-      values (v_key, v_tenant, auth.uid(), v_ent, v_eid, v_ope, v_payload, 'PENDING')
-      on conflict (idempotency_key) do nothing
-      returning idempotency_key into v_claimed;
-
-      if v_claimed is not null then
-        -- claim gagné : appliquer dans la même sous-transaction
-        v_outcome := public.sync_apply(v_op, v_tenant, v_key);
-        if v_outcome is null then
-          -- entité non gérée : pas de ligne de ledger
-          v_outcome := public.sync_out('FAILED', null, 'UNKNOWN_ENTITY');
-          update public.sync_operations
-          set status = 'FAILED', outcome = v_outcome, last_error = 'UNKNOWN_ENTITY',
-              synced_at = now()
-          where idempotency_key = v_key;
-        else
-          update public.sync_operations
-          set status = v_outcome->>'kind',
-              outcome = v_outcome,
-              last_error = case when v_outcome->>'kind' = 'FAILED' then v_outcome->>'error' end,
-              synced_at = now()
-          where idempotency_key = v_key;
-        end if;
-      else
-        -- claim perdu : re-ACK de l'application précédente
-        select status, outcome, last_error into v_status, v_outcome, v_err
-        from public.sync_operations where idempotency_key = v_key;
-        if v_status in ('SYNCED', 'CONFLICT') then
-          v_outcome := coalesce(v_outcome, public.sync_out('SYNCED', null));
-        elsif v_status = 'FAILED' then
-          v_outcome := coalesce(v_outcome, public.sync_out('FAILED', null, v_err));
-        else
-          v_outcome := public.sync_out('FAILED', null, 'IDEMPOTENCY_IN_FLIGHT');
-        end if;
-      end if;
-
-      v_results := jsonb_set(
-        v_results, array[v_i::text, 'outcome']::text[], v_outcome, false
-      );
-    exception
-      when others then
-        v_results := jsonb_set(
-          v_results, array[v_i::text, 'outcome']::text[],
-          public.sync_out('FAILED', null,
-            coalesce(
-              case when sqlerrm like 'TENANT_MISMATCH%' then 'TENANT_MISMATCH'
-                   when sqlerrm like '%valid%' then 'VALIDATION'
-                   else null end,
-              'INTERNAL:' || sqlerrm)),
-          false
-        );
-    end;
-  end loop;
-
-  return jsonb_build_object('results', v_results);
-end;
-$$;
-
--- ---------------------------------------------------------------------
--- 7) Accès : le RPC est exécutable par les rôles authentifiés (l'ACL
---    s'applique sur la fonction, pas sur les tables définers).
--- ---------------------------------------------------------------------
-grant execute on function public.sync_push(jsonb) to authenticated;
-grant execute on function public.sync_push(jsonb) to service_role;
-revoke execute on function public.sync_push(jsonb) from anon, public;
 
 commit;
