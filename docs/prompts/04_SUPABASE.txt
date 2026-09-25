@@ -1,0 +1,43 @@
+PROMPT 04 — SUPABASE
+
+Prépare Supabase pour le projet.
+
+Objectifs:
+- PostgreSQL
+- Auth
+- RLS
+- migrations
+- environnement de développement
+- préparation multi-tenant
+
+Avant toute modification:
+- identifier le projet cible;
+- vérifier l'environnement;
+- ne jamais supposer que la production est sûre pour des tests destructifs.
+
+Préparer une architecture permettant:
+- tenants
+- utilisateurs
+- memberships
+- rôles
+- permissions
+- clients
+- commandes
+- paiements
+- reçus
+- rendez-vous
+- stock
+- fichiers
+- audit
+- abonnements
+- synchronisation
+
+Ne crée pas encore toutes les tables si l'étape DATABASE n'est pas validée.
+
+Documente:
+- projet Supabase
+- environnements
+- auth
+- migrations
+- sécurité
+- prochaines étapes

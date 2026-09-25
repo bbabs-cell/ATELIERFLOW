@@ -1,0 +1,39 @@
+PROMPT 11 — OFFLINE-FIRST ET SYNCHRONISATION
+
+Implémente une architecture offline-first réelle.
+
+Utiliser:
+IndexedDB
+Repository local
+Sync Queue
+Supabase
+
+Chaque opération possède:
+- idempotency_key
+- tenant_id
+- entity
+- entity_id
+- operation
+- payload
+- created_at
+- status
+- retry_count
+- last_error
+
+États:
+PENDING
+SYNCING
+SYNCED
+FAILED
+CONFLICT
+
+Exigences:
+- reprise après coupure;
+- retry contrôlé;
+- idempotence;
+- pas de double paiement;
+- visibilité des erreurs;
+- stratégie de conflits;
+- protection renforcée pour données financières.
+
+Ne cache pas aveuglément les données privées.

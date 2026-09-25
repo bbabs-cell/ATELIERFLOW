@@ -1,0 +1,33 @@
+PROMPT 05 — CLOUDFLARE R2
+
+Prépare Cloudflare R2 pour les fichiers privés du SaaS.
+
+Objectifs:
+- photos clients
+- photos commandes
+- photos tissus
+- reçus PDF
+- autres fichiers autorisés
+
+Architecture:
+tenants/{tenantId}/...
+
+Ne jamais dépendre du nom commercial temporaire "atelierflow".
+
+Exigences:
+- bucket approprié;
+- accès privé par défaut;
+- validation MIME;
+- limite de taille;
+- contrôle d'autorisation;
+- URLs temporaires/signées lorsque nécessaire;
+- credentials uniquement côté serveur;
+- aucune clé R2 dans le frontend.
+
+Tester:
+- upload contrôlé;
+- lecture autorisée;
+- refus cross-tenant;
+- suppression logique ou contrôlée selon le type de fichier.
+
+Ne supprime aucun bucket existant sans confirmation.

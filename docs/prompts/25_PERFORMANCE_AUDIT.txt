@@ -1,0 +1,24 @@
+PROMPT 25 — AUDIT PERFORMANCE
+
+Analyse:
+- bundle;
+- chargement initial;
+- images;
+- requêtes;
+- index;
+- cache;
+- composants;
+- re-renders;
+- pages lourdes;
+- dashboard;
+- recherche;
+- offline.
+
+Optimiser sans dégrader:
+- sécurité;
+- lisibilité;
+- architecture;
+- exactitude financière.
+
+Identifier les vrais goulots d'étranglement.
+Documenter les améliorations.

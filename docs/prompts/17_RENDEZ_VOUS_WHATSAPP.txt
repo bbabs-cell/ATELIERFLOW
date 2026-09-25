@@ -1,0 +1,27 @@
+PROMPT 17 — RENDEZ-VOUS ET WHATSAPP
+
+Rendez-vous:
+- mesures
+- essayage
+- retouche
+- livraison
+- retrait
+- paiement
+- autre
+
+Fonctions:
+- calendrier
+- création
+- modification
+- statut
+- rappels
+- client lié
+- commande liée
+
+WhatsApp:
+- générer un message;
+- rendre le message modifiable;
+- ouvrir WhatsApp;
+- ne pas implémenter l'API Business dans le MVP.
+
+Préparer une abstraction permettant une future intégration officielle.

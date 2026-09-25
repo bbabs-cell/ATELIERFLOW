@@ -1,0 +1,56 @@
+PROMPT 01 — BOOTSTRAP ET AUDIT INITIAL
+
+Tu prends en charge le projet SaaS de gestion d'ateliers de couture dont le nom technique temporaire est "atelierflow".
+
+IMPORTANT:
+Ne commence pas encore le développement fonctionnel.
+
+Objectif:
+auditer complètement l'environnement avant toute construction.
+
+Inspecte:
+- OS
+- Node.js
+- gestionnaire de paquets
+- Git
+- GitHub
+- VS Code
+- OpenCode
+- dépôt actuel
+- structure des dossiers
+- package.json
+- TypeScript
+- Next.js
+- Tailwind
+- tests
+- lint
+- build
+- variables d'environnement
+- Supabase
+- Cloudflare
+- Vercel
+- MCP disponibles
+- Skills disponibles
+
+Ne supprime rien.
+Ne réinitialise rien.
+Ne modifie pas la production.
+
+Retourne un rapport:
+1. environnement
+2. projet existant
+3. dépendances
+4. outils disponibles
+5. problèmes
+6. risques
+7. éléments manquants
+8. architecture observée
+9. recommandations
+10. plan de bootstrap
+
+Termine par:
+READY FOR NEXT PHASE
+ou
+BLOCKED
+
+Si BLOCKED, indique exactement pourquoi.

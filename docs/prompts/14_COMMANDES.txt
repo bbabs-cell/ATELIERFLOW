@@ -1,0 +1,41 @@
+PROMPT 14 — COMMANDES ET ATELIER
+
+Implémente les commandes.
+
+Une commande peut avoir plusieurs articles.
+
+Données:
+- client
+- vêtements
+- tissu
+- modèle
+- photos
+- prix
+- date prévue
+- notes
+- employé
+- statut
+
+Statuts:
+REGISTERED
+FABRIC_RECEIVED
+PREPARATION
+SEWING
+FITTING
+ALTERATION
+COMPLETED
+READY_FOR_PICKUP
+DELIVERED
+CANCELLED
+
+Créer:
+- détail commande;
+- timeline;
+- historique;
+- Kanban atelier;
+- filtres;
+- priorités;
+- retards;
+- affectation.
+
+Préserver l'historique.

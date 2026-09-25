@@ -1,0 +1,34 @@
+PROMPT 21 — ABONNEMENTS SAAS
+
+Préparer une architecture d'abonnement flexible.
+
+Plans initiaux:
+FREE
+BASIC
+PRO
+
+Hypothèses:
+FREE = 0 FCFA
+BASIC ≈ 5 000 FCFA/mois
+PRO ≈ 10 000 FCFA/mois
+
+Ces prix sont configurables.
+
+Ne pas coder les limites directement dans les pages.
+
+Utiliser:
+Plan
+Subscription
+Entitlements/Limits
+
+Prévoir:
+- essai gratuit;
+- limites clients;
+- limites commandes;
+- utilisateurs;
+- stockage;
+- fonctionnalités;
+- expiration;
+- changement de plan.
+
+L'architecture doit permettre de changer les prix et limites sans refonte.

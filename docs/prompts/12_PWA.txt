@@ -1,0 +1,22 @@
+PROMPT 12 — PWA
+
+Transforme l'application en PWA fiable.
+
+Prévoir:
+- manifest
+- icônes
+- service worker
+- cache contrôlé
+- écran offline
+- mise à jour contrôlée
+- installation
+
+Tester:
+- lancement offline;
+- retour online;
+- mise à jour;
+- cache;
+- authentification;
+- données privées.
+
+Ne mettre en cache que ce qui est nécessaire et sûr.

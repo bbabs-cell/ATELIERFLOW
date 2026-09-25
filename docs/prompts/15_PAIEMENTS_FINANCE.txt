@@ -1,0 +1,38 @@
+PROMPT 15 — PAIEMENTS ET INTÉGRITÉ FINANCIÈRE
+
+C'est une zone critique.
+
+Implémente:
+- paiements multiples;
+- espèces;
+- Orange Money;
+- Moov Money;
+- Wave;
+- virement;
+- autre;
+- paiements partiels;
+- surpaiements;
+- solde;
+- surplus;
+- annulation contrôlée;
+- audit.
+
+Calcul:
+total_paid = somme paiements valides
+remaining = total - total_paid
+si remaining > 0: reste
+si remaining < 0: surplus = abs(remaining)
+
+Scénario obligatoire:
+50 000 total
+20 000 payé → 30 000 reste
++15 000 → 15 000 reste
++20 000 → 5 000 surplus
+annuler le dernier paiement → 15 000 reste
+
+Pas de float.
+Pas de suppression physique naïve.
+Pas de modification silencieuse.
+Chaque opération financière doit être traçable.
+
+Créer tests automatisés.

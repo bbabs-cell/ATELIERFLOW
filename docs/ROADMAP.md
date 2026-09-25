@@ -79,4 +79,4 @@ Nom technique temporaire: atelierflow
 
 ---
 
-*Document source : prompts fournis par l'utilisateur (00_INDEX_ET_REGLES).*
+*Document source : `docs/prompts/` (cahier des charges complet, prompts 00 à 26).*

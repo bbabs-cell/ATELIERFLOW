@@ -1,0 +1,28 @@
+PROMPT 16 — REÇUS
+
+Implémente les reçus professionnels.
+
+Format:
+REC-YYYY-XXXXXX
+
+Un reçu contient:
+- atelier
+- client
+- commande
+- paiement
+- mode de paiement
+- total
+- payé
+- reste/surplus
+- date
+- référence
+
+Fonctions:
+- générer PDF
+- consulter
+- imprimer
+- partager
+
+Le PDF doit être professionnel et cohérent avec le Design System.
+
+Le reçu doit refléter exactement les données validées.

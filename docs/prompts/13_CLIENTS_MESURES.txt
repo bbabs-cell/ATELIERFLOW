@@ -1,0 +1,33 @@
+PROMPT 13 — CLIENTS ET MESURES
+
+Implémente le module Clients.
+
+Fonctions:
+- créer
+- modifier
+- rechercher
+- consulter
+- archiver/logical delete
+- photo
+- téléphone
+- WhatsApp
+- adresse
+- notes
+- historique
+
+Créer une fiche client 360°.
+
+Mesures:
+- modèles par type de vêtement;
+- valeurs;
+- unités;
+- historique;
+- date;
+- auteur;
+- contexte.
+
+Ne jamais écraser silencieusement une ancienne mesure.
+
+Créer un parcours mobile rapide.
+Créer un mode express.
+Tester l'ensemble.

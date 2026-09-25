@@ -1,0 +1,64 @@
+PROMPT 26 — FINALISATION V1 PREMIUM
+
+Effectue l'audit final avant production.
+
+Checklist obligatoire:
+
+[ ] build
+[ ] typecheck
+[ ] lint
+[ ] tests
+[ ] Supabase
+[ ] migrations
+[ ] RLS
+[ ] auth
+[ ] multi-tenancy
+[ ] paiements
+[ ] intégrité financière
+[ ] reçus
+[ ] fichiers
+[ ] R2
+[ ] offline
+[ ] sync
+[ ] PWA
+[ ] responsive
+[ ] accessibility
+[ ] performance
+[ ] sécurité
+[ ] erreurs
+[ ] permissions
+[ ] abonnements
+[ ] documentation
+[ ] Git
+[ ] environnement
+[ ] Vercel
+
+Vérifier également que "atelierflow" n'est pas devenu une dépendance métier ou de branding.
+
+Le système doit pouvoir changer de marque et de domaine ultérieurement.
+
+Avant production:
+- aucune vulnérabilité critique;
+- aucun secret dans Git;
+- aucune migration destructive non validée;
+- aucun paiement fictif;
+- aucun backend mocké pour une fonctionnalité finale;
+- aucune isolation tenant défaillante.
+
+Produire:
+FINAL RELEASE REPORT
+
+Avec:
+- fonctionnalités terminées;
+- tests;
+- risques résiduels;
+- éléments non bloquants;
+- éléments bloquants;
+- environnement de déploiement;
+- prochaines étapes.
+
+Si tout est conforme:
+READY FOR PRODUCTION
+
+Sinon:
+BLOCKED

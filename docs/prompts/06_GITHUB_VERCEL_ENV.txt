@@ -1,0 +1,33 @@
+PROMPT 06 — GITHUB, VERCEL ET ENVIRONNEMENTS
+
+Prépare:
+- GitHub
+- Vercel
+- development
+- staging
+- production
+
+Créer ou vérifier:
+.env.example
+
+Ne jamais commit:
+- .env
+- secrets
+- tokens
+- clés privées
+
+Configurer les variables par environnement.
+
+Le nom technique "atelierflow" doit rester remplaçable.
+
+Vérifier:
+- repository
+- branches
+- protection
+- build
+- preview
+- production
+- variables
+- domaine temporaire éventuel
+
+Ne déploie pas une version instable en production.

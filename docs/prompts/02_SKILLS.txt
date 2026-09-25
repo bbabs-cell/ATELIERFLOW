@@ -1,0 +1,62 @@
+PROMPT 02 — INSTALLATION ET VÉRIFICATION DES SKILLS
+
+À partir du rapport d'audit, prépare les Skills nécessaires au projet.
+
+Catégories:
+- architecture
+- coding standards
+- TypeScript
+- Next.js
+- React
+- Tailwind
+- responsive design
+- UI/UX
+- design system
+- accessibility
+- Supabase
+- PostgreSQL
+- authentication
+- authorization
+- multi-tenancy
+- Cloudflare
+- Cloudflare R2
+- Vercel
+- GitHub
+- offline-first
+- IndexedDB
+- synchronization
+- conflict resolution
+- PWA
+- payments
+- financial integrity
+- receipts
+- appointments
+- inventory
+- subscriptions
+- testing
+- security
+- performance
+- error handling
+- migrations
+- documentation
+
+Règles:
+- privilégier les Skills officiels ou de source fiable;
+- ne jamais installer un Skill douteux;
+- éviter les doublons;
+- vérifier que chaque Skill est réellement lisible par OpenCode;
+- documenter ce qui a été installé;
+- ne pas modifier le code métier.
+
+Retourne:
+- Skills déjà présents
+- Skills installés
+- Skills impossibles à installer
+- emplacement
+- vérification
+- recommandations
+
+Termine par:
+SKILLS READY
+ou
+BLOCKED

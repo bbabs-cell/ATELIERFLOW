@@ -1,0 +1,43 @@
+PROMPT 09 — DATABASE
+
+Conçois et implémente le schéma PostgreSQL versionné.
+
+Entités minimales:
+Tenant
+User
+Role
+Permission
+TenantMembership
+Customer
+MeasurementProfile
+MeasurementSnapshot
+Order
+OrderItem
+OrderStatusHistory
+Payment
+Receipt
+Appointment
+Fabric
+StockMovement
+Alteration
+File
+AuditLog
+Subscription
+Plan
+Notification
+SyncOperation
+
+Règles:
+- tenant_id sur les données métier concernées;
+- contraintes cohérentes;
+- index de recherche;
+- pagination;
+- timestamps;
+- migrations versionnées;
+- pas de suppression destructive par défaut;
+- montants financiers exacts, jamais float;
+- IDs techniques indépendants des identifiants affichés.
+
+Créer les migrations.
+Valider le schéma.
+Documenter DATABASE.md.

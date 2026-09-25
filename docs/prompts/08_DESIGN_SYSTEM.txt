@@ -1,0 +1,48 @@
+PROMPT 08 — DESIGN SYSTEM PREMIUM
+
+Construis le Design System avant les écrans métier.
+
+Direction:
+premium, sérieux, moderne, atelier de couture.
+
+Palette:
+- chocolat profond
+- beige chaud
+- ivoire
+- champagne doré discret
+- anthracite
+- vert succès
+- rouge/orange alertes
+
+Définir:
+- tokens couleurs
+- typographie
+- spacing
+- radius
+- shadows
+- boutons
+- inputs
+- selects
+- cards
+- tables
+- badges
+- dialogs
+- drawers
+- tabs
+- dropdowns
+- toasts
+- navigation
+- calendrier
+- charts
+- kanban
+- timeline
+- états loading/empty/error/success/offline/sync
+
+Responsive:
+320, 360, 375, 390, 414, 480, 640, 768, 820, 912, 1024, 1280, 1366, 1440, 1536, 1920.
+
+Pas de design générique d'admin.
+Pas de surcharge.
+Mobile-first.
+Accessible.
+Touch-friendly.
