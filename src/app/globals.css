@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@import "../ui/tokens.css";
+
+@layer base {
+  .font-display {
+    font-family: var(--font-display);
+  }
+}

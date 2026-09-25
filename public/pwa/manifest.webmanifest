@@ -1,0 +1,44 @@
+{
+  "id": "/",
+  "name": "Atelier — Gestion d'atelier de couture",
+  "short_name": "Atelier",
+  "description": "Logiciel de gestion premium pour ateliers de couture : clients, commandes, paiements, rendez-vous, stock, travail hors ligne.",
+  "lang": "fr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f8f4ea",
+  "theme_color": "#3e2723",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/pwa/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa/maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nouvelle commande",
+      "short_name": "Commande",
+      "description": "Enregistrer rapidement une commande",
+      "url": "/commandes/nouveau",
+      "icons": [{ "src": "/pwa/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Rendez-vous du jour",
+      "short_name": "Rendez-vous",
+      "description": "Calendrier des rendez-vous",
+      "url": "/rendez-vous",
+      "icons": [{ "src": "/pwa/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    }
+  ]
+}
