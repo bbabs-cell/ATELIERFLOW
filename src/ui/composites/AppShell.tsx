@@ -36,7 +36,10 @@ export function AppShell({
         <Link
           key={item.href}
           href={item.href}
-          onClick={() => onNavigate?.(item)}
+          onClick={() => {
+            setMenuOpen(false);
+            onNavigate?.(item);
+          }}
           className={cx(
             "flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors",
             item.active

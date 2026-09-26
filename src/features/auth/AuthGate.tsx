@@ -3,8 +3,17 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { Session } from "@supabase/supabase-js";
-import { LogOut } from "lucide-react";
-import { Badge, Button, StateView } from "@/ui";
+import {
+  CalendarDays,
+  ClipboardList,
+  CreditCard,
+  LayoutDashboard,
+  LogOut,
+  Shirt,
+  Users,
+  UsersRound,
+} from "lucide-react";
+import { AppShell, Badge, Button, StateView, type NavItem } from "@/ui";
 import {
   clearActiveSession,
   demoSession,
@@ -20,7 +29,17 @@ import {
 } from "@/infrastructure/auth/lastIdentity";
 
 /** Pages accessibles sans atelier actif. */
-const PUBLIC_PATHS = ["/connexion", "/bienvenue", "/offline"];
+const PUBLIC_PATHS = ["/connexion", "/bienvenue", "/offline", "/design"];
+
+const NAV: Omit<NavItem, "active">[] = [
+  { label: "Tableau de bord", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Clients", href: "/clients", icon: Users },
+  { label: "Commandes", href: "/commandes", icon: ClipboardList },
+  { label: "Rendez-vous", href: "/rdv", icon: CalendarDays },
+  { label: "Stock", href: "/stock", icon: Shirt },
+  { label: "Équipe", href: "/equipe", icon: UsersRound },
+  { label: "Abonnement", href: "/abonnement", icon: CreditCard },
+];
 /** Pages qui n'ont plus de raison d'être une fois l'atelier prêt. */
 const ENTRY_PATHS = ["/connexion", "/bienvenue"];
 const HOME_PATH = "/dashboard";
@@ -128,11 +147,33 @@ export function AuthGate({ children }: { children: ReactNode }) {
       </div>
     );
   }
+  const navItems: NavItem[] = NAV.map((item) => ({
+    ...item,
+    active: pathname === item.href || pathname.startsWith(`${item.href}/`),
+  }));
   return (
     <>
-      <AccountBar session={state.session} />
-      {children}
+      {state.session.mode === "DEMO" ? <DemoBanner /> : null}
+      <AppShell
+        brand={<span className="font-display text-2xl italic text-chocolat-800">Atelier</span>}
+        navItems={navItems}
+      >
+        {state.session.mode === "DEMO" ? null : <AccountBar session={state.session} />}
+        {children}
+      </AppShell>
     </>
+  );
+}
+
+function DemoBanner() {
+  return (
+    <div
+      role="status"
+      className="border-b border-outline bg-champagne-100 px-4 py-2 text-center text-xs text-ink-soft"
+    >
+      Mode démo local : Supabase n&apos;est pas configuré, les données restent sur cet
+      appareil et ne sont pas synchronisées.
+    </div>
   );
 }
 
@@ -150,20 +191,8 @@ function AccountBar({ session }: { session: ActiveSession }) {
     router.replace("/connexion");
   }
 
-  if (session.mode === "DEMO") {
-    return (
-      <div
-        role="status"
-        className="border-b border-outline bg-champagne-100 px-4 py-2 text-center text-xs text-ink-soft"
-      >
-        Mode démo local : Supabase n&apos;est pas configuré, les données restent sur cet
-        appareil et ne sont pas synchronisées.
-      </div>
-    );
-  }
-
   return (
-    <div className="flex items-center justify-end gap-3 border-b border-outline bg-surface px-4 py-2 text-xs text-ink-soft">
+    <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-end gap-3 px-4 text-xs text-ink-soft">
       {session.mode === "OFFLINE" ? (
         <Badge tone="warning">Hors ligne — reconnexion requise pour synchroniser</Badge>
       ) : null}
