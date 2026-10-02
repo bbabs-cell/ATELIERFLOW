@@ -86,3 +86,11 @@ Règles :
 - Les variables `NEXT_PUBLIC_*` sont lues par accès littéral `process.env.NEXT_PUBLIC_X` (`src/infrastructure/supabase/env.ts`), seule forme que Next.js injecte dans le bundle navigateur.
 
 Prérequis Supabase : hook activé dans Auth → Hooks → « Customize Access Token » → `public.custom_access_token_hook`. Sans lui, `/bienvenue` affiche un message explicite après la création de l'atelier.
+
+## 9. Invitations d'équipe (étape 19, migration `0017_team_invitations.sql`)
+
+- `create_invitation(email, rôle)` : `team.manage` requis dans l'atelier de session ; rôles invitables MANAGER / EMPLOYEE / APPRENTICE (jamais OWNER) ; jeton aléatoire 192 bits renvoyé une seule fois, seule son empreinte SHA-256 est stockée (`token_hash` illisible via l'API) ; validité 7 jours ; une nouvelle invitation révoque la précédente pour le même e-mail ; journalisée (`team.invite`).
+- `get_invitation(jeton)` : seule fonction ouverte à `anon`, pour la page `/invitation/<jeton>` ; ne renvoie que le nom de l'atelier, le rôle, l'e-mail invité, l'auteur et l'état.
+- `accept_invitation(jeton)` : compte connecté dont l'e-mail est exactement celui de l'invitation ; usage unique, refus si expirée / révoquée / déjà membre / membre désactivé (la réactivation reste une décision du gestionnaire) ; crée la membership ACTIVE puis le client rafraîchit sa session pour que le hook pose `tenant_id`.
+- `list_team`, `set_member_role`, `set_member_status` : `team.read` / `team.manage` ; seul un OWNER nomme ou modifie un OWNER ; le trigger `tenant_memberships_rules` interdit toujours de changer son propre rôle, de se désactiver et de retirer le dernier OWNER.
+- Scénarios : `supabase/validations/invitations_local.sql` (20/20 PASS sur base locale ; ne pas exécuter en production, il crée des comptes).
