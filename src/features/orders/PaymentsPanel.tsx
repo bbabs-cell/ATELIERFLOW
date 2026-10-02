@@ -14,6 +14,7 @@ import type { ReceiptRecord } from "@/domain/orders/receipts";
 import type { OrderPayments } from "@/application/orders/paymentService";
 import { getOrdersFacade } from "./facade";
 import { ReceiptViewer } from "./ReceiptViewer";
+import { useDataChanged } from "@/features/sync/useDataChanged";
 
 export interface PaymentsPanelProps {
   orderId: string;
@@ -53,6 +54,7 @@ export function PaymentsPanel({
     setReceipts(orderReceipts);
     setLoading(false);
   }, [orderId]);
+  useDataChanged(reload);
 
   useEffect(() => {
     let cancelled = false;

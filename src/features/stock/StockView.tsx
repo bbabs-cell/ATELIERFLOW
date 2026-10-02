@@ -15,6 +15,7 @@ import {
   STOCK_MOVEMENT_TYPES_LIST,
 } from "./constants";
 import { FabricForm, type FabricFormValues } from "./FabricForm";
+import { useDataChanged } from "@/features/sync/useDataChanged";
 
 const isStrictlyPositive = (v: string) => v.trim() !== "";
 
@@ -53,6 +54,7 @@ export function StockView(): React.ReactElement {
       setLoading(false);
     }
   }, [search, showArchived]);
+  useDataChanged(load);
 
   useEffect(() => {
     void (async () => {

@@ -17,6 +17,7 @@ import { OrderDetail } from "./OrderDetail";
 import { OrderBoard } from "./OrderBoard";
 import { ORDER_PRIORITY_META } from "./constants";
 import { useAssignees } from "./useAssignees";
+import { useDataChanged } from "@/features/sync/useDataChanged";
 
 type OrdersMode = "list" | "board";
 const MODE_KEY = "atelier.orders.view";
@@ -100,6 +101,7 @@ export function OrdersView(): React.ReactElement {
       setLoading(false);
     }
   }, []);
+  useDataChanged(() => load(search));
 
   useEffect(() => {
     let cancelled = false;

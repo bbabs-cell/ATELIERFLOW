@@ -31,6 +31,7 @@ import {
   type OrderOption,
 } from "./AppointmentForm";
 import { MessageComposer } from "./MessageComposer";
+import { useDataChanged } from "@/features/sync/useDataChanged";
 
 function todayISO(): string {
   return appointmentDayISO(new Date().toISOString());
@@ -69,6 +70,7 @@ export function AppointmentsView(): React.ReactElement {
       setLoading(false);
     }
   }, []);
+  useDataChanged(load);
 
   useEffect(() => {
     void (async () => {

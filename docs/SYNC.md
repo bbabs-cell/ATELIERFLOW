@@ -85,3 +85,20 @@ Exécution : `npm run test` (vitest). Typecheck/lint/build intégrés : `npm run
 - Validé de bout en bout contre PostgreSQL local : client → commande (+ articles,
   historique) → paiement → reçu, tous SYNCED ; référence affichée et PDF archivé identiques
   à celle du serveur.
+
+## Récupération depuis le serveur (synchronisation descendante) — 2026-10-02
+
+- Après chaque envoi, `pullService` (application/sync) lit les lignes modifiées côté serveur
+  depuis le dernier curseur, table par table dans l'ordre des dépendances
+  (`PULL_ENTITIES`, domain/sync/pull) : clients, profils et relevés de mesures, tissus,
+  commandes, articles, historique, mouvements de stock, paiements, reçus, rendez-vous.
+- Lecture par l'API REST au nom de l'utilisateur : la RLS limite à son atelier et à ses
+  permissions ; une table non lisible (rôle) est simplement ignorée.
+- Pagination par (curseur, id), recouvrement d'une minute (transactions validées en
+  retard), fusion idempotente ; curseurs par atelier dans le stockage de l'appareil.
+- Une ligne ayant encore une modification locale non envoyée n'est jamais écrasée.
+- Les écrans principaux (tableau de bord, clients, commandes, paiements, rendez-vous,
+  stock) se rechargent quand des données arrivent (`atelier:data-changed`).
+- Validé à deux appareils contre PostgreSQL local : client créé sur téléphone visible sur
+  l'ordinateur en ~1 s sans recharger ; commande créée sur l'ordinateur visible sur le
+  téléphone.

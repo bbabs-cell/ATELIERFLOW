@@ -32,6 +32,7 @@ import { ORDER_STATUS_META } from "@/features/orders/constants";
 import { AmbientBlobs } from "@/ui/composites/AppShell";
 import { getDashboardFacade } from "./facade";
 import { DASHBOARD_PERIOD_OPTIONS, PAYMENT_METHOD_META, SEARCH_ENTITY_LABELS } from "./constants";
+import { useDataChanged } from "@/features/sync/useDataChanged";
 
 type Tone = "flamme" | "azur" | "or" | "wax" | "menthe" | "violet";
 
@@ -166,6 +167,7 @@ export function DashboardView(): React.ReactElement {
       setLoading(false);
     }
   }, [days]);
+  useDataChanged(load);
 
   useEffect(() => {
     void (async () => {

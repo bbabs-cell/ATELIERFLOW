@@ -131,6 +131,12 @@ export class SyncEngine {
    * Vrai quand aucune opération locale n'attend encore le serveur pour
    * cette entité : l'enregistrement en cache est la version confirmée.
    */
+  /** Clés « entité:id » ayant au moins une opération locale non confirmée. */
+  async unsettledKeys(): Promise<Set<string>> {
+    const ops = await this.queue.listAll();
+    return new Set(ops.filter((op) => op.status !== "SYNCED").map((op) => `${op.entity}:${op.entityId}`));
+  }
+
   async isSettled(entity: string, entityId: string): Promise<boolean> {
     const ops = await this.queue.listAll();
     return !ops.some((op) => op.entity === entity && op.entityId === entityId && op.status !== "SYNCED");
