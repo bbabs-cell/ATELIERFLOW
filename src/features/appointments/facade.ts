@@ -5,6 +5,7 @@ import { createNotificationService } from "@/application/appointments/notificati
 import { getClientsFacade } from "@/features/clients/facade";
 import { makeLocalAppointmentsStores } from "@/repository/local/appointments";
 import { makeLocalClientsStores } from "@/repository/local/clients";
+import { makeLocalOrdersRepository } from "@/repository/local/orders";
 import { createIndexedDbCache } from "@/repository/local/indexeddb/cache";
 import { scopedToSession } from "@/application/auth/session";
 
@@ -26,8 +27,8 @@ export function createAppointmentsFacade(input: {
     tenantId: input.tenantId,
     profileId: input.profileId,
     appointments: stores.appointments,
-    notifications: stores.notifications,
     customers,
+    orders: makeLocalOrdersRepository(cache),
     engine: clientsFacade.engine,
   });
 

@@ -40,6 +40,8 @@ export interface AppointmentRecord {
   ends_at: string | null;
   status: AppointmentStatus;
   note: string | null;
+  /** Dernier rappel WhatsApp envoyé au client (0019) ; absent sur les anciens enregistrements locaux. */
+  reminder_sent_at?: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -65,7 +67,7 @@ export interface AppointmentDraftClean {
 }
 
 export type AppointmentDraftErrors = Partial<
-  Record<"customerId" | "type" | "startsAt" | "endsAt", string>
+  Record<"customerId" | "orderId" | "type" | "startsAt" | "endsAt", string>
 >;
 
 export function validateAppointmentDraft(
@@ -121,6 +123,11 @@ export const APPOINTMENT_TRANSITIONS: Record<
   CANCELLED: [],
   NO_SHOW: ["COMPLETED", "CANCELLED"],
 };
+
+/** Un rendez-vous terminé ou annulé n'est plus modifiable (miroir de 0019). */
+export function isAppointmentEditable(status: AppointmentStatus): boolean {
+  return status !== "COMPLETED" && status !== "CANCELLED";
+}
 
 export function canTransitionAppointment(from: string, to: string): boolean {
   if (!isAppointmentStatus(from)) return false;
