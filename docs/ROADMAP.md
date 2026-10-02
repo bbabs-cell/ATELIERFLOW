@@ -54,7 +54,7 @@ Nom technique temporaire: atelierflow
 | 16 | Reçus | FAIT (local) | `src/domain/orders/receipts.ts` + `src/application/orders/receiptService.ts` + UI dans `PaymentsPanel` + `docs/RECEIPTS.md` (104 tests) |
 | 17 | Rendez-vous / WhatsApp | FAIT (local) | `src/domain/appointments/*` + `src/features/appointments/*` + `/rdv` + rappel WhatsApp outbox + `docs/APPOINTMENTS.md` (121 tests) |
 | 18 | Stock | FAIT (local) | `src/domain/inventory/*` + `src/application/stock/stockService.ts` + `/stock` + `docs/STOCK.md` (137 tests) |
-| 19 | Équipe / permissions | FAIT (code) — 0017 à appliquer | `0017_team_invitations.sql` (invitations par lien à usage unique, jeton haché, 7 jours ; équipe et rôles côté serveur) + `/equipe` connecté (`RemoteTeamView`) + `/invitation/<jeton>` + partage WhatsApp / e-mail ; `docs/SECURITY.md` §9 ; 20/20 scénarios locaux. Mode démo : écran local d'origine. |
+| 19 | Équipe / permissions | FAIT — 0017 appliquée en production le 2026-10-02 | `0017_team_invitations.sql` (invitations par lien à usage unique, jeton haché, 7 jours ; équipe et rôles côté serveur) + `/equipe` connecté (`RemoteTeamView`) + `/invitation/<jeton>` + partage WhatsApp / e-mail ; `docs/SECURITY.md` §9 ; 20/20 scénarios locaux. Mode démo : écran local d'origine. |
 | 20 | Dashboard / recherche | FAIT (local) | `src/domain/dashboard/*` + `src/application/dashboard/dashboardService.ts` + `/dashboard` + `docs/DASHBOARD.md` (160 tests) |
 | 21 | Abonnements SaaS | FAIT (local) | `src/domain/subscriptions/*` + `src/application/subscriptions/subscriptionService.ts` + `/abonnement` + `docs/SUBSCRIPTIONS.md` (171 tests) |
 | 22 | Tests | FAIT | `tests/*` : recherche (unit) + E2E fil de l'eau + `docs/TESTS.md` (180 tests) |
