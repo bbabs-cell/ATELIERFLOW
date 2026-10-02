@@ -6,3 +6,40 @@
     font-family: var(--font-display);
   }
 }
+/* Impression du reçu (prompt 16) : seule la feuille du reçu est imprimée. */
+#receipt-print-root {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A5 portrait;
+    margin: 8mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    overflow: visible !important;
+  }
+
+  body > *:not(#receipt-print-root) {
+    display: none !important;
+  }
+
+  #receipt-print-root {
+    display: block;
+  }
+
+  #receipt-print-root .receipt-sheet {
+    max-width: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  #receipt-print-root * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

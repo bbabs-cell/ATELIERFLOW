@@ -54,6 +54,8 @@ export function createOrdersFacade(input: {
     orders: makeLocalOrdersRepository(cache),
     payments: makeLocalPaymentsRepository(cache),
     receipts: makeLocalReceiptsRepository(cache),
+    items: stores.items,
+    customers,
     engine: clientsFacade.engine,
   });
 

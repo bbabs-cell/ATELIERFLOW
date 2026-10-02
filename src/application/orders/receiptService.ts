@@ -5,7 +5,11 @@ import {
   nextReceiptSequence,
 } from "@/domain/orders/receipts";
 import type { ReceiptRecord } from "@/domain/orders/receipts";
-import type { OrdersRepository } from "@/repository/ports/orders";
+import type { OrderItemRecord, OrderRecord } from "@/domain/orders/order";
+import type { PaymentRecord } from "@/domain/orders/payments";
+import type { Customer } from "@/domain/clients/customer";
+import type { CustomersRepository } from "@/repository/ports/clients";
+import type { OrderItemsRepository, OrdersRepository } from "@/repository/ports/orders";
 import type { PaymentsRepository } from "@/repository/ports/payments";
 import type { ReceiptsRepository } from "@/repository/ports/receipts";
 
@@ -15,10 +19,22 @@ export type IssueReceiptResult =
   | { ok: true; receipt: ReceiptRecord }
   | { ok: false; reason: string };
 
+/** Données sources d'un reçu, telles qu'enregistrées sur l'appareil. */
+export interface ReceiptSources {
+  receipt: ReceiptRecord;
+  order: OrderRecord;
+  items: OrderItemRecord[];
+  customer: Customer | null;
+  payment: PaymentRecord | null;
+  /** Le reçu est confirmé par le serveur (plus aucune opération en attente). */
+  settled: boolean;
+}
+
 export interface ReceiptService {
   issuePaymentReceipt(paymentId: string): Promise<IssueReceiptResult>;
   issueCorrectionReceipt(paymentId: string): Promise<IssueReceiptResult>;
   orderReceipts(orderId: string): Promise<ReceiptRecord[]>;
+  receiptSources(receiptId: string): Promise<ReceiptSources | null>;
 }
 
 export interface ReceiptServiceDeps {
@@ -27,6 +43,8 @@ export interface ReceiptServiceDeps {
   orders: OrdersRepository;
   payments: PaymentsRepository;
   receipts: ReceiptsRepository;
+  items?: OrderItemsRepository;
+  customers?: CustomersRepository;
   engine: SyncEngine;
   now?: () => string;
   uuid?: () => string;
@@ -133,6 +151,19 @@ export function createReceiptService(deps: ReceiptServiceDeps): ReceiptService {
     issueCorrectionReceipt: (paymentId) => issue(paymentId, true),
     async orderReceipts(orderId) {
       return deps.receipts.listByOrder(orderId);
+    },
+    async receiptSources(receiptId) {
+      const receipt = await deps.receipts.getReceipt(receiptId);
+      if (receipt === null) return null;
+      const order = await deps.orders.getOrder(receipt.order_id);
+      if (order === null) return null;
+      const [items, customer, payment, settled] = await Promise.all([
+        deps.items ? deps.items.listByOrder(order.id) : Promise.resolve([]),
+        deps.customers ? deps.customers.getCustomer(order.customer_id) : Promise.resolve(null),
+        receipt.payment_id ? deps.payments.getPayment(receipt.payment_id) : Promise.resolve(null),
+        deps.engine.isSettled(RECEIPTS, receipt.id),
+      ]);
+      return { receipt, order, items, customer, payment, settled };
     },
   };
 }

@@ -70,6 +70,8 @@ function makeHarness(tenantId: string = uniqueTenant()) {
     orders: orderStores.orders,
     payments: makeLocalPaymentsRepository(cache),
     receipts: makeLocalReceiptsRepository(cache),
+    items: orderStores.items,
+    customers: clientStores.customers,
     engine,
     now,
     uuid,
@@ -239,5 +241,28 @@ describe("createReceiptService", () => {
     expect(receipts[0].operation).toBe("INSERT");
 
     expect(await h.engine.flush()).toMatchObject({ synced: 0, attempted: 0 });
+  });
+
+  it("rassemble les données du reçu ; provisoire jusqu'à la synchronisation", async () => {
+    const h = makeHarness();
+    const order = await createOrder(h);
+    if (!order) return;
+    const paid = await h.payments.recordPayment({ orderId: order.id, amount: 15000, method: "WAVE", note: "Acompte" });
+    if (!paid.ok) return;
+    const issued = await h.receipts.issuePaymentReceipt(paid.payment.id);
+    if (!issued.ok) return;
+
+    const before = await h.receipts.receiptSources(issued.receipt.id);
+    expect(before).not.toBeNull();
+    expect(before?.settled).toBe(false);
+    expect(before?.order.id).toBe(order.id);
+    expect(before?.customer?.full_name).toBe("Awa Diop");
+    expect(before?.items.map((i) => i.description)).toEqual(["Robe de mariée"]);
+    expect(before?.payment?.note).toBe("Acompte");
+    expect(before?.receipt.state).toEqual({ total: 50000, totalPaid: 15000, remaining: 35000, surplus: 0 });
+
+    await h.engine.flush();
+    expect((await h.receipts.receiptSources(issued.receipt.id))?.settled).toBe(true);
+    expect(await h.receipts.receiptSources("inconnu")).toBeNull();
   });
 });
