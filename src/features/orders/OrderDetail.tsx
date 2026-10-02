@@ -1,7 +1,8 @@
 "use client";
 
 import { CalendarClock, Flag, UserRound, XCircle } from "lucide-react";
-import { Badge, Button, Timeline } from "@/ui";
+import { Badge, Button, Select, Timeline } from "@/ui";
+import type { Assignee } from "./useAssignees";
 import { formatFcfa } from "@/domain/money";
 import {
   availableTransitions,
@@ -22,6 +23,8 @@ export interface OrderDetailProps {
   actionError: string | null;
   onAction: (to: OrderStatus) => void;
   onCancelOrder: () => void;
+  assignees?: Assignee[];
+  onAssign?: (employeeId: string | null) => void;
 }
 
 export function OrderDetail({
@@ -30,6 +33,8 @@ export function OrderDetail({
   actionError,
   onAction,
   onCancelOrder,
+  assignees = [],
+  onAssign,
 }: OrderDetailProps): React.ReactElement {
   const { order, customerName, items, history } = detail;
   const status = ORDER_STATUS_META[order.status];
@@ -67,6 +72,28 @@ export function OrderDetail({
           </dd>
         </div>
       </dl>
+
+      {onAssign && !isTerminal(order.status) ? (
+        <label className="flex flex-col gap-1.5 rounded-xl bg-azur-50 px-3 py-2.5">
+          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-azur-700">Affectée à</span>
+          <Select
+            aria-label="Personne affectée"
+            className="h-10 min-h-10 rounded-full py-0 text-sm"
+            value={order.employee_id ?? ""}
+            onChange={(e) => onAssign(e.target.value === "" ? null : e.target.value)}
+          >
+            <option value="">Personne (non affectée)</option>
+            {order.employee_id && !assignees.some((a) => a.id === order.employee_id) ? (
+              <option value={order.employee_id}>Membre</option>
+            ) : null}
+            {assignees.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.name}
+              </option>
+            ))}
+          </Select>
+        </label>
+      ) : null}
 
       {order.notes ? (
         <p className="rounded-lg bg-ivoire-100 px-3 py-2 text-sm text-ink-soft">{order.notes}</p>

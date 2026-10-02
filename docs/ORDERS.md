@@ -85,3 +85,11 @@ COMPLETED → READY_FOR_PICKUP → DELIVERED
   reçus `REC-YYYY-XXXXXX` ; rapprochement solde/commande.
 - Photos tissus/corps (R2, Prompt 18) à rattacher aux articles (`fabric_id`), et
   profil de mesures lié (`measurement_profile_id`) déjà présent dans le draft.
+## Kanban atelier et affectation (prompt 14, complément)
+
+- **Vue Atelier** (par défaut, mémorisée par appareil) / **Liste** sur `/commandes`. Une colonne par étape du flux (`ORDER_FLOW`), annulées exclues ; défilement horizontal, une colonne par écran sur mobile.
+- **Déplacements** : glisser-déposer (ordinateur) ou bouton « étape suivante » sur chaque carte (tactile). Tout passage est validé par `canDrop` = `canTransition` du domaine, l'annulation reste réservée au détail (raison obligatoire) ; un passage interdit est refusé avec un message. Chaque déplacement passe par `orderService.transition` : historique conservé, synchronisé.
+- **Retards** (`deadlineState`) : date prévue passée → « n j de retard » (barre rose qui pulse) ; jour même → « Aujourd'hui » ; ≤ 2 jours → date en orange. Jamais en retard une fois prête à retirer, livrée ou annulée.
+- **Tri dans une colonne** : retard, priorité (Urgente → Basse), échéance la plus proche, ancienneté.
+- **Filtres** (Liste et Atelier) : priorité, personne affectée / non affectées, « En retard » (avec compteur).
+- **Affectation** : sélecteur « Affectée à » dans le détail (membres ACTIVE de l'équipe ; « Moi » seul sans droit `team.read`) ; `orderService.assign(id, profil | null)`. Seule cette opération envoie `employee_id` : les autres modifications l'omettent pour ne jamais écraser une affectation faite depuis un autre appareil. Côté serveur (`0018`), la clé présente fait foi (null = retrait) et la personne doit être membre ACTIVE de l'atelier.

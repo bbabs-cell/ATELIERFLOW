@@ -188,6 +188,32 @@ describe("createOrderService", () => {
     }
   });
 
+  it("affecte puis retire l'affectation, chaque changement part en sync", async () => {
+    const h = makeHarness(uniqueTenant());
+    const customer = await h.clients.createCustomer({ full_name: "Awa Diop" });
+    if (!customer.ok) throw new Error("client");
+    const created = await h.orders.createOrder({ customerId: customer.customer.id, priority: "NORMAL", items: [ITEM_ROBE] });
+    if (!created.ok) throw new Error("commande");
+    const id = created.order.id;
+    const EMP = "aaaaaaaa-0000-4000-8000-0000000000e1";
+
+    expect((await h.orders.assign(id, EMP))?.employee_id).toBe(EMP);
+    expect((await h.orders.getOrderDetail(id))?.order.employee_id).toBe(EMP);
+    expect(await h.orders.assign("inconnue", EMP)).toBeNull();
+    await h.orders.assign(id, EMP); // inchangé : aucune opération en plus
+    expect((await h.orders.assign(id, null))?.employee_id).toBeNull();
+
+    await h.orders.transition(id, "FABRIC_RECEIVED");
+
+    await h.engine.flush();
+    const updates = h.server.pushed().filter((op) => op.entity === "orders" && op.operation === "UPDATE");
+    expect(updates).toHaveLength(3);
+    expect(updates.slice(0, 2).map((op) => (op.payload as { employee_id: string | null }).employee_id)).toEqual([EMP, null]);
+    // Un changement d'étape n'envoie pas l'affectation (pas d'écrasement serveur).
+    expect(updates[2].payload as object).not.toHaveProperty("employee_id");
+    expect((updates[2].payload as { status: string }).status).toBe("FABRIC_RECEIVED");
+  });
+
   it("annule avec raison obligatoire, jamais de suppression", async () => {
     const h = makeHarness(uniqueTenant());
     const customer = await h.clients.createCustomer({ full_name: "Awa Diop" });
