@@ -45,16 +45,45 @@ src/features/orders/ReceiptViewer.tsx        archivage automatique du PDF du re�
 
 ## 4. Mise en service
 
-1. Cloudflare → R2 : créer le bucket privé (ex. `atelier-fichiers`).
-2. R2 → « Manage API tokens » : jeton **Object Read & Write** limité à ce bucket.
-3. Vercel → variables d'environnement (Production) : `R2_ACCOUNT_ID`,
-   `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, puis redéployer.
-4. Appliquer `0020_files_register.sql` sur Supabase.
+Seule étape restante : la création du bucket et des clés, à faire dans le tableau de bord
+Cloudflare (aucun accès Cloudflare depuis le dépôt). Le code et `0020` sont déjà en
+production.
+
+1. **Cloudflare → R2 → Create bucket** : nom neutre (ex. `atelier-fichiers`), emplacement
+   automatique, classe Standard. Dans **Settings** du bucket, laisser **Public access**
+   désactivé : ni domaine `r2.dev`, ni domaine personnalisé. Aucune règle CORS n'est
+   nécessaire, car le navigateur ne parle jamais directement à R2 : l'envoi passe par
+   `/api/files` et la lecture par des liens signés ouverts en `<img>`.
+2. **R2 → Manage API tokens → Create API token** : permission **Object Read & Write**,
+   **limité à ce bucket** (« Apply to specific buckets only »), sans date d'expiration ni
+   filtre IP (les adresses Vercel varient). Noter l'**Access Key ID** et le
+   **Secret Access Key** (affiché une seule fois) ; l'**Account ID** figure sur la page R2.
+3. **Vérifier** depuis un poste, avec un `.env.local` non commité :
+   ```
+   R2_ACCOUNT_ID=…  R2_BUCKET=atelier-fichiers  R2_ACCESS_KEY_ID=…  R2_SECRET_ACCESS_KEY=…
+   node --env-file=.env.local scripts-provisioning/verify-r2.mjs
+   ```
+   Le script écrit deux objets sonde sous `_provisioning/` (hors `tenants/`), contrôle
+   qu'un lien signé fonctionne, que l'accès anonyme, un lien falsifié et un lien
+   réutilisé pour un autre objet sont **refusés**, puis retire les sondes. Attendu :
+   `R2 prêt (bucket privé, liens signés)`. Si l'accès anonyme passe, le bucket est
+   public : désactiver l'accès public avant d'aller plus loin.
+4. **Vercel → atelierflow → Settings → Environment Variables** (Production et Preview,
+   type **Sensitive**) : `R2_ACCOUNT_ID`, `R2_BUCKET`, `R2_ACCESS_KEY_ID`,
+   `R2_SECRET_ACCESS_KEY` (ne pas définir `R2_ENDPOINT`, réservé aux tests). Puis
+   **redéployer** : les variables ne s'appliquent qu'aux nouveaux déploiements.
+5. **Contrôle final dans l'application** : ajouter une photo sur une fiche client, la
+   rouvrir sur un autre appareil, la retirer ; émettre un reçu et vérifier son archivage.
+
 Sans ces variables, la route répond `FILES_NOT_PROVISIONED` (501) et l'interface affiche
-« Le stockage des fichiers n'est pas encore activé ».
+« Le stockage des fichiers n'est pas encore activé ». Ne jamais supprimer un bucket
+existant sans confirmation explicite.
 
 ## 5. Tests
 
 `tests/unit/files/files.test.ts` (signatures, contrôles, clés, service : envoi, refus,
 nettoyage, filtre cross-tenant, reçu immuable ; R2 : lien signé, PUT signé) ;
-`supabase/validations/files_local.sql` (15 scénarios, local uniquement).
+`supabase/validations/files_local.sql` (15 scénarios, local uniquement) ;
+`scripts-provisioning/verify-r2.mjs` (bucket réel : écriture, lien signé, refus anonyme,
+lien falsifié ou détourné ; essayé sur deux stockages S3 locaux : refus anonyme et
+mauvais secret détectés, stockage sans authentification signalé comme non privé).

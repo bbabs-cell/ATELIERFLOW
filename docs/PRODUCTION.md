@@ -28,9 +28,10 @@ d'accès externes est déjà livré et vérifié localement.
    granulaire), `alter default privileges`, et restreindre les écritures
    sensibles (`payments`, `receipts`, `counters`) à des fonctions serveur
    `security definer`.
-4. **Cloudflare R2** : création des buckets privés (layout :
-   `{tenant_id}/customers|orders|fabrics/{id}/…`, reçus PDF), vérification
-   MIME/taille côté serveur, URLs signées courte durée (`R2_SIGNED_URL_TTL=600`).
+4. **Cloudflare R2** : création du bucket privé (layout :
+   `tenants/{tenant_id}/customers|orders|fabrics|receipts/{fiche}/…`), jeton
+   limité au bucket, variables `R2_*` sur Vercel, puis
+   `scripts-provisioning/verify-r2.mjs` — procédure complète dans `docs/FILES.md` §4.
 5. **Vercel/GitHub** : repo + CI (typecheck/lint/test/build), variables
    d'environnement selon `.env.example`, domaine + HTTPS.
 
