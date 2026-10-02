@@ -4,7 +4,7 @@ import type {
 } from "@/domain/sync/types";
 import { isIdempotencyKey, newIdempotencyKey } from "@/domain/ids/idempotency";
 import { MAX_PUSH_BATCH, shouldAttempt } from "@/domain/sync/queuePolicy";
-import { serverIsReference } from "@/domain/sync/conflictPolicy";
+import { adoptServerRecord } from "@/domain/sync/conflictPolicy";
 import {
   toWireOperation,
   type LocalCachePort,
@@ -225,8 +225,10 @@ export class SyncEngine {
     op: SyncOperation,
     serverRecord: unknown | undefined,
   ): Promise<void> {
-    if (serverIsReference(op.entity) && serverRecord !== undefined) {
-      await this.cache.put(op.entity, op.entityId, serverRecord);
+    if (serverRecord !== undefined) {
+      const local = await this.cache.get(op.entity, op.entityId);
+      const adopted = adoptServerRecord(op.entity, local, serverRecord);
+      if (adopted !== null) await this.cache.put(op.entity, op.entityId, adopted);
     }
     await this.queue.resolve(op.idempotencyKey, "SYNCED", null);
     this.bumpPending(-1);

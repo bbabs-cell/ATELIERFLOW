@@ -23,15 +23,19 @@ export interface AppShellProps {
   footer?: ReactNode;
 }
 
-/** Couleur d'accent propre à chaque entrée de menu (pastille d'icône). */
+/**
+ * Pastille d'icône de chaque entrée de menu — palette resserrée :
+ * orange pour le travail de l'atelier, espresso pour la gestion, vert pour
+ * l'argent. Le rouge reste réservé aux alertes.
+ */
 const ICON_TONES = [
-  "from-flamme-300 to-flamme-500",
-  "from-azur-300 to-azur-500",
-  "from-champagne-300 to-champagne-500",
-  "from-wax-300 to-wax-500",
-  "from-menthe-300 to-menthe-500",
-  "from-violet-100 to-violet-500",
-  "from-flamme-200 to-wax-500",
+  "from-flamme-300 to-flamme-500", // Tableau de bord
+  "from-azur-300 to-azur-500", // Clients
+  "from-champagne-300 to-champagne-500", // Commandes
+  "from-flamme-200 to-flamme-600", // Rendez-vous
+  "from-azur-300 to-azur-600", // Stock
+  "from-violet-100 to-violet-500", // Équipe
+  "from-menthe-300 to-menthe-500", // Abonnement
 ];
 
 /** Formes lumineuses qui dérivent lentement (fond vivant). */
@@ -50,7 +54,7 @@ export function AmbientBlobs({ dark = false, className }: { dark?: boolean; clas
       />
       {dark ? null : (
         <div
-          className={cx("absolute right-1/4 top-[-5rem] size-64 rounded-full bg-wax-500 blur-3xl animate-blob", tone)}
+          className={cx("absolute right-1/4 top-[-5rem] size-64 rounded-full bg-flamme-300 blur-3xl animate-blob", tone)}
           style={{ animationDelay: "-3s" }}
         />
       )}

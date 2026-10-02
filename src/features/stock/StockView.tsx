@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Archive, PackagePlus, Shirt, TrendingDown, TrendingUp, Scale } from "lucide-react";
 import { Badge, Button, Dialog, Drawer, Field, Input, Select, StateView, Textarea } from "@/ui";
+import { PhotoGallery } from "@/features/files/PhotoGallery";
 import type { FabricRecord } from "@/domain/inventory/fabrics";
 import type { StockMovementRecord, StockMovementType } from "@/domain/inventory/stock";
 import { formatFcfa } from "@/domain/money";
@@ -432,6 +433,8 @@ export function StockView(): React.ReactElement {
               <p className="text-ink-soft">Stock</p>
               <p className="font-display text-xl text-ink">{formatMeters(detail.quantity)}</p>
             </div>
+
+            <PhotoGallery key={detail.id} category="FABRIC" entityId={detail.id} title="Photos du tissu" />
 
             <div>
               <p className="mb-2 text-sm font-medium text-ink">Journal des mouvements</p>

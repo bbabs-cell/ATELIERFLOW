@@ -265,4 +265,33 @@ describe("createReceiptService", () => {
     expect((await h.receipts.receiptSources(issued.receipt.id))?.settled).toBe(true);
     expect(await h.receipts.receiptSources("inconnu")).toBeNull();
   });
+
+  it("après synchronisation, le reçu porte la référence attribuée par le serveur", async () => {
+    const h = makeHarness();
+    const order = await createOrder(h);
+    if (!order) return;
+    const paid = await h.payments.recordPayment({ orderId: order.id, amount: 15000, method: "CASH" });
+    if (!paid.ok) return;
+    const issued = await h.receipts.issuePaymentReceipt(paid.payment.id);
+    if (!issued.ok) return;
+    expect(issued.receipt.reference).toBe("REC-2026-000001");
+
+    // Le serveur (autre appareil déjà passé) attribue REC-2026-000007.
+    const push = h.server.push;
+    h.server.push = async (request) => {
+      const response = await push(request);
+      return {
+        results: response.results.map((r) => {
+          const op = request.batch.find((o) => o.idempotencyKey === r.idempotencyKey);
+          return op?.entity === "receipts" && r.outcome.kind === "SYNCED"
+            ? { ...r, outcome: { kind: "SYNCED" as const, record: { ...(r.outcome.record as object), reference: "REC-2026-000007" } } }
+            : r;
+        }),
+      };
+    };
+    await h.engine.flush();
+    const sources = await h.receipts.receiptSources(issued.receipt.id);
+    expect(sources?.settled).toBe(true);
+    expect(sources?.receipt.reference).toBe("REC-2026-000007");
+  });
 });

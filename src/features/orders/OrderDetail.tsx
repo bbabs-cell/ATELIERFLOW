@@ -16,6 +16,7 @@ import {
   ORDER_STATUS_LABELS,
 } from "./constants";
 import { PaymentsPanel } from "./PaymentsPanel";
+import { PhotoGallery } from "@/features/files/PhotoGallery";
 
 export interface OrderDetailProps {
   detail: OrderWithCustomer;
@@ -127,6 +128,8 @@ export function OrderDetail({
         orderReference={order.reference}
         orderStatus={order.status}
       />
+
+      <PhotoGallery category="ORDER" entityId={order.id} title="Photos de la commande" />
 
       {!isTerminal(order.status) ? (
         <div className="flex flex-col gap-2">

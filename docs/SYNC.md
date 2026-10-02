@@ -73,3 +73,15 @@ Implémentation serveur attendue (migration 0010 — prochaine étape hors-ligne
 4. Conflit financier → `CONFLICT`, aucun écrasement du local (y compris record serveur fourni au SYNCED ignoré sur les entités financières).
 
 Exécution : `npm run test` (vitest). Typecheck/lint/build intégrés : `npm run typecheck`, `npm run lint`, `npm run build`.
+## Correctif 2026-10-02 — déclenchement et références serveur
+
+- **Déclenchement** : aucun code n'appelait `engine.flush()` ; les opérations restaient sur
+  l'appareil (base de production : 0 opération reçue). `src/features/sync/useSyncRunner.ts`,
+  monté par l'AuthGate pour une session Supabase, envoie la file au démarrage, au retour du
+  réseau, au retour sur l'onglet, 1,2 s après une saisie et toutes les 30 s.
+- **Références** : après SYNCED, `adoptServerRecord` (domain/sync/conflictPolicy) reprend la
+  version serveur des reçus (REC définitive, état du solde) et la référence ORD des
+  commandes ; les autres saisies locales sensibles restent inchangées.
+- Validé de bout en bout contre PostgreSQL local : client → commande (+ articles,
+  historique) → paiement → reçu, tous SYNCED ; référence affichée et PDF archivé identiques
+  à celle du serveur.

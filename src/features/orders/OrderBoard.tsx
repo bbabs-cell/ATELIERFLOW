@@ -26,7 +26,7 @@ const COLUMN_TONES: Record<OrderStatus, string> = {
   PREPARATION: "from-azur-300 to-azur-500",
   SEWING: "from-flamme-300 to-flamme-500",
   FITTING: "from-violet-100 to-violet-500",
-  ALTERATION: "from-wax-300 to-wax-500",
+  ALTERATION: "from-flamme-400 to-flamme-700",
   COMPLETED: "from-menthe-300 to-menthe-500",
   READY_FOR_PICKUP: "from-champagne-400 to-flamme-500",
   DELIVERED: "from-menthe-500 to-menthe-600",

@@ -33,7 +33,7 @@ const config: Record<
   },
   error: {
     icon: <TriangleAlert className="size-7" />,
-    tone: "bg-[linear-gradient(120deg,#e5337f,#dc2626)]",
+    tone: "bg-[linear-gradient(120deg,#ef4444,#b91c1c)]",
     defaultTitle: "Une erreur est survenue",
   },
   success: {
