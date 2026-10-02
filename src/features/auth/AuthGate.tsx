@@ -124,11 +124,14 @@ export function AuthGate({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const isPublic = PUBLIC_PATHS.includes(pathname);
+  // Lien d'invitation : accessible connecté ou non, sans atelier, et jamais
+  // détourné vers /bienvenue (l'invité rejoint un atelier existant).
+  const isInvitation = pathname.startsWith("/invitation/");
+  const isPublic = isInvitation || PUBLIC_PATHS.includes(pathname);
   const target =
     state.status === "anonymous" && !isPublic
       ? "/connexion"
-      : state.status === "needs-workspace" && pathname !== "/bienvenue"
+      : state.status === "needs-workspace" && pathname !== "/bienvenue" && !isInvitation
         ? "/bienvenue"
         : state.status === "ready" && state.session.mode !== "DEMO" && ENTRY_PATHS.includes(pathname)
           ? HOME_PATH

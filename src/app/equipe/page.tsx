@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { TeamView } from "@/features/team/TeamView";
+import { TeamScreen } from "@/features/team/TeamScreen";
 
 export const metadata: Metadata = {
   title: "Équipe — Atelier",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function TeamPage() {
-  return <TeamView />;
+  return <TeamScreen />;
 }

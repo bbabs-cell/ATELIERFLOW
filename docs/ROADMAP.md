@@ -45,7 +45,7 @@ Nom technique temporaire: atelierflow
 | 07 | Architecture | FAIT | `docs/ARCHITECTURE.md` |
 | 08 | Design system | FAIT | app Next.js + `src/ui/*` + `src/app/page.tsx` |
 | 09 | Database | FAIT (local) | `supabase/migrations/0000-0008` + `docs/DATABASE.md` |
-| 10 | Auth / RLS / multitenant | FAIT (code) — hook à activer | `supabase/migrations/0007-0008`, `0011`, `0015-0016` + `docs/SECURITY.md` §8 : `/connexion` (connexion, inscription), `/bienvenue` (création d'atelier via `create_owner_tenant`), `AuthGate` : tenant issu du claim JWT `tenant_id`, facades scopées par session (identifiants de démo supprimés), jeton transmis à `/api/sync`, reprise hors ligne, mode DEMO explicite sans Supabase. Rejeux réels 23/23 RLS + 27/27 sync. Reste : activer le hook dans le dashboard, invitation d'équipe par lien (INVITED → ACTIVE). |
+| 10 | Auth / RLS / multitenant | FAIT (code) — hook à activer | `supabase/migrations/0007-0008`, `0011`, `0015-0016` + `docs/SECURITY.md` §8 : `/connexion` (connexion, inscription), `/bienvenue` (création d'atelier via `create_owner_tenant`), `AuthGate` : tenant issu du claim JWT `tenant_id`, facades scopées par session (identifiants de démo supprimés), jeton transmis à `/api/sync`, reprise hors ligne, mode DEMO explicite sans Supabase. Rejeux réels 23/23 RLS + 27/27 sync. Reste : activer le hook dans le dashboard, invitation d'équipe par lien → étape 19. |
 | 11 | Offline sync | FAIT (local) | `src/domain/sync` + `src/application/sync/engine.ts` + `src/repository/local/indexeddb` + `docs/SYNC.md` (19/19 tests) |
 | 12 | PWA | FAIT (local) | `public/sw.js` + `public/pwa/manifest.webmanifest` + `src/features/pwa/*` + `docs/PWA.md` |
 | 13 | Clients / mesures | FAIT (local) | `src/domain/clients` + `src/application/clients` + `/clients` + `docs/CLIENTS.md` (57 tests) |
@@ -54,7 +54,7 @@ Nom technique temporaire: atelierflow
 | 16 | Reçus | FAIT (local) | `src/domain/orders/receipts.ts` + `src/application/orders/receiptService.ts` + UI dans `PaymentsPanel` + `docs/RECEIPTS.md` (104 tests) |
 | 17 | Rendez-vous / WhatsApp | FAIT (local) | `src/domain/appointments/*` + `src/features/appointments/*` + `/rdv` + rappel WhatsApp outbox + `docs/APPOINTMENTS.md` (121 tests) |
 | 18 | Stock | FAIT (local) | `src/domain/inventory/*` + `src/application/stock/stockService.ts` + `/stock` + `docs/STOCK.md` (137 tests) |
-| 19 | Équipe / permissions | FAIT (local) | `src/domain/team/*` + `src/application/team/teamService.ts` + `/equipe` + `docs/TEAM.md` (151 tests) |
+| 19 | Équipe / permissions | FAIT — 0017 appliquée en production le 2026-10-02 | `0017_team_invitations.sql` (invitations par lien à usage unique, jeton haché, 7 jours ; équipe et rôles côté serveur) + `/equipe` connecté (`RemoteTeamView`) + `/invitation/<jeton>` + partage WhatsApp / e-mail ; `docs/SECURITY.md` §9 ; 20/20 scénarios locaux. Mode démo : écran local d'origine. |
 | 20 | Dashboard / recherche | FAIT (local) | `src/domain/dashboard/*` + `src/application/dashboard/dashboardService.ts` + `/dashboard` + `docs/DASHBOARD.md` (160 tests) |
 | 21 | Abonnements SaaS | FAIT (local) | `src/domain/subscriptions/*` + `src/application/subscriptions/subscriptionService.ts` + `/abonnement` + `docs/SUBSCRIPTIONS.md` (171 tests) |
 | 22 | Tests | FAIT | `tests/*` : recherche (unit) + E2E fil de l'eau + `docs/TESTS.md` (180 tests) |
