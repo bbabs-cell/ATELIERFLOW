@@ -63,6 +63,8 @@ export interface OrderService {
     id: string,
     reason: string,
   ): Promise<{ ok: true; order: OrderRecord } | { ok: false; reason: string }>;
+  /** Affecte la commande à un membre (profil) ou retire l'affectation (null). */
+  assign(id: string, employeeId: string | null): Promise<OrderRecord | null>;
 }
 
 export interface OrderServiceDeps {
@@ -139,6 +141,17 @@ export function createOrderService(deps: OrderServiceDeps): OrderService {
     });
   }
 
+  /**
+   * Charge utile d'une modification qui ne touche pas à l'affectation :
+   * sans employee_id, pour ne jamais écraser côté serveur une affectation
+   * faite depuis un autre appareil (0018 : la clé présente fait foi).
+   */
+  function withoutAssignment(order: OrderRecord): Omit<OrderRecord, "employee_id"> {
+    const { employee_id: _ignored, ...rest } = order;
+    void _ignored;
+    return rest;
+  }
+
   async function doTransition(
     id: string,
     to: OrderStatus,
@@ -158,7 +171,7 @@ export function createOrderService(deps: OrderServiceDeps): OrderService {
     const updated = orderAfterTransition(order, to, txNow);
     await deps.orders.saveOrder(updated);
     await deps.history.saveEntry(result.result.history);
-    await enqueue(ORDERS, id, "UPDATE", updated);
+    await enqueue(ORDERS, id, "UPDATE", withoutAssignment(updated));
     await enqueue(ORDER_HISTORY, result.result.history.id, "INSERT", result.result.history);
     return { ok: true, order: updated };
   }
@@ -304,12 +317,22 @@ export function createOrderService(deps: OrderServiceDeps): OrderService {
         updated_at: now(),
       };
       await deps.orders.saveOrder(order);
-      await enqueue(ORDERS, id, "UPDATE", order);
+      await enqueue(ORDERS, id, "UPDATE", withoutAssignment(order));
       return order;
     },
 
     async transition(id, to, note) {
       return doTransition(id, to, note ?? null);
+    },
+
+    async assign(id, employeeId) {
+      const existing = await deps.orders.getOrder(id);
+      if (existing === null) return null;
+      if (existing.employee_id === employeeId) return existing;
+      const order: OrderRecord = { ...existing, employee_id: employeeId, updated_at: now() };
+      await deps.orders.saveOrder(order);
+      await enqueue(ORDERS, id, "UPDATE", order);
+      return order;
     },
 
     async cancel(id, reason) {

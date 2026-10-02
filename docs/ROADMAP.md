@@ -49,7 +49,7 @@ Nom technique temporaire: atelierflow
 | 11 | Offline sync | FAIT (local) | `src/domain/sync` + `src/application/sync/engine.ts` + `src/repository/local/indexeddb` + `docs/SYNC.md` (19/19 tests) |
 | 12 | PWA | FAIT (local) | `public/sw.js` + `public/pwa/manifest.webmanifest` + `src/features/pwa/*` + `docs/PWA.md` |
 | 13 | Clients / mesures | FAIT (local) | `src/domain/clients` + `src/application/clients` + `/clients` + `docs/CLIENTS.md` (57 tests) |
-| 14 | Commandes | FAIT (local) | `src/domain/orders` + `src/domain/money.ts` + `src/application/orders` + `/commandes` + `docs/ORDERS.md` (83 tests) |
+| 14 | Commandes | FAIT — Kanban atelier | `src/domain/orders` + `src/application/orders` + `/commandes` + `docs/ORDERS.md` ; **Kanban atelier** (`OrderBoard`, logique `domain/orders/board.ts`) : une colonne par étape, glisser-déposer validé par les transitions du domaine, bouton « étape suivante » tactile, retards (« n j de retard », aujourd'hui, bientôt), tri retard → priorité → échéance, filtres priorité / personne / retards communs Liste et Atelier, **affectation** (`assign`, sélecteur dans le détail) ; `0018_orders_assignment.sql` (retrait d’affectation, membre ACTIVE vérifié) — appliquée en production le 2026-10-02. |
 | 15 | Paiements / finance | FAIT (local) | `src/domain/orders/payments.ts` + `src/application/orders/paymentService.ts` + `PaymentsPanel` + `docs/FINANCE.md` (94 tests) |
 | 16 | Reçus | FAIT (local) | `src/domain/orders/receipts.ts` + `src/application/orders/receiptService.ts` + UI dans `PaymentsPanel` + `docs/RECEIPTS.md` (104 tests) |
 | 17 | Rendez-vous / WhatsApp | FAIT (local) | `src/domain/appointments/*` + `src/features/appointments/*` + `/rdv` + rappel WhatsApp outbox + `docs/APPOINTMENTS.md` (121 tests) |
