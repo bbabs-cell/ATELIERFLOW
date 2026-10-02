@@ -37,11 +37,18 @@ export function Dialog({
 }: DialogProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
+  // onClose est souvent une fonction recréée à chaque rendu (`() => setOpen(false)`) :
+  // on la garde dans une ref pour que l'effet ne se relance qu'à l'ouverture.
+  // Sinon le focus revenait sur la fenêtre à chaque frappe et la saisie s'arrêtait.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") onCloseRef.current();
     };
     document.addEventListener("keydown", onKey);
     const { body } = document;
@@ -52,7 +59,7 @@ export function Dialog({
       document.removeEventListener("keydown", onKey);
       body.style.overflow = prev;
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 
