@@ -11,6 +11,7 @@ import { ClientsList } from "./ClientsList";
 import { MeasurementsPanel } from "./MeasurementsPanel";
 import { PhotoGallery } from "@/features/files/PhotoGallery";
 import { ProfileForm } from "./ProfileForm";
+import { useDataChanged } from "@/features/sync/useDataChanged";
 
 export function ClientsView(): React.ReactElement {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -43,6 +44,7 @@ export function ClientsView(): React.ReactElement {
       setLoading(false);
     }
   }, []);
+  useDataChanged(() => load(search));
 
   useEffect(() => {
     let cancelled = false;
