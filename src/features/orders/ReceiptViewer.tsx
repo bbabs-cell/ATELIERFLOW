@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { Download, MessageCircle, Pencil, Printer, Share2 } from "lucide-react";
+import { CloudCheck, CloudUpload, Download, MessageCircle, Pencil, Printer, Share2 } from "lucide-react";
 import { Button, Dialog, Field, Input, StateView, Textarea } from "@/ui";
 import {
   buildReceiptDocument,
@@ -18,6 +18,9 @@ import type { ReceiptSources } from "@/application/orders/receiptService";
 import { getOrdersFacade } from "./facade";
 import { ReceiptSheet } from "./ReceiptSheet";
 import { useAtelierIdentity } from "./useAtelierIdentity";
+import { FilesClientError, listFiles, uploadFile } from "@/infrastructure/files/filesClient";
+
+type ArchiveState = "idle" | "archiving" | "archived" | "unavailable" | "error";
 
 export interface ReceiptViewerProps {
   receiptId: string | null;
@@ -94,6 +97,40 @@ export function ReceiptViewer({ receiptId, onClose }: ReceiptViewerProps) {
   }, [sources, identity]);
 
   const canShareFiles = typeof navigator !== "undefined" && typeof navigator.canShare === "function";
+
+  // Archivage du PDF dans le stockage privé (R2), une seule fois, quand la
+  // référence est confirmée par le serveur et les coordonnées connues.
+  const [archive, setArchive] = useState<ArchiveState>("idle");
+  const archiveReady = doc !== null && !doc.provisional && identity !== null && peekActiveSession()?.mode !== "DEMO";
+  useEffect(() => {
+    if (!archiveReady || !doc || !sources) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const existing = await listFiles("RECEIPT", sources.receipt.id);
+        if (cancelled) return;
+        if (existing.length > 0) {
+          setArchive("archived");
+          return;
+        }
+        setArchive("archiving");
+        const file = await buildPdfFile(doc);
+        await uploadFile("RECEIPT", sources.receipt.id, file, file.name);
+        if (!cancelled) setArchive("archived");
+      } catch (error) {
+        if (cancelled) return;
+        const code = error instanceof FilesClientError ? error.code : "";
+        if (code === "ALREADY_ARCHIVED") setArchive("archived");
+        else if (code === "FILES_NOT_PROVISIONED" || code === "OFFLINE" || code.startsWith("FORBIDDEN")) setArchive("unavailable");
+        else setArchive("error");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // Une tentative par reçu ouvert (doc change avec l'identité : déjà prise en compte par archiveReady).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [archiveReady, sources?.receipt.id]);
 
   async function downloadPdf() {
     if (!doc) return;
@@ -181,6 +218,12 @@ export function ReceiptViewer({ receiptId, onClose }: ReceiptViewerProps) {
           <StateView variant="loading" title="Préparation du reçu…" />
         ) : (
           <div className="flex flex-col gap-3">
+            {archive === "archived" || archive === "archiving" ? (
+              <p className={archive === "archived" ? "flex items-center gap-1.5 self-start text-xs font-semibold text-menthe-600 animate-fade-up" : "flex items-center gap-1.5 self-start text-xs text-ink-soft"}>
+                {archive === "archived" ? <CloudCheck className="size-4" aria-hidden="true" /> : <CloudUpload className="size-4 animate-pulse" aria-hidden="true" />}
+                {archive === "archived" ? "PDF archivé dans le stockage sécurisé de l'atelier" : "Archivage du PDF…"}
+              </p>
+            ) : null}
             {actionError ? (
               <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-sm text-danger">
                 {actionError}

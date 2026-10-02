@@ -9,6 +9,7 @@ import { getClientsFacade } from "./facade";
 import { CustomerForm } from "./CustomerForm";
 import { ClientsList } from "./ClientsList";
 import { MeasurementsPanel } from "./MeasurementsPanel";
+import { PhotoGallery } from "@/features/files/PhotoGallery";
 import { ProfileForm } from "./ProfileForm";
 
 export function ClientsView(): React.ReactElement {
@@ -188,6 +189,8 @@ export function ClientsView(): React.ReactElement {
               customerId={selected.id}
               onNewProfile={() => setProfileOpen(true)}
             />
+
+            <PhotoGallery key={selected.id} category="CUSTOMER" entityId={selected.id} title="Photos du client" />
           </div>
         ) : null}
       </Drawer>
