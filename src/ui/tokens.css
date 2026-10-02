@@ -346,12 +346,18 @@
   .gradient-border::before {
     content: "";
     position: absolute;
-    inset: -1.5px;
-    z-index: -1;
+    inset: 0;
+    z-index: 1;
+    padding: 2px;
     border-radius: inherit;
     background: var(--gradient-aurora);
     background-size: 300% 300%;
     animation: var(--animate-gradient);
+    /* Seul le contour est peint : le contenu reste lisible. */
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    pointer-events: none;
     opacity: 0;
     transition: opacity 0.35s ease;
   }
@@ -379,6 +385,23 @@
     background: linear-gradient(90deg, var(--color-beige-200) 25%, var(--color-ivoire-50) 50%, var(--color-beige-200) 75%);
     background-size: 200% 100%;
     animation: var(--animate-shimmer);
+  }
+
+  .page-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    animation: var(--animate-fade-up);
+  }
+  .page-title::after {
+    content: ".";
+    background-image: var(--gradient-sunset);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: var(--animate-gradient);
   }
 
   .tabular {

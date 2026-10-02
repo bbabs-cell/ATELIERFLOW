@@ -22,7 +22,7 @@ export function THead({
   className?: string;
 }) {
   return (
-    <thead className={cx("border-b border-outline text-xs uppercase tracking-wide text-ink-soft", className)}>
+    <thead className={cx("border-b-2 border-flamme-200 font-mono text-[11px] uppercase tracking-[0.12em] text-flamme-700", className)}>
       {children}
     </thead>
   );
@@ -38,7 +38,7 @@ export function TRow({
 } & ThHTMLAttributes<HTMLTableRowElement>) {
   return (
     <tr
-      className={cx("border-b border-anthracite-100 last:border-0", className)}
+      className={cx("border-b border-anthracite-100 transition-colors duration-200 last:border-0 hover:bg-flamme-50/70", className)}
       {...rest}
     >
       {children}
@@ -47,7 +47,7 @@ export function TRow({
 }
 
 export function TH({ className, ...rest }: ThHTMLAttributes<HTMLTableCellElement>) {
-  return <th className={cx("px-3 py-2.5 font-medium", className)} {...rest} />;
+  return <th className={cx("px-3 py-3 font-medium", className)} {...rest} />;
 }
 
 export function TD({ className, ...rest }: TdHTMLAttributes<HTMLTableCellElement>) {

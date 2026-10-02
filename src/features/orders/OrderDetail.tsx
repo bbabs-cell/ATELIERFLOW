@@ -40,7 +40,7 @@ export function OrderDetail({
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-3">
-        <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-champagne-400 text-chocolat-950">
+        <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-sunset-gradient text-chocolat-950 shadow-soft transition-transform duration-300 group-hover:scale-110">
           <UserRound className="size-6" aria-hidden="true" />
         </span>
         <div className="min-w-0">
@@ -74,7 +74,7 @@ export function OrderDetail({
 
       <div>
         <p className="text-sm font-medium text-ink">Articles</p>
-        <ul className="mt-2 divide-y divide-anthracite-100 rounded-lg border border-outline bg-surface">
+        <ul className="mt-2 divide-y divide-anthracite-100 overflow-hidden rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up">
           {items.map((item) => (
             <li key={item.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
               <div className="min-w-0">

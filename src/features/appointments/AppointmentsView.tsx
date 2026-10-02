@@ -140,7 +140,7 @@ export function AppointmentsView(): React.ReactElement {
     <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:py-10">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl text-ink sm:text-4xl">Rendez-vous</h1>
+          <h1 className="page-title text-4xl text-ink sm:text-5xl">Rendez-vous</h1>
           <p className="mt-1 text-sm text-ink-soft">
             Planification de l&apos;atelier : essayages, mesures, retraits et livraisons.
           </p>
@@ -201,7 +201,7 @@ export function AppointmentsView(): React.ReactElement {
                     return (
                       <li
                         key={item.appointment.id}
-                        className="rounded-lg border border-outline bg-surface-2 p-3"
+                        className="rounded-xl border border-outline bg-surface-2/80 p-3"
                       >
                         <div className="flex flex-wrap items-start justify-between gap-2">
                           <div className="flex items-center gap-2">

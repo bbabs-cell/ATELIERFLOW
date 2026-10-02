@@ -119,7 +119,7 @@ export function ClientsView(): React.ReactElement {
     <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:py-10">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl text-ink sm:text-4xl">Clients</h1>
+          <h1 className="page-title text-4xl text-ink sm:text-5xl">Clients</h1>
           <p className="mt-1 text-sm text-ink-soft">
             Carnet de l&apos;atelier — créations, fiches et mesures.
           </p>
@@ -151,7 +151,7 @@ export function ClientsView(): React.ReactElement {
         {selected ? (
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-3">
-              <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-champagne-400 text-chocolat-950">
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-sunset-gradient text-chocolat-950 shadow-soft transition-transform duration-300 group-hover:scale-110">
                 <UserRound className="size-6" aria-hidden="true" />
               </span>
               <div className="min-w-0">

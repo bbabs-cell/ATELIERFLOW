@@ -69,7 +69,7 @@ export function Calendar({
   return (
     <div>
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-display text-lg text-ink capitalize">{monthLabel}</h3>
+        <h3 key={monthLabel} className="font-display text-xl text-ink capitalize animate-fade-up">{monthLabel}</h3>
         <div className="flex items-center gap-1">
           <button
             type="button"
@@ -77,7 +77,7 @@ export function Calendar({
             onClick={() =>
               setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))
             }
-            className="rounded-md p-1.5 text-ink-soft hover:bg-anthracite-50 hover:text-ink"
+            className="grid size-9 place-items-center rounded-full bg-chocolat-900 text-ivoire-50 transition-all duration-300 hover:scale-110 hover:bg-flamme-500 hover:shadow-glow"
           >
             <ChevronLeft className="size-5" />
           </button>
@@ -87,7 +87,7 @@ export function Calendar({
             onClick={() =>
               setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))
             }
-            className="rounded-md p-1.5 text-ink-soft hover:bg-anthracite-50 hover:text-ink"
+            className="grid size-9 place-items-center rounded-full bg-chocolat-900 text-ivoire-50 transition-all duration-300 hover:scale-110 hover:bg-flamme-500 hover:shadow-glow"
           >
             <ChevronRight className="size-5" />
           </button>
@@ -96,7 +96,7 @@ export function Calendar({
 
       <div className="grid grid-cols-7 gap-1 text-center">
         {daysFr.map((d) => (
-          <span key={d} className="text-[0.7rem] font-medium text-ink-faint">
+          <span key={d} className="font-mono text-[0.65rem] uppercase tracking-wider text-flamme-600">
             {d}
           </span>
         ))}
@@ -110,12 +110,12 @@ export function Calendar({
               type="button"
               onClick={() => onSelectDate?.(key)}
               aria-label={`${d.getDate()} ${monthLabel}${dayEvents.length ? `, ${dayEvents.length} évènement(s)` : ""}`}
-              className="relative flex aspect-square items-center justify-center rounded-md text-sm transition-colors hover:bg-beige-100"
+              className="group relative flex aspect-square items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:bg-flamme-50"
             >
               <span
                 className={cx(
-                  "flex size-8 items-center justify-center rounded-full",
-                  isToday && "border border-champagne-500 font-semibold text-chocolat-900",
+                  "flex size-9 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110",
+                  isToday && "bg-flamme-gradient font-bold text-white shadow-glow animate-gradient",
                   !inMonth(d) && "text-ink-faint",
                 )}
               >
@@ -127,7 +127,7 @@ export function Calendar({
                     <span
                       key={e.id}
                       className={cx(
-                        "size-1.5 rounded-full",
+                        "size-1.5 rounded-full animate-pop",
                         tones[e.tone ?? "primary"],
                       )}
                     />

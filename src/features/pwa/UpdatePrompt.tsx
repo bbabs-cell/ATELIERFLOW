@@ -16,7 +16,7 @@ export function UpdatePrompt({
     <div
       role="alertdialog"
       aria-label="Mise à jour disponible"
-      className="fixed inset-x-0 bottom-4 z-50 mx-auto flex w-[calc(100%-2rem)] max-w-md flex-col gap-3 rounded-lg border border-outline bg-surface p-4 shadow-lg"
+      className="fixed inset-x-0 bottom-4 z-50 mx-auto flex w-[calc(100%-2rem)] max-w-md flex-col gap-3 rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up p-4 shadow-lg"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
