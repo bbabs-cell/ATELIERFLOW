@@ -45,9 +45,9 @@ src/features/orders/ReceiptViewer.tsx        archivage automatique du PDF du re�
 
 ## 4. Mise en service
 
-Seule étape restante : la création du bucket et des clés, à faire dans le tableau de bord
-Cloudflare (aucun accès Cloudflare depuis le dépôt). Le code et `0020` sont déjà en
-production.
+État au 2026-10-02 : **en production** (bucket `atelier-fichiers`, jeton limité au bucket,
+variables sur Vercel, envoi de photo confirmé). Procédure à suivre pour un nouvel
+environnement ou une rotation de clé :
 
 1. **Cloudflare → R2 → Create bucket** : nom neutre (ex. `atelier-fichiers`), emplacement
    automatique, classe Standard. Dans **Settings** du bucket, laisser **Public access**
