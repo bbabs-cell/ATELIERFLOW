@@ -13,7 +13,8 @@ import {
   Users,
   UsersRound,
 } from "lucide-react";
-import { AppShell, Badge, Button, StateView, type NavItem } from "@/ui";
+import { AppShell, Badge, StateView, type NavItem } from "@/ui";
+import { Brand } from "./Brand";
 import {
   clearActiveSession,
   demoSession,
@@ -155,11 +156,20 @@ export function AuthGate({ children }: { children: ReactNode }) {
     <>
       {state.session.mode === "DEMO" ? <DemoBanner /> : null}
       <AppShell
-        brand={<span className="font-display text-2xl italic text-chocolat-800">Atelier</span>}
+        brand={<Brand subtitle="Gestion d'atelier" />}
         navItems={navItems}
+        footer={state.session.mode === "DEMO" ? null : <AccountCard session={state.session} />}
       >
-        {state.session.mode === "DEMO" ? null : <AccountBar session={state.session} />}
-        {children}
+        {state.session.mode === "OFFLINE" ? (
+          <div className="mx-auto flex max-w-5xl justify-end px-4 pt-4">
+            <Badge tone="warning" dot>
+              Hors ligne — reconnexion requise pour synchroniser
+            </Badge>
+          </div>
+        ) : null}
+        <div key={pathname} className="animate-fade-up">
+          {children}
+        </div>
       </AppShell>
     </>
   );
@@ -169,7 +179,7 @@ function DemoBanner() {
   return (
     <div
       role="status"
-      className="border-b border-outline bg-champagne-100 px-4 py-2 text-center text-xs text-ink-soft"
+      className="relative z-40 overflow-hidden bg-sunset-gradient px-4 py-2 text-center text-xs font-semibold text-chocolat-950 animate-gradient"
     >
       Mode démo local : Supabase n&apos;est pas configuré, les données restent sur cet
       appareil et ne sont pas synchronisées.
@@ -177,7 +187,21 @@ function DemoBanner() {
   );
 }
 
-function AccountBar({ session }: { session: ActiveSession }) {
+const ROLE_LABELS: Record<string, string> = {
+  OWNER: "Propriétaire",
+  MANAGER: "Gérant",
+  EMPLOYEE: "Employé",
+  APPRENTICE: "Apprenti",
+};
+
+function initials(email: string | null): string {
+  const local = (email ?? "?").split("@")[0] ?? "?";
+  const parts = local.split(/[._-]+/).filter(Boolean);
+  const letters = parts.length >= 2 ? parts[0][0] + parts[1][0] : local.slice(0, 2);
+  return letters.toUpperCase();
+}
+
+function AccountCard({ session }: { session: ActiveSession }) {
   const router = useRouter();
   const [leaving, setLeaving] = useState(false);
 
@@ -192,15 +216,27 @@ function AccountBar({ session }: { session: ActiveSession }) {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-end gap-3 px-4 text-xs text-ink-soft">
-      {session.mode === "OFFLINE" ? (
-        <Badge tone="warning">Hors ligne — reconnexion requise pour synchroniser</Badge>
-      ) : null}
-      <span className="min-w-0 truncate">{session.email ?? "Compte connecté"}</span>
-      <Button variant="ghost" size="sm" onClick={signOut} loading={leaving}>
-        <LogOut className="size-4" aria-hidden="true" />
-        Déconnexion
-      </Button>
+    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur animate-fade-up max-lg:border-outline max-lg:bg-surface-2">
+      <span className="relative grid size-11 shrink-0 place-items-center rounded-full bg-ocean-gradient font-display text-sm font-bold text-white shadow-soft">
+        {initials(session.email)}
+        <span className="absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full border-2 border-chocolat-900 bg-menthe-500 animate-pulse-ring max-lg:border-surface" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-sm font-semibold max-lg:text-ink">{session.email ?? "Compte connecté"}</span>
+        <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-champagne-300 max-lg:text-flamme-600">
+          {ROLE_LABELS[session.role ?? ""] ?? "Membre"}
+        </span>
+      </span>
+      <button
+        type="button"
+        onClick={signOut}
+        disabled={leaving}
+        aria-label="Déconnexion"
+        title="Déconnexion"
+        className="grid size-10 shrink-0 place-items-center rounded-full bg-white/10 text-ivoire-50 transition-all duration-300 hover:rotate-12 hover:bg-flamme-500 disabled:opacity-50 max-lg:bg-flamme-50 max-lg:text-flamme-600 max-lg:hover:text-white"
+      >
+        <LogOut className={leaving ? "size-4 animate-spin" : "size-4"} aria-hidden="true" />
+      </button>
     </div>
   );
 }

@@ -1,99 +1,222 @@
 /* =====================================================================
-   ATELIER — DESIGN TOKENS (Prompt 08)
-   Premium / sérieux / moderne / atelier de couture.
+   ATELIER — DESIGN TOKENS v2 « vivant »
+   Famille visuelle MagyaPro : crème chaud, espresso profond, flamme
+   orange, or vif, azur, touches wax. Typo Bricolage Grotesque / Manrope /
+   DM Mono. Animations partout (entrées, survols, fonds vivants).
    Toutes les valeurs passent par des tokens CSS — jamais de hex en dur
-   dans les composants. Le branding final reste configurable.
+   dans les composants. Le branding reste configurable ici.
    ===================================================================== */
 
 @theme {
   /* ---------- Typographie ---------- */
-  --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+  --font-display: var(--font-bricolage), "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-manrope), "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     Roboto, Arial, sans-serif;
+  --font-mono: var(--font-dm-mono), "DM Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* ---------- Palette chocolat (primary) ---------- */
-  --color-chocolat-50: #f7f0ea;
-  --color-chocolat-100: #efe2d7;
-  --color-chocolat-200: #dfc4b2;
-  --color-chocolat-300: #cfa68d;
-  --color-chocolat-400: #b98363;
-  --color-chocolat-500: #a0654a;
-  --color-chocolat-600: #7e4e39;
-  --color-chocolat-700: #5d3a2c;
-  --color-chocolat-800: #4a2f24;
-  --color-chocolat-900: #3e2723;
-  --color-chocolat-950: #2a1b18;
+  /* ---------- Espresso (ex-chocolat) : fonds sombres, titres ---------- */
+  --color-chocolat-50: #f6f1ea;
+  --color-chocolat-100: #ece3d6;
+  --color-chocolat-200: #d8c8b3;
+  --color-chocolat-300: #b9a58c;
+  --color-chocolat-400: #8f7b64;
+  --color-chocolat-500: #6b5a47;
+  --color-chocolat-600: #4d4033;
+  --color-chocolat-700: #3a3027;
+  --color-chocolat-800: #2a231c;
+  --color-chocolat-900: #1f1a15;
+  --color-chocolat-950: #141110;
 
-  /* ---------- Beige chaud (surfaces secondaires) ---------- */
-  --color-beige-50: #faf5ec;
-  --color-beige-100: #f1e8d9;
-  --color-beige-200: #e6d6bd;
-  --color-beige-300: #d9c4a5;
-  --color-beige-400: #c8ac84;
-  --color-beige-500: #b7956a;
+  /* ---------- Sable (ex-beige) : surfaces enfoncées ---------- */
+  --color-beige-50: #fbf8f2;
+  --color-beige-100: #f4eee3;
+  --color-beige-200: #ece5d8;
+  --color-beige-300: #ddd3c1;
+  --color-beige-400: #c9bca5;
+  --color-beige-500: #b3a58c;
 
-  /* ---------- Ivoire (fonds) ---------- */
-  --color-ivoire-50: #fdfbf6;
-  --color-ivoire-100: #f8f4ea;
-  --color-ivoire-200: #f2ecdb;
-  --color-ivoire-300: #e8dfc8;
+  /* ---------- Crème (ex-ivoire) : fonds ---------- */
+  --color-ivoire-50: #fffdf8;
+  --color-ivoire-100: #fbf8f2;
+  --color-ivoire-200: #f6f0e4;
+  --color-ivoire-300: #ece5d8;
 
-  /* ---------- Champagne doré discret (accents, prix) ---------- */
-  --color-champagne-100: #efe4cc;
-  --color-champagne-200: #e0cda8;
-  --color-champagne-300: #d2b98a;
-  --color-champagne-400: #c6a664;
-  --color-champagne-500: #a9864a;
-  --color-champagne-600: #8a6c37;
+  /* ---------- Or vif (ex-champagne) : accents, prix ---------- */
+  --color-champagne-100: #fbf1cf;
+  --color-champagne-200: #f5e19a;
+  --color-champagne-300: #ecd06f;
+  --color-champagne-400: #e0bd52;
+  --color-champagne-500: #c99a2e;
+  --color-champagne-600: #9c7420;
 
-  /* ---------- Anthracite (textes) ---------- */
-  --color-anthracite-50: #f4f4f5;
-  --color-anthracite-100: #e6e6e9;
-  --color-anthracite-200: #c9c9ce;
-  --color-anthracite-300: #a9a9af;
-  --color-anthracite-400: #808086;
-  --color-anthracite-500: #6b6b72;
-  --color-anthracite-600: #4e4e55;
-  --color-anthracite-700: #46464b;
-  --color-anthracite-800: #38383d;
-  --color-anthracite-900: #2b2b2e;
-  --color-anthracite-950: #1b1b1d;
+  /* ---------- Flamme : couleur de marque ---------- */
+  --color-flamme-50: #fff4ec;
+  --color-flamme-100: #ffe3d0;
+  --color-flamme-200: #ffc3a0;
+  --color-flamme-300: #ff9a4d;
+  --color-flamme-400: #ff7a3a;
+  --color-flamme-500: #ff5e2e;
+  --color-flamme-600: #e8461a;
+  --color-flamme-700: #c2360f;
+
+  /* ---------- Azur ---------- */
+  --color-azur-50: #eef3ff;
+  --color-azur-100: #dde7ff;
+  --color-azur-300: #8aa8f5;
+  --color-azur-500: #2f5bd8;
+  --color-azur-600: #2448b3;
+  --color-azur-700: #1b3788;
+
+  /* ---------- Wax (magenta) ---------- */
+  --color-wax-50: #fff0f7;
+  --color-wax-100: #ffe0ef;
+  --color-wax-300: #ff8cc0;
+  --color-wax-500: #e5337f;
+  --color-wax-600: #c21f66;
+
+  /* ---------- Menthe ---------- */
+  --color-menthe-50: #ecfdf5;
+  --color-menthe-100: #d1fae5;
+  --color-menthe-300: #6ee7b7;
+  --color-menthe-500: #10b981;
+  --color-menthe-600: #047857;
+
+  /* ---------- Violet ---------- */
+  --color-violet-50: #f4f0ff;
+  --color-violet-100: #e9e2ff;
+  --color-violet-500: #7c5cff;
+  --color-violet-600: #6241e8;
+
+  /* ---------- Neutres chauds (ex-anthracite) ---------- */
+  --color-anthracite-50: #f7f3ec;
+  --color-anthracite-100: #ede6da;
+  --color-anthracite-200: #ddd3c1;
+  --color-anthracite-300: #bdb1a0;
+  --color-anthracite-400: #948b7b;
+  --color-anthracite-500: #7a7163;
+  --color-anthracite-600: #5c5448;
+  --color-anthracite-700: #4a4339;
+  --color-anthracite-800: #332d25;
+  --color-anthracite-900: #211d16;
+  --color-anthracite-950: #15120e;
 
   /* ---------- Sémantiques ---------- */
-  --color-success: #2e7d32;
-  --color-success-soft: #e6f2e6;
-  --color-warning: #e65100;
-  --color-warning-soft: #fbe9de;
-  --color-danger: #c62828;
-  --color-danger-soft: #fae6e6;
-  --color-info: #2f5d9e;
-  --color-info-soft: #e4ecf6;
+  --color-success: #047857;
+  --color-success-soft: #ecfdf5;
+  --color-warning: #c2410c;
+  --color-warning-soft: #fff4ec;
+  --color-danger: #dc2626;
+  --color-danger-soft: #fef2f2;
+  --color-info: #2f5bd8;
+  --color-info-soft: #eef3ff;
 
   /* ---------- Rôles ---------- */
-  --color-bg: #f8f4ea;
+  --color-bg: #fbf8f2;
   --color-surface: #ffffff;
-  --color-surface-2: #faf5ec;
-  --color-ink: #2b2b2e;
-  --color-ink-soft: #6b6b72;
-  --color-ink-faint: #a9a9af;
-  --color-primary: #3e2723;
-  --color-accent: #c6a664;
-  --color-outline: #c9c9ce;
+  --color-surface-2: #f4eee3;
+  --color-ink: #211d16;
+  --color-ink-soft: #6a6153;
+  --color-ink-faint: #857d6f;
+  --color-primary: #ff5e2e;
+  --color-accent: #e0bd52;
+  --color-outline: #e2d8c6;
 
   /* ---------- Radius ---------- */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
   --radius-full: 9999px;
 
-  /* ---------- Shadows (douces, low-elevation) ---------- */
-  --shadow-soft: 0 1px 2px rgb(27 27 29 / 0.06), 0 4px 12px rgb(27 27 29 / 0.05);
-  --shadow-lift: 0 2px 4px rgb(27 27 29 / 0.08), 0 12px 28px rgb(27 27 29 / 0.1);
-  --shadow-modal: 0 8px 24px rgb(27 27 29 / 0.14), 0 24px 64px rgb(27 27 29 / 0.16);
+  /* ---------- Ombres ---------- */
+  --shadow-soft: 0 1px 2px rgb(33 29 22 / 0.05), 0 6px 18px -6px rgb(33 29 22 / 0.12);
+  --shadow-lift: 0 4px 10px -2px rgb(33 29 22 / 0.08), 0 22px 40px -18px rgb(33 29 22 / 0.28);
+  --shadow-modal: 0 12px 30px rgb(20 17 16 / 0.18), 0 40px 90px -20px rgb(20 17 16 / 0.35);
+  --shadow-glow: 0 10px 30px -8px rgb(255 94 46 / 0.55), 0 4px 12px -4px rgb(224 189 82 / 0.5);
+  --shadow-neo: 4px 4px 0 var(--color-ink);
+  --shadow-neo-lg: 7px 7px 0 var(--color-ink);
 
-  /* ---------- Breakpoints (mobile-first, grille d'audit 320→1920) ----------
-     320-414 → styles de base (xs) ; sm 480 ; md 640 ; lg 820 ; xl 1024 ;
-     2xl 1280 ; 3xl 1536 ; 1920 = extension 3xl. */
+  /* ---------- Animations ---------- */
+  --animate-fade-up: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-pop: pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-scale-in: scale-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-slide-in-left: slide-in-left 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-slide-in-right: slide-in-right 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-blob: blob 14s ease-in-out infinite;
+  --animate-float: float 5s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-gradient: gradient-pan 6s ease infinite;
+  --animate-marquee: marquee 28s linear infinite;
+  --animate-spin-slow: spin 12s linear infinite;
+  --animate-wiggle: wiggle 0.6s ease-in-out;
+  --animate-pulse-ring: pulse-ring 2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  --animate-grow-up: grow-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes pop {
+    0% { opacity: 0; transform: scale(0.85); }
+    60% { opacity: 1; transform: scale(1.06); }
+    100% { transform: scale(1); }
+  }
+  @keyframes scale-in {
+    from { opacity: 0; transform: translateY(10px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes slide-in-left {
+    from { opacity: 0; transform: translateX(-100%); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slide-in-right {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes blob {
+    0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    33% { transform: translate(40px, -30px) scale(1.12) rotate(20deg); }
+    66% { transform: translate(-30px, 25px) scale(0.92) rotate(-15deg); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(-2deg); }
+  }
+  @keyframes shimmer {
+    from { background-position: -200% 0; }
+    to { background-position: 200% 0; }
+  }
+  @keyframes gradient-pan {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-10deg); }
+    75% { transform: rotate(10deg); }
+  }
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgb(255 94 46 / 0.55); }
+    80%, 100% { box-shadow: 0 0 0 12px rgb(255 94 46 / 0); }
+  }
+  @keyframes grow-up {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+  }
+
+  /* ---------- Breakpoints (mobile-first, grille d'audit 320→1920) ---------- */
   --breakpoint-xs: 24rem;
   --breakpoint-sm: 30rem;
   --breakpoint-md: 40rem;
@@ -101,6 +224,13 @@
   --breakpoint-xl: 64rem;
   --breakpoint-2xl: 80rem;
   --breakpoint-3xl: 96rem;
+}
+
+:root {
+  --gradient-flamme: linear-gradient(120deg, #ff9a4d 0%, #ff5e2e 55%, #e5337f 100%);
+  --gradient-sunset: linear-gradient(120deg, #ff5e2e 0%, #ff9a4d 45%, #e0bd52 100%);
+  --gradient-ocean: linear-gradient(120deg, #2f5bd8 0%, #7c5cff 100%);
+  --gradient-aurora: linear-gradient(120deg, #ff5e2e, #e0bd52, #10b981, #2f5bd8, #7c5cff, #e5337f, #ff5e2e);
 }
 
 @layer base {
@@ -122,14 +252,14 @@
   }
 
   ::selection {
-    background-color: var(--color-champagne-400);
+    background-color: var(--color-flamme-300);
     color: var(--color-chocolat-950);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-champagne-500);
+    outline: 2px solid var(--color-flamme-500);
     outline-offset: 2px;
-    border-radius: 2px;
+    border-radius: 4px;
   }
 
   h1,
@@ -138,11 +268,133 @@
   h4 {
     font-family: var(--font-display);
     font-weight: 700;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.025em;
   }
 
   dialog {
     padding: 0;
     border: none;
+  }
+}
+
+@layer utilities {
+  /* Titres et chiffres en dégradé animé. */
+  .text-gradient {
+    background-image: var(--gradient-sunset);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: var(--animate-gradient);
+  }
+
+  .bg-flamme-gradient {
+    background-image: var(--gradient-flamme);
+    background-size: 200% 200%;
+  }
+
+  .bg-sunset-gradient {
+    background-image: var(--gradient-sunset);
+    background-size: 200% 200%;
+  }
+
+  .bg-ocean-gradient {
+    background-image: var(--gradient-ocean);
+    background-size: 200% 200%;
+  }
+
+  .bg-aurora-gradient {
+    background-image: var(--gradient-aurora);
+    background-size: 300% 300%;
+  }
+
+  /* Trame de points (fonds sombres façon MagyaPro). */
+  .dot-grid {
+    background-image: radial-gradient(rgb(255 255 255 / 0.07) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+
+  .dot-grid-ink {
+    background-image: radial-gradient(rgb(33 29 22 / 0.07) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Reflet qui balaie un bouton au survol. */
+  .shine {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .shine::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(110deg, transparent 20%, rgb(255 255 255 / 0.45) 50%, transparent 80%);
+    transform: translateX(-120%);
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .shine:hover::after {
+    transform: translateX(120%);
+  }
+
+  /* Bordure en dégradé animé (cartes mises en avant). */
+  .gradient-border {
+    position: relative;
+    isolation: isolate;
+  }
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: -1.5px;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--gradient-aurora);
+    background-size: 300% 300%;
+    animation: var(--animate-gradient);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .gradient-border:hover::before,
+  .gradient-border:focus-within::before {
+    opacity: 1;
+  }
+
+  /* Enfants qui apparaissent en cascade. */
+  .stagger > * {
+    animation: var(--animate-fade-up);
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0.02s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.07s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.12s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.17s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.22s; }
+  .stagger > *:nth-child(6) { animation-delay: 0.27s; }
+  .stagger > *:nth-child(7) { animation-delay: 0.32s; }
+  .stagger > *:nth-child(8) { animation-delay: 0.37s; }
+  .stagger > *:nth-child(n + 9) { animation-delay: 0.42s; }
+
+  /* Squelette de chargement scintillant. */
+  .skeleton-shimmer {
+    background: linear-gradient(90deg, var(--color-beige-200) 25%, var(--color-ivoire-50) 50%, var(--color-beige-200) 75%);
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Accessibilité : on garde les transitions courtes mais on coupe les
+   mouvements continus pour qui a demandé moins d'animations. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-iteration-count: 1 !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

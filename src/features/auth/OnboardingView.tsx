@@ -7,7 +7,7 @@ import { resolveIdentity } from "@/domain/auth/claims";
 import { authErrorMessage } from "@/domain/auth/errors";
 import { getSupabaseBrowserClient } from "@/infrastructure/supabase/browserClient";
 import { getSupabaseBrowserEnv } from "@/infrastructure/supabase/env";
-import { AuthLayout } from "./LoginView";
+import { AuthLayout } from "./AuthLayout";
 
 /**
  * Création du premier atelier (tenant) après inscription.
@@ -99,7 +99,7 @@ export function OnboardingView() {
 
   return (
     <AuthLayout>
-      <Card>
+      <Card interactive={false} className="shadow-modal">
         <h1 className="font-display text-3xl text-ink">Votre atelier</h1>
         <p className="mt-1 text-sm text-ink-soft">
           Dernière étape : nommez votre atelier. Vous en serez le propriétaire et pourrez
@@ -116,11 +116,11 @@ export function OnboardingView() {
             />
           </Field>
           {error ? (
-            <p role="alert" className="text-sm text-danger">
+            <p role="alert" className="rounded-lg border-2 border-wax-300 bg-wax-50 px-3 py-2 text-sm font-semibold text-wax-600 animate-wiggle">
               {error}
             </p>
           ) : null}
-          <Button type="submit" size="lg" loading={busy}>
+          <Button type="submit" size="lg" loading={busy} className="mt-2 w-full">
             Créer mon atelier
           </Button>
         </form>

@@ -11,13 +11,13 @@ export type BadgeTone =
   | "info";
 
 const tones: Record<BadgeTone, string> = {
-  neutral: "bg-anthracite-100 text-anthracite-700",
-  primary: "bg-chocolat-900 text-ivoire-100",
-  accent: "bg-champagne-400 text-chocolat-950",
-  success: "bg-success-soft text-success",
-  warning: "bg-warning-soft text-warning",
-  danger: "bg-danger-soft text-danger",
-  info: "bg-info-soft text-info",
+  neutral: "bg-anthracite-100 text-anthracite-700 ring-1 ring-inset ring-anthracite-200",
+  primary: "bg-flamme-gradient text-white shadow-[0_4px_12px_-4px_rgb(255_94_46/0.6)]",
+  accent: "bg-champagne-300 text-chocolat-950 ring-1 ring-inset ring-champagne-500/40",
+  success: "bg-menthe-100 text-menthe-600 ring-1 ring-inset ring-menthe-300",
+  warning: "bg-flamme-100 text-flamme-700 ring-1 ring-inset ring-flamme-200",
+  danger: "bg-wax-100 text-wax-600 ring-1 ring-inset ring-wax-300",
+  info: "bg-azur-100 text-azur-600 ring-1 ring-inset ring-azur-300",
 };
 
 export interface BadgeProps {
@@ -36,13 +36,13 @@ export function Badge({
   return (
     <span
       className={cx(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap",
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap animate-pop",
         children === undefined && "px-2",
         tones[tone],
         className,
       )}
     >
-      {dot ? <span className="size-1.5 rounded-full bg-current" /> : null}
+      {dot ? <span className="size-1.5 animate-pulse rounded-full bg-current" /> : null}
       {children}
     </span>
   );

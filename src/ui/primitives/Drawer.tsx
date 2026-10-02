@@ -16,8 +16,8 @@ export interface DrawerProps {
 }
 
 const position: Record<DrawerSide, string> = {
-  right: "right-0 rounded-l-lg",
-  left: "left-0 rounded-r-lg",
+  right: "right-0 rounded-l-xl animate-slide-in-right",
+  left: "left-0 rounded-r-xl animate-slide-in-left",
 };
 
 export function Drawer({
@@ -47,7 +47,7 @@ export function Drawer({
   return createPortal(
     <div className="fixed inset-0 z-50" role="dialog" aria-modal="true">
       <div
-        className="absolute inset-0 bg-chocolat-950/50 backdrop-blur-[2px]"
+        className="absolute inset-0 animate-fade-in bg-chocolat-950/60 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -59,12 +59,12 @@ export function Drawer({
         aria-label={typeof title === "string" ? title : undefined}
       >
         <div className="flex items-center justify-between gap-4 border-b border-anthracite-100 p-4">
-          <h2 className="font-display text-xl text-ink">{title}</h2>
+          <h2 className="font-display text-2xl text-ink">{title}</h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Fermer"
-            className="rounded-md p-1 text-ink-soft hover:bg-anthracite-50 hover:text-ink"
+            className="rounded-full p-1.5 text-ink-soft transition-all duration-300 hover:rotate-90 hover:bg-flamme-50 hover:text-flamme-600"
           >
             <X className="size-5" />
           </button>

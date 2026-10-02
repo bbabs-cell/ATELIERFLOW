@@ -64,7 +64,7 @@ export function Dialog({
       aria-labelledby={titleId}
     >
       <div
-        className="absolute inset-0 bg-chocolat-950/50 backdrop-blur-[2px]"
+        className="absolute inset-0 animate-fade-in bg-chocolat-950/60 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -72,19 +72,19 @@ export function Dialog({
         ref={panelRef}
         tabIndex={-1}
         className={cx(
-          "relative w-full rounded-t-lg bg-surface shadow-modal sm:rounded-lg",
+          "relative w-full animate-scale-in overflow-hidden rounded-t-xl bg-surface shadow-modal before:absolute before:inset-x-0 before:top-0 before:h-1.5 before:bg-flamme-gradient sm:rounded-xl",
           sizes[size],
         )}
       >
         <div className="flex items-start justify-between gap-4 border-b border-anthracite-100 p-4 sm:p-5">
-          <h2 id={titleId} className="font-display text-xl text-ink">
+          <h2 id={titleId} className="font-display text-2xl text-ink">
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Fermer"
-            className="rounded-md p-1 text-ink-soft hover:bg-anthracite-50 hover:text-ink"
+            className="rounded-full p-1.5 text-ink-soft transition-all duration-300 hover:rotate-90 hover:bg-flamme-50 hover:text-flamme-600"
           >
             <X className="size-5" />
           </button>

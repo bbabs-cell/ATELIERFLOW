@@ -23,7 +23,7 @@ export function Tabs({ items, value, onChange, className }: TabsProps) {
       role="tablist"
       aria-label="Onglets"
       className={cx(
-        "inline-flex w-full max-w-full items-center gap-1 overflow-x-auto rounded-lg bg-anthracite-100/60 p-1",
+        "inline-flex w-full max-w-full items-center gap-1 overflow-x-auto rounded-full bg-chocolat-900 p-1.5 shadow-soft",
         className,
       )}
     >
@@ -39,9 +39,9 @@ export function Tabs({ items, value, onChange, className }: TabsProps) {
             disabled={item.disabled}
             onClick={() => onChange(item.value)}
             className={cx(
-              "h-9 flex-shrink-0 rounded-md px-3 text-sm font-medium text-ink-soft transition-colors",
-              "aria-selected:bg-surface aria-selected:text-ink aria-selected:shadow-soft",
-              "hover:text-ink disabled:opacity-50",
+              "h-9 flex-shrink-0 rounded-full px-4 text-sm font-semibold text-chocolat-200 transition-all duration-300",
+              "aria-selected:bg-sunset-gradient aria-selected:text-chocolat-950 aria-selected:shadow-glow",
+              "hover:text-white disabled:opacity-50",
             )}
           >
             {item.label}

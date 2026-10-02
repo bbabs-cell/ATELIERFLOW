@@ -22,33 +22,33 @@ const config: Record<
   { icon: ReactNode; tone: string; defaultTitle: string }
 > = {
   loading: {
-    icon: <Loader2 className="size-8 animate-spin" />,
-    tone: "text-chocolat-400",
+    icon: <Loader2 className="size-7 animate-spin" />,
+    tone: "bg-flamme-gradient",
     defaultTitle: "Chargement…",
   },
   empty: {
-    icon: <Inbox className="size-8" />,
-    tone: "text-ink-faint",
+    icon: <Inbox className="size-7" />,
+    tone: "bg-ocean-gradient",
     defaultTitle: "Aucune donnée pour le moment",
   },
   error: {
-    icon: <TriangleAlert className="size-8" />,
-    tone: "text-danger",
+    icon: <TriangleAlert className="size-7" />,
+    tone: "bg-[linear-gradient(120deg,#e5337f,#dc2626)]",
     defaultTitle: "Une erreur est survenue",
   },
   success: {
-    icon: <CheckCircle2 className="size-8" />,
-    tone: "text-success",
+    icon: <CheckCircle2 className="size-7" />,
+    tone: "bg-[linear-gradient(120deg,#10b981,#047857)]",
     defaultTitle: "Opération réussie",
   },
   offline: {
-    icon: <CloudOff className="size-8" />,
-    tone: "text-ink-soft",
+    icon: <CloudOff className="size-7" />,
+    tone: "bg-[linear-gradient(120deg,#6b5a47,#1f1a15)]",
     defaultTitle: "Hors ligne",
   },
   sync: {
-    icon: <RefreshCw className="size-8 animate-pulse" />,
-    tone: "text-accent",
+    icon: <RefreshCw className="size-7 animate-spin" />,
+    tone: "bg-sunset-gradient",
     defaultTitle: "Synchronisation en cours…",
   },
 };
@@ -72,20 +72,26 @@ export function StateView({
   return (
     <div
       className={cx(
-        "flex min-h-40 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-outline bg-surface-2/60 p-8 text-center",
+        "relative flex min-h-48 flex-col items-center justify-center gap-4 overflow-hidden rounded-xl border-2 border-dashed border-flamme-200 bg-surface/70 p-8 text-center backdrop-blur animate-scale-in",
         className,
       )}
     >
-      <span className={c.tone}>{c.icon}</span>
-      <div>
-        <h3 className="font-display text-lg text-ink">{title ?? c.defaultTitle}</h3>
+      <span aria-hidden="true" className="absolute -top-10 left-1/2 size-40 -translate-x-1/2 rounded-full bg-flamme-300/25 blur-3xl animate-blob" />
+      <span className="relative animate-float">
+        <span aria-hidden="true" className={cx("absolute inset-0 rounded-2xl opacity-50 blur-lg", c.tone)} />
+        <span className={cx("relative grid size-16 place-items-center rounded-2xl text-white shadow-lift animate-gradient", c.tone)}>
+          {c.icon}
+        </span>
+      </span>
+      <div className="relative">
+        <h3 className="font-display text-xl text-ink">{title ?? c.defaultTitle}</h3>
         {description ? (
           <p className="mx-auto mt-1 max-w-md text-sm text-ink-soft">
             {description}
           </p>
         ) : null}
       </div>
-      {action ? <div className="mt-1">{action}</div> : null}
+      {action ? <div className="relative mt-1">{action}</div> : null}
     </div>
   );
 }

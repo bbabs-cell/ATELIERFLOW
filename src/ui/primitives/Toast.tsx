@@ -27,10 +27,10 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | null>(null);
 
 const toneStyles: Record<ToastTone, { box: string; icon: ReactNode }> = {
-  success: { box: "border-success/30", icon: <CheckCircle2 className="text-success" /> },
-  error: { box: "border-danger/30", icon: <OctagonX className="text-danger" /> },
-  warning: { box: "border-warning/30", icon: <AlertTriangle className="text-warning" /> },
-  info: { box: "border-info/30", icon: <Info className="text-info" /> },
+  success: { box: "border-menthe-300", icon: <CheckCircle2 className="text-success" /> },
+  error: { box: "border-wax-300", icon: <OctagonX className="text-danger" /> },
+  warning: { box: "border-flamme-300", icon: <AlertTriangle className="text-warning" /> },
+  info: { box: "border-azur-300", icon: <Info className="text-info" /> },
 };
 
 let nextId = 1;
@@ -62,13 +62,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               key={t.id}
               role="status"
               className={cx(
-                "pointer-events-auto flex items-start gap-3 rounded-md border bg-surface p-3.5 shadow-lift",
+                "pointer-events-auto flex items-start gap-3 rounded-lg border-2 bg-surface p-4 shadow-lift animate-scale-in",
                 tone.box,
               )}
             >
               <span className="mt-0.5 shrink-0">{tone.icon}</span>
               <div className="min-w-0">
-                <p className="text-sm font-medium text-ink">{t.title}</p>
+                <p className="text-sm font-bold text-ink">{t.title}</p>
                 {t.description ? (
                   <p className="mt-0.5 text-sm text-ink-soft">{t.description}</p>
                 ) : null}

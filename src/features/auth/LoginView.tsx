@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button, Card, Field, Input, StateView } from "@/ui";
 import { authErrorMessage, MIN_PASSWORD_LENGTH, validateCredentials } from "@/domain/auth/errors";
 import { resolveIdentity } from "@/domain/auth/claims";
+import { AuthLayout } from "./AuthLayout";
 import { getSupabaseBrowserClient } from "@/infrastructure/supabase/browserClient";
 import { getSupabaseBrowserEnv } from "@/infrastructure/supabase/env";
 
@@ -98,8 +99,36 @@ export function LoginView() {
 
   return (
     <AuthLayout>
-      <Card>
-        <h1 className="font-display text-3xl text-ink">
+      <Card interactive={false} className="shadow-modal">
+        <div role="tablist" aria-label="Accès" className="relative mb-6 grid grid-cols-2 rounded-full bg-chocolat-900 p-1.5">
+          <span
+            aria-hidden="true"
+            className={
+              "absolute inset-y-1.5 left-1.5 w-[calc(50%-0.375rem)] rounded-full bg-sunset-gradient shadow-glow transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] " +
+              (signup ? "translate-x-full" : "translate-x-0")
+            }
+          />
+          {(["signin", "signup"] as const).map((m) => (
+            <button
+              key={m}
+              type="button"
+              role="tab"
+              aria-selected={mode === m}
+              onClick={() => {
+                setMode(m);
+                setError(null);
+                setNotice(null);
+              }}
+              className={
+                "relative z-10 h-10 rounded-full text-sm font-bold transition-colors duration-300 " +
+                (mode === m ? "text-chocolat-950" : "text-chocolat-200 hover:text-white")
+              }
+            >
+              {m === "signin" ? "Connexion" : "Créer un compte"}
+            </button>
+          ))}
+        </div>
+        <h1 key={mode} className="font-display text-3xl text-ink animate-fade-up">
           {signup ? "Créer votre compte" : "Connexion"}
         </h1>
         <p className="mt-1 text-sm text-ink-soft">
@@ -108,7 +137,7 @@ export function LoginView() {
             : "Accédez à votre atelier : clients, commandes, paiements."}
         </p>
 
-        <form className="mt-6 flex flex-col gap-4" onSubmit={onSubmit} noValidate>
+        <form key={`form-${mode}`} className="stagger mt-6 flex flex-col gap-4" onSubmit={onSubmit} noValidate>
           {signup ? (
             <Field label="Votre nom" htmlFor="auth-name" required>
               <Input
@@ -145,17 +174,17 @@ export function LoginView() {
           </Field>
 
           {error ? (
-            <p role="alert" className="text-sm text-danger">
+            <p role="alert" className="rounded-lg border-2 border-wax-300 bg-wax-50 px-3 py-2 text-sm font-semibold text-wax-600 animate-wiggle">
               {error}
             </p>
           ) : null}
           {notice ? (
-            <p role="status" className="text-sm text-success">
+            <p role="status" className="rounded-lg border-2 border-menthe-300 bg-menthe-50 px-3 py-2 text-sm font-semibold text-menthe-600 animate-pop">
               {notice}
             </p>
           ) : null}
 
-          <Button type="submit" size="lg" loading={busy}>
+          <Button type="submit" size="lg" loading={busy} className="mt-2 w-full">
             {signup ? "Créer mon compte" : "Se connecter"}
           </Button>
         </form>
@@ -164,7 +193,7 @@ export function LoginView() {
           {signup ? "Déjà un compte ?" : "Pas encore de compte ?"}{" "}
           <button
             type="button"
-            className="min-h-11 font-medium text-chocolat-700 underline-offset-4 hover:underline"
+            className="min-h-11 font-bold text-flamme-600 underline-offset-4 transition-colors hover:text-wax-500 hover:underline"
             onClick={() => {
               setMode(signup ? "signin" : "signup");
               setError(null);
@@ -176,14 +205,5 @@ export function LoginView() {
         </p>
       </Card>
     </AuthLayout>
-  );
-}
-
-export function AuthLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center px-4 py-10">
-      <p className="mb-6 text-center font-display text-2xl italic text-chocolat-800">Atelier</p>
-      {children}
-    </div>
   );
 }

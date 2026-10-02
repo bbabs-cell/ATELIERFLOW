@@ -14,25 +14,28 @@ export type ButtonVariant =
 export type ButtonSize = "sm" | "md" | "lg";
 
 const base =
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium " +
-  "rounded-md touch-manipulation select-none transition-colors duration-150 " +
+  "shine inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold " +
+  "rounded-full touch-manipulation select-none transition-all duration-200 ease-out " +
+  "hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] " +
   "disabled:pointer-events-none disabled:opacity-50 ";
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary text-ivoire-50 hover:bg-chocolat-700 active:bg-chocolat-900 shadow-soft",
+    "bg-flamme-gradient text-white shadow-glow hover:[background-position:100%_50%] " +
+    "hover:shadow-[0_16px_36px_-10px_rgb(255_94_46/0.7)]",
   secondary:
-    "bg-beige-200 text-chocolat-900 hover:bg-beige-300 active:bg-beige-400",
+    "bg-chocolat-900 text-ivoire-50 shadow-soft hover:bg-chocolat-800 hover:shadow-lift",
   outline:
-    "border border-chocolat-300 bg-transparent text-chocolat-900 hover:bg-chocolat-50 text-ink",
-  ghost: "text-ink-soft hover:bg-anthracite-50 hover:text-ink",
-  danger: "bg-danger text-white hover:bg-chocolat-700",
+    "border-2 border-ink bg-surface text-ink shadow-neo hover:shadow-neo-lg hover:-translate-x-0.5 " +
+    "active:shadow-none active:translate-x-0",
+  ghost: "text-ink-soft hover:bg-flamme-50 hover:text-flamme-700 hover:translate-y-0",
+  danger: "bg-danger text-white shadow-soft hover:bg-flamme-700 hover:shadow-lift",
 };
 
 const sizes: Record<ButtonSize, string> = {
-  sm: "h-9 px-3 text-sm",
-  md: "h-11 px-4 text-sm",
-  lg: "h-12 px-6 text-base",
+  sm: "h-9 px-4 text-sm",
+  md: "h-11 px-5 text-sm",
+  lg: "h-13 px-7 text-base",
 };
 
 export interface ButtonProps
