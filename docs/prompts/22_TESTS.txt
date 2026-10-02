@@ -1,0 +1,41 @@
+PROMPT 22 — TESTS COMPLETS
+
+Construis une stratégie de tests.
+
+Tester:
+- logique métier;
+- paiements;
+- surplus;
+- solde;
+- annulation;
+- prix;
+- mesures;
+- commandes;
+- permissions;
+- RLS;
+- tenant isolation;
+- IDs;
+- reçus;
+- offline;
+- sync;
+- idempotence;
+- conflits;
+- abonnements;
+- stockage.
+
+Tests critiques:
+1. paiement multiple;
+2. double synchronisation;
+3. cross-tenant;
+4. permission insuffisante;
+5. changement prix;
+6. annulation paiement;
+7. génération reçu.
+
+Lancer:
+lint
+typecheck
+tests
+build
+
+Corriger les erreurs avant de continuer.

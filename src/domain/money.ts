@@ -1,30 +1,35 @@
-export const CURRENCY = "EUR";
+/**
+ * Montants : francs CFA (XOF) ENTIERS, sans sous-unité — même unité que
+ * les colonnes `bigint` de la base (0001/0002 : « FCFA entiers »). Aucune
+ * conversion entre l'écran, IndexedDB, la synchronisation et Postgres :
+ * 50 000 F CFA saisis = 50000 partout. Jamais de float.
+ */
+export const CURRENCY = "XOF";
 
-export function parseEurosToCentimes(input: string): number | null {
+/**
+ * Lit un montant saisi en F CFA : chiffres, espaces ou points comme
+ * séparateurs de milliers (« 50 000 », « 50.000 »), suffixe « F », « FCFA »
+ * ou « F CFA » toléré. Refuse décimales, signes et notations exotiques.
+ */
+export function parseFcfa(input: string): number | null {
   const normalized = input
     .trim()
-    .replace(/[\u00A0\u202F\s]/g, "")
-    .replace(",", ".");
-  if (!/^\d+(\.\d{1,2})?$/.test(normalized)) return null;
-  const [whole = "0", frac = ""] = normalized.split(".");
-  const euros = Number(whole);
-  if (!Number.isSafeInteger(euros)) return null;
-  const cents = frac.length === 1 ? Number(frac) * 10 : Number(frac) || 0;
-  const total = euros * 100 + cents;
-  return Number.isSafeInteger(total) ? total : null;
+    .replace(/\s*(f\s*cfa|fcfa|f|xof)$/i, "")
+    .replace(/[  \s]/g, "");
+  if (!/^\d{1,3}(\.\d{3})+$|^\d+$/.test(normalized)) return null;
+  const value = Number(normalized.replace(/\./g, ""));
+  return Number.isSafeInteger(value) ? value : null;
 }
 
 function groupThousands(value: number): string {
-  const s = String(value);
-  return s.replace(/\B(?=(\d{3})+(?!\d))/g, "\u00A0");
+  return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
-export function formatEuros(centimes: number): string {
-  const abs = Math.abs(Math.trunc(centimes));
-  const euros = Math.floor(abs / 100);
-  const cents = abs % 100;
-  const sign = centimes < 0 ? "-" : "";
-  return `${sign}${groupThousands(euros)},${String(cents).padStart(2, "0")} €`;
+/** « 50 000 F CFA » (espaces insécables) ; négatif = crédit/surplus. */
+export function formatFcfa(amount: number): string {
+  const abs = Math.abs(Math.trunc(amount));
+  const sign = amount < 0 ? "-" : "";
+  return `${sign}${groupThousands(abs)} F CFA`;
 }
 
 export function lineTotal(source: {
@@ -37,7 +42,7 @@ export function lineTotal(source: {
   return Number.isSafeInteger(total) ? total : null;
 }
 
-export function sumCentimes(amounts: readonly number[]): number | null {
+export function sumAmounts(amounts: readonly number[]): number | null {
   let total = 0;
   for (const amount of amounts) {
     if (!Number.isSafeInteger(amount) || amount < 0) return null;

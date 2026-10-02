@@ -6,10 +6,7 @@ import { getClientsFacade } from "@/features/clients/facade";
 import { makeLocalAppointmentsStores } from "@/repository/local/appointments";
 import { makeLocalClientsStores } from "@/repository/local/clients";
 import { createIndexedDbCache } from "@/repository/local/indexeddb/cache";
-import {
-  APPOINTMENTS_DEMO_PROFILE_ID,
-  APPOINTMENTS_DEMO_TENANT_ID,
-} from "./constants";
+import { scopedToSession } from "@/application/auth/session";
 
 export interface AppointmentsFacade {
   appointments: AppointmentService;
@@ -44,17 +41,13 @@ export function createAppointmentsFacade(input: {
   return { appointments, notifications };
 }
 
-let singleton: AppointmentsFacade | null = null;
+const scopedAppointmentsFacade = scopedToSession((session) =>
+  createAppointmentsFacade({ tenantId: session.tenantId, profileId: session.profileId }),
+);
 
 export function getAppointmentsFacade(): AppointmentsFacade {
   if (typeof window === "undefined") {
     throw new Error("APPOINTMENTS_FACADE_SERVER_SIDE");
   }
-  if (singleton === null) {
-    singleton = createAppointmentsFacade({
-      tenantId: APPOINTMENTS_DEMO_TENANT_ID,
-      profileId: APPOINTMENTS_DEMO_PROFILE_ID,
-    });
-  }
-  return singleton;
+  return scopedAppointmentsFacade();
 }

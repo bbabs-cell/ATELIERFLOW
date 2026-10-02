@@ -10,6 +10,7 @@ import { makeLocalClientsStores } from "@/repository/local/clients";
 import { makeLocalOrderStores } from "@/repository/local/orders";
 import { makeLocalPaymentsRepository } from "@/repository/local/payments";
 import { createFakeSyncServer } from "../../support/fakeSyncServer";
+import { parseFcfa } from "@/domain/money";
 
 let tenantSeq = 0;
 const uniqueTenant = () =>
@@ -226,5 +227,32 @@ describe("createPaymentService", () => {
         (op.payload as { status: string }).status === "CANCELLED",
     );
     expect(cancelled).toBeDefined();
+  });
+
+  it("F CFA entiers de la saisie à la synchronisation (aucune conversion)", async () => {
+    const h = makeHarness();
+    const customer = await h.clients.createCustomer({ full_name: "Fatou Sow", phone: "770000000" });
+    if (!customer.ok) throw new Error("client");
+    const unitPrice = parseFcfa("50 000");
+    const amount = parseFcfa("20 000");
+    expect(unitPrice).toBe(50000);
+    expect(amount).toBe(20000);
+
+    const order = await h.orders.createOrder({
+      customerId: customer.customer.id,
+      priority: "NORMAL",
+      items: [{ description: "Grand boubou", quantity: 1, unit_price: unitPrice ?? 0 }],
+    });
+    if (!order.ok) throw new Error("commande");
+    const paid = await h.payments.recordPayment({ orderId: order.order.id, amount: amount ?? 0, method: "WAVE" });
+    if (!paid.ok) throw new Error("paiement");
+    expect(paid.balance.remaining).toBe(30000);
+
+    await h.engine.flush();
+    const wire = h.server.pushed();
+    const orderOp = wire.find((op) => op.entity === "orders");
+    const paymentOp = wire.find((op) => op.entity === "payments");
+    expect((orderOp?.payload as { total_price?: number }).total_price).toBe(50000);
+    expect((paymentOp?.payload as { amount?: number }).amount).toBe(20000);
   });
 });

@@ -1,0 +1,35 @@
+PROMPT 23 — AUDIT SÉCURITÉ
+
+Effectue un audit complet.
+
+Vérifier:
+- secrets;
+- variables d'environnement;
+- auth;
+- RLS;
+- tenant isolation;
+- permissions;
+- API;
+- validation input;
+- upload;
+- MIME;
+- taille fichier;
+- R2;
+- URLs signées;
+- XSS;
+- CSRF selon architecture;
+- injection SQL;
+- logs;
+- erreurs exposées;
+- rate limiting si nécessaire;
+- dépendances.
+
+Tester les attaques cross-tenant.
+
+Ne pas corriger par un simple contrôle frontend.
+
+Documenter SECURITY.md.
+
+Si une vulnérabilité critique existe:
+BLOCK RELEASE
+et expliquer.

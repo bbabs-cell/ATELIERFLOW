@@ -15,7 +15,7 @@ le service orchestre les référentiels locaux, la UI affiche.
 | `revenue` | 7 points de série temporelle sur la période |
 | `ordersByStatus` / `appointmentsByType` / `paymentsByMethod` | répartitions exactes |
 
-- Arithmétique stricte en **centimes** (jamais de float) via les sommes
+- Arithmétique stricte en **F CFA entiers** (jamais de float) via les sommes
   de `sumCentimes` ; le reste à encaisser n'est jamais négatif par commande.
 - Les paiements `CANCELLED` sont exclus des encaissements.
 - `defaultDateRange(now)` (1 mois) et `dayDateRange(days, now)` fournissent

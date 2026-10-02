@@ -8,7 +8,7 @@ Vérifié : typecheck, lint, build prod, 83 tests verts (dont 26 nouveaux pour a
 - **Commandes** : liste + recherche (référence / client), création avec articles dynamiques
   (quantité, prix unitaire, type de vêtement), fiche de détail, workflow 10 statuts avec
   historique immuable, annulation « douce » (raison obligatoire, jamais de suppression).
-- **Argent exact** : entiers `bigint` exprimés en centimes ; calcul ligne par ligne et total
+- **Argent exact** : entiers `bigint` exprimés en F CFA (XOF, sans sous-unité) ; calcul ligne par ligne et total
   re-calculés, jamais de virgule flottante.
 - **Offline-first** : like clients — écritures locales instantanées (IndexedDB) + file de sync
   idempotente. `orders` + `order_items` (sensitive) et `order_status_history` (financial)
@@ -17,7 +17,7 @@ Vérifié : typecheck, lint, build prod, 83 tests verts (dont 26 nouveaux pour a
 ## 2. Architecture
 
 ```
-src/domain/money.ts                       centimes : parse/format, lineTotal, sumCentimes
+src/domain/money.ts                       F CFA : parseFcfa/formatFcfa, lineTotal, sumAmounts
 src/domain/orders/order.ts                statuts, priorités, références, machine à états
 src/repository/ports/orders.ts            contrats Orders/OrderItems/OrderHistoryRepository
 src/repository/local/orders.ts            implémentation IndexedDB (entités orders, order_items, order_status_history)
@@ -34,8 +34,8 @@ src/app/commandes/page.tsx                route /commandes
 ## 3. Règles métier (feldspath → domaine pur)
 
 ### Argent (`src/domain/money.ts`)
-- Tous les montants sont des `number` entiers en **centimes** (`Number.isSafeInteger`).
-- `parseEurosToCentimes("25,50")` → 2550 ; formatage `formatEuros(2550)` → `25,50 €`
+- Tous les montants sont des `number` entiers en **F CFA** (`Number.isSafeInteger`).
+- `parseFcfa("50 000")` → 50000 ; formatage `formatFcfa(50000)` → `50 000 F CFA` (décimales refusées)
   (espace insécable `\u00A0` pour les milliers).
 - `lineTotal` refuse quantité < 1 ou prix < 0 ; tout total non sûr invalide la commande.
 
@@ -73,7 +73,7 @@ COMPLETED → READY_FOR_PICKUP → DELIVERED
 
 ## 5. Tests
 
-`tests/unit/orders/money.test.ts` — centimes partout, formatage, lineTotal, sommes, refus de montants non sûrs.
+`tests/unit/orders/money.test.ts` — F CFA entiers partout, formatage, lineTotal, sommes, refus de montants non sûrs.
 `tests/unit/orders/order.test.ts` — références (format, séquence déduite), machine à états (avant, sauts, arrière limité, terminaux, annulation raison obligatoire), validation des drafts.
 `tests/integration/orders/orderService.test.ts` — création persistée + calcul total, séquence par tenant, workflow complet avec historique immuable, annulation sans suppression, recherche/filtre annulées, flush idempotent (orders + items + historique).
 

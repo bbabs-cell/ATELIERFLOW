@@ -1,0 +1,46 @@
+PROMPT 07 — ARCHITECTURE
+
+Conçois l'architecture réelle de production.
+
+Stack:
+Next.js + TypeScript + Supabase/PostgreSQL + Cloudflare R2 + Vercel + GitHub + PWA + IndexedDB.
+
+Architecture logique:
+UI
+→ Application
+→ Domain
+→ Repository
+→ Infrastructure
+
+Séparer:
+- présentation
+- logique métier
+- données
+- intégrations externes
+
+Prévoir:
+- multi-tenancy
+- auth
+- RBAC
+- paiements
+- audit
+- offline
+- sync
+- fichiers
+- abonnements
+- notifications
+
+Le branding doit être configurable.
+
+Produis:
+- arborescence
+- responsabilités
+- flux de données
+- flux auth
+- flux offline
+- flux paiement
+- flux fichiers
+- conventions
+- décisions techniques
+
+Ne développe pas encore toutes les fonctionnalités.

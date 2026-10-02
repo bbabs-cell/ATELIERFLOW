@@ -35,7 +35,7 @@ export interface PlanDefinition {
   code: PlanCode;
   name: string;
   description: string;
-  price_monthly_cents: number;
+  price_monthly: number;
   currency: string;
   limits: PlanLimits;
   features: PlanFeature[];
@@ -56,7 +56,7 @@ function plan(
     code,
     name,
     description,
-    price_monthly_cents: priceXof * 100,
+    price_monthly: priceXof,
     currency: "XOF",
     limits,
     features,
@@ -160,7 +160,7 @@ export interface SubscriptionMirror {
   trial_ends_at: string | null;
   current_period_end: string | null;
   cancelled_at: string | null;
-  price_monthly_cents: number;
+  price_monthly: number;
   currency: string;
 }
 
@@ -172,7 +172,7 @@ export function defaultSubscription(): SubscriptionMirror {
     trial_ends_at: null,
     current_period_end: null,
     cancelled_at: null,
-    price_monthly_cents: 0,
+    price_monthly: 0,
     currency: "XOF",
   };
 }
@@ -181,15 +181,6 @@ export function subscriptionActive(status: SubscriptionStatus): boolean {
   return status === "ACTIVE" || status === "TRIAL" || status === "PAST_DUE";
 }
 
-function groupThousands(value: number): string {
-  const s = String(value);
-  return s.replace(/\B(?=(\d{3})+(?!\d))/g, "\u00A0");
-}
-
-export function formatXof(price_monthly_cents: number): string {
-  const xof = Math.trunc(price_monthly_cents / 100);
-  return `${groupThousands(xof)} F CFA`;
-}
 
 export interface SubscriptionUsage {
   users: number;

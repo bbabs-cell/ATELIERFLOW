@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Banknote, FileText, ReceiptText, Undo2, Wallet } from "lucide-react";
-import { Badge, Button, Dialog, Field, Input, Select, Textarea, StateView } from "@/ui";
-import { formatEuros, parseEurosToCentimes } from "@/domain/money";
+import { Badge, Button, Dialog, Field, Input, Select, Textarea, StateView, useCountUp } from "@/ui";
+import { formatFcfa, parseFcfa } from "@/domain/money";
 import {
   PAYMENT_MODES,
   formatPaymentMethodLabel,
@@ -32,7 +32,7 @@ export function PaymentsPanel({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [recordOpen, setRecordOpen] = useState(false);
-  const [amountEuros, setAmountEuros] = useState("");
+  const [amountInput, setAmountInput] = useState("");
   const [method, setMethod] = useState<PaymentMethod>("CASH");
   const [note, setNote] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, string> | null>(null);
@@ -67,7 +67,7 @@ export function PaymentsPanel({
   }, [reload]);
 
   function openRecord() {
-    setAmountEuros("");
+    setAmountInput("");
     setMethod("CASH");
     setNote("");
     setFormErrors(null);
@@ -78,7 +78,7 @@ export function PaymentsPanel({
     setSaving(true);
     setFormErrors(null);
     try {
-      const amount = parseEurosToCentimes(amountEuros);
+      const amount = parseFcfa(amountInput);
       const result = await getOrdersFacade().payments.recordPayment({
         orderId,
         amount: amount ?? 0,
@@ -153,7 +153,7 @@ export function PaymentsPanel({
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className="flex size-9 items-center justify-center rounded-full bg-champagne-400 text-chocolat-950">
+          <span className="flex size-9 items-center justify-center rounded-full bg-sunset-gradient text-chocolat-950 shadow-soft transition-transform duration-300 group-hover:scale-110">
             <Wallet className="size-4" aria-hidden="true" />
           </span>
           <h3 className="font-display text-xl text-ink">Paiements</h3>
@@ -172,36 +172,21 @@ export function PaymentsPanel({
         </p>
       ) : null}
 
-      <dl className="grid grid-cols-2 gap-3 min-[420px]:grid-cols-4">
-        <div className="rounded-lg bg-ivoire-100 px-3 py-2">
-          <dt className="text-xs uppercase tracking-wide text-ink-faint">Total</dt>
-          <dd className="font-display text-lg text-ink">{formatEuros(orderTotal)}</dd>
-        </div>
-        <div className="rounded-lg bg-success-soft px-3 py-2">
-          <dt className="text-xs uppercase tracking-wide text-success">Payé</dt>
-          <dd className="font-display text-lg text-success">
-            {formatEuros(balance?.totalPaid ?? 0)}
-          </dd>
-        </div>
-        <div className="rounded-lg bg-anthracite-50 px-3 py-2">
-          <dt className="text-xs uppercase tracking-wide text-ink-faint">
-            {balance && balance.surplus > 0 ? "Restant" : "Reste à payer"}
-          </dt>
-          <dd className="font-display text-lg text-ink">
-            {formatEuros(balance?.remaining ?? orderTotal)}
-          </dd>
-        </div>
-        <div className="rounded-lg bg-warning-soft px-3 py-2">
-          <dt className="text-xs uppercase tracking-wide text-warning">Surplus</dt>
-          <dd className="font-display text-lg text-warning">
-            {formatEuros(balance?.surplus ?? 0)}
-          </dd>
-        </div>
+      <dl className="stagger grid grid-cols-2 gap-3">
+        <MoneyTile label="Total" value={orderTotal} className="bg-chocolat-900 text-ivoire-50" labelClass="text-champagne-300" />
+        <MoneyTile label="Payé" value={balance?.totalPaid ?? 0} className="bg-[linear-gradient(120deg,#10b981,#047857)] text-white" labelClass="text-menthe-100" />
+        <MoneyTile
+          label={balance && balance.surplus > 0 ? "Restant" : "Reste à payer"}
+          value={balance?.remaining ?? orderTotal}
+          className="bg-flamme-gradient text-white animate-gradient"
+          labelClass="text-flamme-50"
+        />
+        <MoneyTile label="Surplus" value={balance?.surplus ?? 0} className="bg-ocean-gradient text-white" labelClass="text-azur-100" />
       </dl>
 
       {balance && balance.surplus > 0 ? (
         <p className="rounded-md bg-warning-soft px-3 py-2 text-sm text-warning">
-          Crédit de {formatEuros(balance.surplus)} reporté sur la fiche — à utiliser ou
+          Crédit de {formatFcfa(balance.surplus)} reporté sur la fiche — à utiliser ou
           rembourser, jamais détruit.
         </p>
       ) : null}
@@ -211,10 +196,10 @@ export function PaymentsPanel({
           Aucun paiement enregistré pour {orderReference}.
         </p>
       ) : (
-        <ul className="divide-y divide-anthracite-100 rounded-lg border border-outline bg-surface">
+        <ul className="divide-y divide-anthracite-100 overflow-hidden rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up">
           {payments.map((p) => (
             <li key={p.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2">
-              <span className="font-display text-lg text-ink">{formatEuros(p.amount)}</span>
+              <span className="font-display text-lg text-ink">{formatFcfa(p.amount)}</span>
               <Badge tone={p.status === "VALID" ? "success" : "neutral"}>
                 {p.status === "VALID" ? "Validé" : "Annulé"}
               </Badge>
@@ -277,9 +262,9 @@ export function PaymentsPanel({
       )}
 
       {receipts.length > 0 ? (
-        <div className="rounded-lg border border-outline bg-surface-2 p-4">
+        <div className="rounded-xl border border-outline bg-surface-2/80 p-4">
           <p className="text-sm font-medium text-ink">Reçus émis</p>
-          <ul className="mt-2 divide-y divide-anthracite-100">
+          <ul className="mt-2 divide-y divide-anthracite-100 overflow-hidden">
             {receipts.map((r) => (
               <li key={r.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2">
                 <span className="font-mono text-sm font-semibold text-ink">{r.reference}</span>
@@ -289,7 +274,7 @@ export function PaymentsPanel({
                 {r.method ? (
                   <span className="text-sm text-ink-soft">{formatPaymentMethodLabel(r.method)}</span>
                 ) : null}
-                <span className="ml-auto text-sm font-medium text-ink">{formatEuros(r.amount)}</span>
+                <span className="ml-auto text-sm font-medium text-ink">{formatFcfa(r.amount)}</span>
                 <span className="text-xs text-ink-faint">
                   {new Date(r.issued_at).toLocaleDateString("fr-FR")}
                 </span>
@@ -311,13 +296,13 @@ export function PaymentsPanel({
               {formErrors.generic}
             </p>
           ) : null}
-          <Field label="Montant (€)" required htmlFor="pay-amount" error={formErrors?.amount}>
+          <Field label="Montant (F CFA)" required htmlFor="pay-amount" error={formErrors?.amount}>
             <Input
               id="pay-amount"
-              inputMode="decimal"
-              value={amountEuros}
-              onChange={(e) => setAmountEuros(e.target.value)}
-              placeholder="0,00"
+              inputMode="numeric"
+              value={amountInput}
+              onChange={(e) => setAmountInput(e.target.value)}
+              placeholder="Ex : 20 000"
               invalid={Boolean(formErrors?.amount)}
             />
           </Field>
@@ -383,6 +368,26 @@ export function PaymentsPanel({
           </div>
         </div>
       </Dialog>
+    </div>
+  );
+}
+
+function MoneyTile({
+  label,
+  value,
+  className,
+  labelClass,
+}: {
+  label: string;
+  value: number;
+  className: string;
+  labelClass: string;
+}) {
+  const shown = useCountUp(value);
+  return (
+    <div className={`min-w-0 rounded-xl px-3.5 py-3 shadow-soft transition-transform duration-300 hover:-translate-y-0.5 ${className}`}>
+      <dt className={`font-mono text-[10px] uppercase tracking-[0.14em] ${labelClass}`}>{label}</dt>
+      <dd className="mt-0.5 truncate font-display text-xl font-extrabold tabular">{formatFcfa(shown)}</dd>
     </div>
   );
 }

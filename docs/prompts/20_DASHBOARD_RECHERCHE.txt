@@ -1,0 +1,25 @@
+PROMPT 20 — DASHBOARD ET RECHERCHE
+
+Créer le cockpit "Aujourd'hui".
+
+Afficher:
+- rendez-vous
+- commandes urgentes
+- retards
+- commandes prêtes
+- livraisons
+- paiements attendus
+- chiffre du jour
+- alertes
+
+Créer recherche globale:
+- client
+- téléphone
+- commande
+- reçu
+- paiement
+- tissu
+
+Utiliser index et pagination.
+
+Le dashboard doit être rapide et lisible sur mobile.

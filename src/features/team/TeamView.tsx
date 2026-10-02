@@ -178,7 +178,7 @@ export function TeamView(): React.ReactElement {
     <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:py-10">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl text-ink sm:text-4xl">Équipe · Rôles</h1>
+          <h1 className="page-title text-4xl text-ink sm:text-5xl">Équipe · Rôles</h1>
           <p className="mt-1 text-sm text-ink-soft">
             Membres de l&apos;atelier, rôles et permissions associées.
           </p>
@@ -206,7 +206,7 @@ export function TeamView(): React.ReactElement {
             <div className="mb-4 flex flex-wrap items-center gap-3">
               <input
                 aria-label="Rechercher un membre"
-                className="w-full max-w-xs rounded-md border border-outline bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:border-chocolat-600 focus:outline-none"
+                className="h-12 w-full max-w-xs rounded-full border-2 border-outline bg-surface/90 px-4 text-sm font-medium text-ink shadow-soft transition-all duration-300 placeholder:text-ink-faint hover:border-flamme-300 focus:border-flamme-500 focus:shadow-[0_0_0_4px_rgb(255_94_46/0.18)] focus:outline-none"
                 placeholder="Rechercher un membre…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -240,7 +240,7 @@ export function TeamView(): React.ReactElement {
                   return (
                     <li
                       key={member.id}
-                      className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-outline bg-surface p-3"
+                      className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up p-3"
                     >
                       <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-beige-100 font-medium text-chocolat-800">
                         {initials(member.full_name)}
@@ -315,7 +315,7 @@ export function TeamView(): React.ReactElement {
               </ul>
             )}
 
-            <section className="mt-8 rounded-lg border border-outline bg-surface p-3 sm:p-5">
+            <section className="mt-8 rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up p-3 sm:p-5">
               <h2 className="font-display text-xl text-ink">Permissions par rôle</h2>
               <p className="mt-1 text-sm text-ink-soft">
                 Lecture seule pour les apprentis ; les rôles managés (changer un

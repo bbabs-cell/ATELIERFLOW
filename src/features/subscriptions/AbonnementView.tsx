@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { Badge, Button, StateView } from "@/ui";
 import { Check, CreditCard, X } from "lucide-react";
 import type { SubscriptionOverview } from "@/application/subscriptions/subscriptionService";
-import { getPlan, formatXof, RESOURCE_LABELS } from "@/domain/subscriptions/plans";
+import { getPlan, RESOURCE_LABELS } from "@/domain/subscriptions/plans";
+import { formatFcfa } from "@/domain/money";
 import type { ResourceKind } from "@/domain/subscriptions/plans";
 import { getSubscriptionsFacade } from "./facade";
 import {
@@ -65,7 +66,7 @@ export function AbonnementView(): React.ReactElement {
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:py-10">
       <header>
-        <h1 className="font-display text-3xl text-ink sm:text-4xl">Abonnement · Plans</h1>
+        <h1 className="page-title text-4xl text-ink sm:text-5xl">Abonnement · Plans</h1>
         <p className="mt-1 text-sm text-ink-soft">
           Plan actuel du workspace, usages et limites. La facturation est
           gérée côté serveur (phase 04).
@@ -84,10 +85,10 @@ export function AbonnementView(): React.ReactElement {
           <StateView variant="loading" title="Chargement…" />
         ) : (
           <>
-            <section className="rounded-lg border border-outline bg-surface p-4 sm:p-6">
+            <section className="rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up p-4 sm:p-6">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <span className="flex size-11 items-center justify-center rounded-full bg-champagne-400 text-chocolat-950">
+                  <span className="flex size-11 items-center justify-center rounded-full bg-sunset-gradient text-chocolat-950 shadow-soft transition-transform duration-300 group-hover:scale-110">
                     <CreditCard className="size-5" aria-hidden="true" />
                   </span>
                   <div>
@@ -103,7 +104,7 @@ export function AbonnementView(): React.ReactElement {
                       </Badge>
                     </div>
                     <p className="mt-1 text-sm text-ink-faint">
-                      {formatXof(overview.currentPlan.priceMonthlyCents)}{" "}
+                      {formatFcfa(overview.currentPlan.priceMonthly)}{" "}
                       / mois · {overview.currentPlan.description}
                     </p>
                   </div>
@@ -164,7 +165,7 @@ export function AbonnementView(): React.ReactElement {
               </div>
             </section>
 
-            <section className="mt-6 rounded-lg border border-outline bg-surface p-4 sm:p-6">
+            <section className="mt-6 rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up p-4 sm:p-6">
               <h2 className="font-display text-xl text-ink">Fonctionnalités incluses</h2>
               <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {overview.features.map((feature) => (
@@ -209,7 +210,7 @@ export function AbonnementView(): React.ReactElement {
                       </div>
                       <p className="mt-1 text-sm text-ink-faint">{plan.description}</p>
                       <p className="mt-3 font-display text-2xl text-ink">
-                        {formatXof(plan.price_monthly_cents)}
+                        {formatFcfa(plan.price_monthly)}
                         <span className="text-sm font-normal text-ink-faint"> / mois</span>
                       </p>
                       {isCurrent ? (

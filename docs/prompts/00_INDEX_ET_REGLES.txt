@@ -1,0 +1,45 @@
+ATELIERFLOW — INDEX DES PROMPTS
+Version: V1 Premium
+Nom technique temporaire: atelierflow
+
+ORDRE D'UTILISATION OBLIGATOIRE
+
+01_BOOTSTRAP_AUDIT
+02_SKILLS
+03_MCP_ET_INTEGRATIONS
+04_SUPABASE
+05_CLOUDFLARE_R2
+06_GITHUB_VERCEL_ENV
+07_ARCHITECTURE
+08_DESIGN_SYSTEM
+09_DATABASE
+10_AUTH_RLS_MULTITENANT
+11_OFFLINE_SYNC
+12_PWA
+13_CLIENTS_MESURES
+14_COMMANDES
+15_PAIEMENTS_FINANCE
+16_RECUS
+17_RENDEZ_VOUS_WHATSAPP
+18_STOCK
+19_EQUIPE_PERMISSIONS
+20_DASHBOARD_RECHERCHE
+21_ABONNEMENTS_SAAS
+22_TESTS
+23_SECURITY_AUDIT
+24_RESPONSIVE_AUDIT
+25_PERFORMANCE_AUDIT
+26_FINALISATION_PRODUCTION
+
+RÈGLES GÉNÉRALES
+- Ne jamais coder une étape suivante si l'étape précédente est bloquée.
+- Inspecter l'état réel du projet avant toute modification.
+- Ne pas détruire de données.
+- Ne jamais exposer de secrets.
+- Pas de fake backend pour les fonctionnalités finales.
+- Toutes les données métier doivent être multi-tenant.
+- Les opérations financières doivent être exactes et auditées.
+- Le mode offline et la synchronisation doivent éviter les doublons.
+- Le nom "atelierflow" est temporaire et ne doit pas devenir une dépendance métier.
+- L'interface doit être premium, simple et parfaitement responsive.
+- Toute action destructive ou production critique exige une confirmation explicite.

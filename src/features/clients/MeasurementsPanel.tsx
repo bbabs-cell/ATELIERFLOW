@@ -192,7 +192,7 @@ export function MeasurementsPanel({
       )}
 
       {latest?.entries.length ? (
-        <div className="mt-2 rounded-lg border border-outline bg-surface-2 p-4">
+        <div className="mt-2 rounded-xl border border-outline bg-surface-2/80 p-4">
           <p className="text-sm font-medium text-ink">
             {latest.profile_name ?? "Dernières mesures"}
           </p>

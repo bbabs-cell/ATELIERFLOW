@@ -145,7 +145,7 @@ describe("buildRevenuePoints", () => {
       RANGE,
     );
     expect(points).toHaveLength(7);
-    const total = points.reduce((acc, p) => acc + p.cents, 0);
+    const total = points.reduce((acc, p) => acc + p.amount, 0);
     expect(total).toBe(12_500);
   });
 });
@@ -153,9 +153,9 @@ describe("buildRevenuePoints", () => {
 describe("aggregateDashboardKpis", () => {
   it("calcule encaissé, facturé, reste à encaisser et compteurs", () => {
     const kpis = aggregateDashboardKpis(base());
-    expect(kpis.money.revenuePeriodCents).toBe(12_500);
-    expect(kpis.money.invoicedPeriodCents).toBe(30_000);
-    expect(kpis.money.outstandingCents).toBe(17_500);
+    expect(kpis.money.revenuePeriod).toBe(12_500);
+    expect(kpis.money.invoicedPeriod).toBe(30_000);
+    expect(kpis.money.outstanding).toBe(17_500);
     expect(kpis.money.ordersActive).toBe(1);
     expect(kpis.money.ordersReadyPickup).toBe(0);
     expect(kpis.money.ordersLate).toBe(1);

@@ -7,7 +7,18 @@
  * route / du serveur.
  */
 
-const ENV = typeof process === "undefined" ? ({} as NodeJS.ProcessEnv) : process.env;
+/*
+ * Next.js n'injecte les `NEXT_PUBLIC_*` dans le bundle navigateur que pour
+ * des accès LITTÉRAUX `process.env.NEXT_PUBLIC_X` : pas d'alias ni d'accès
+ * dynamique, sinon la valeur est toujours absente côté client.
+ */
+function browserUrl(): string | undefined {
+  return process.env.NEXT_PUBLIC_SUPABASE_URL;
+}
+
+function browserAnonKey(): string | undefined {
+  return process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+}
 
 export const REQUIRED_BROWSER_ENV = ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"] as const;
 
@@ -32,8 +43,8 @@ function parseUrl(value: string | undefined): string | null {
 }
 
 export function getSupabaseBrowserEnv(): SupabaseBrowserEnv {
-  const url = parseUrl(ENV.NEXT_PUBLIC_SUPABASE_URL);
-  const anonKey = ENV.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() || null;
+  const url = parseUrl(browserUrl());
+  const anonKey = browserAnonKey()?.trim() || null;
   const provisioned = url !== null && anonKey !== null;
   return {
     url: url ?? "",
@@ -48,12 +59,14 @@ export function getSupabaseBrowserEnv(): SupabaseBrowserEnv {
  */
 export function getSupabaseServerEnv(): SupabaseServerEnv {
   const base = getSupabaseBrowserEnv();
-  const serviceRoleKey = ENV.SUPABASE_SERVICE_ROLE_KEY?.trim() || null;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() || null;
   return { ...base, serviceRoleKey };
 }
 
 export function getMissingBrowserEnv(): string[] {
-  return REQUIRED_BROWSER_ENV.filter(
-    (key) => !ENV[key]?.trim(),
-  );
+  const values: Record<(typeof REQUIRED_BROWSER_ENV)[number], string | undefined> = {
+    NEXT_PUBLIC_SUPABASE_URL: browserUrl(),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: browserAnonKey(),
+  };
+  return REQUIRED_BROWSER_ENV.filter((key) => !values[key]?.trim());
 }

@@ -1,0 +1,32 @@
+PROMPT 03 — MCP ET INTÉGRATIONS
+
+Configure et vérifie les MCP nécessaires.
+
+Priorités:
+1. Supabase
+2. Cloudflare/R2 si disponible
+3. GitHub si disponible
+4. Vercel si disponible
+
+Règles:
+- accès minimal nécessaire;
+- préférer read-only lorsque possible;
+- ne jamais exposer de secrets;
+- ne pas donner accès à tous les projets si un seul suffit;
+- aucune action destructive sans confirmation;
+- tester chaque connexion.
+
+Pour chaque intégration, indique:
+- disponible?
+- configurée?
+- authentification correcte?
+- portée correcte?
+- test réussi?
+- risques?
+
+Ne commence pas les fonctionnalités métier.
+
+Termine par:
+MCP READY
+ou
+BLOCKED

@@ -33,7 +33,7 @@ export interface PlanStatus {
   code: string;
   name: string;
   description: string;
-  priceMonthlyCents: number;
+  priceMonthly: number;
   currency: string;
   limits: PlanLimits;
 }
@@ -143,7 +143,7 @@ export function createSubscriptionService(deps: SubscriptionServiceDeps): Subscr
             code: plan.code,
             name: plan.name,
             description: plan.description,
-            priceMonthlyCents: plan.price_monthly_cents,
+            priceMonthly: plan.price_monthly,
             currency: plan.currency,
             limits: plan.limits,
           },

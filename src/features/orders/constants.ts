@@ -6,9 +6,6 @@ import {
   type OrderStatus,
 } from "@/domain/orders/order";
 
-export const ORDERS_DEMO_TENANT_ID = "0171c000-0000-4000-8000-000000000001";
-export const ORDERS_DEMO_PROFILE_ID = "0171c000-0000-4000-8000-000000000002";
-
 export const ORDER_STATUS_META: Record<
   OrderStatus,
   { label: string; tone: BadgeTone }

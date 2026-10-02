@@ -2,7 +2,7 @@
 
 import { CalendarClock, Flag, UserRound, XCircle } from "lucide-react";
 import { Badge, Button, Timeline } from "@/ui";
-import { formatEuros } from "@/domain/money";
+import { formatFcfa } from "@/domain/money";
 import {
   availableTransitions,
   isTerminal,
@@ -40,7 +40,7 @@ export function OrderDetail({
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-3">
-        <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-champagne-400 text-chocolat-950">
+        <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-sunset-gradient text-chocolat-950 shadow-soft transition-transform duration-300 group-hover:scale-110">
           <UserRound className="size-6" aria-hidden="true" />
         </span>
         <div className="min-w-0">
@@ -74,23 +74,23 @@ export function OrderDetail({
 
       <div>
         <p className="text-sm font-medium text-ink">Articles</p>
-        <ul className="mt-2 divide-y divide-anthracite-100 rounded-lg border border-outline bg-surface">
+        <ul className="mt-2 divide-y divide-anthracite-100 overflow-hidden rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up">
           {items.map((item) => (
             <li key={item.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-ink">{item.description}</p>
                 <p className="text-xs text-ink-soft">
                   {item.garment_type ? `${item.garment_type} · ` : ""}
-                  {item.quantity} × {formatEuros(item.unit_price)}
+                  {item.quantity} × {formatFcfa(item.unit_price)}
                 </p>
               </div>
-              <p className="text-sm font-medium text-ink">{formatEuros(item.quantity * item.unit_price)}</p>
+              <p className="text-sm font-medium text-ink">{formatFcfa(item.quantity * item.unit_price)}</p>
             </li>
           ))}
         </ul>
         <div className="mt-2 flex items-center justify-between px-3">
           <span className="text-sm text-ink-soft">Total</span>
-          <span className="font-display text-xl text-ink">{formatEuros(order.total_price)}</span>
+          <span className="font-display text-xl text-ink">{formatFcfa(order.total_price)}</span>
         </div>
       </div>
 

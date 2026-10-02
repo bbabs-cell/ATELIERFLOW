@@ -77,7 +77,7 @@ Cas rare « reçu avant paiement appliqué » : `FAILED PAYMENT_PENDING` documen
 1. Rejeu des **22 scénarios d'isolation** (docs/SECURITY.md) : rien ne doit casser malgré les grants 0009.
 2. **Concurrence** : deux push simultanés même `idempotency_key` → un seul effet, re-ACK.
 3. **Replay** : renvoyer un lot déjà `SYNCED` → re-ACK sans ré-application (compteurs stables).
-4. **Finance** : commande 3 articles (prix centimes), paiement, reçu → références cohérentes
+4. **Finance** : commande 3 articles (prix en F CFA), paiement, reçu → références cohérentes
    `ORD-`/`REC-`, unicité `(tenant_id, reference)`, solde = somme des paiements validés.
 5. **Permissions** : chaque tentative cross-perm (ex. APPRENTICE écrit `payments`) → `FAILED`.
 6. **Fuzz du contrat** : lots malformés, `tenantId ≠ claim`, entités inconnues → erreurs propres.

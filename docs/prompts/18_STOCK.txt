@@ -1,0 +1,24 @@
+PROMPT 18 — TISSUS ET STOCK
+
+Implémente:
+- tissus
+- couleurs
+- quantité
+- unité
+- fournisseur
+- prix
+- photo
+- mouvements
+- historique
+
+Les mouvements doivent être traçables.
+
+Prévoir:
+- entrées;
+- sorties;
+- ajustements;
+- stock faible;
+- association à une commande si nécessaire.
+
+Éviter les incohérences de quantité.
+Tester les calculs.

@@ -1,0 +1,26 @@
+PROMPT 19 — ÉQUIPE ET PERMISSIONS
+
+Implémente la gestion d'équipe.
+
+Rôles:
+OWNER
+MANAGER
+EMPLOYEE
+APPRENTICE
+SAAS_ADMIN
+
+Permissions granulaires.
+
+Prévoir:
+- invitation;
+- activation/désactivation;
+- rôle;
+- permissions;
+- accès financier;
+- accès stock;
+- accès clients;
+- accès commandes;
+- accès statistiques.
+
+Tester chaque niveau.
+Ne jamais se fier uniquement au frontend.

@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import {
   computeUsage,
   defaultSubscription,
-  formatXof,
   getPlan,
   isFeatureEnabled,
   PLANS,
   resourcesFor,
   subscriptionActive,
 } from "@/domain/subscriptions/plans";
+import { formatFcfa } from "@/domain/money";
 import type { OrderRecord } from "@/domain/orders/order";
 import type { Customer } from "@/domain/clients/customer";
 import type { TeamMemberRecord } from "@/domain/team/teamMember";
@@ -76,7 +76,7 @@ describe("catalogue des plans (miroir 0005)", () => {
       stock: false,
       audit: false,
     });
-    expect(PLANS.BASIC.price_monthly_cents).toBe(500_000);
+    expect(PLANS.BASIC.price_monthly).toBe(5_000);
     expect(PLANS.BASIC.limits.users_max).toBe(3);
     expect(PLANS.PRO.limits.users_max).toBe(15);
     expect(PLANS.PRO.limits.audit).toBe(true);
@@ -128,8 +128,8 @@ describe("status et format", () => {
   });
 
   it("formate les prix en F CFA", () => {
-    expect(formatXof(500_000)).toBe("5\u00A0000 F CFA");
-    expect(formatXof(0)).toBe("0 F CFA");
+    expect(formatFcfa(PLANS.BASIC.price_monthly)).toBe("5\u00A0000\u00A0F\u00A0CFA");
+    expect(formatFcfa(PLANS.FREE.price_monthly)).toBe("0\u00A0F\u00A0CFA");
   });
 
   it("fournit un abonnement par défaut FREE/TRIAL", () => {

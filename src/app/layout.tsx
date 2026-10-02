@@ -1,19 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Bricolage_Grotesque, DM_Mono, Manrope } from "next/font/google";
 import "./globals.css";
 import { PwaProvider } from "@/features/pwa/PwaProvider";
+import { AuthGate } from "@/features/auth/AuthGate";
 
-const inter = Inter({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-manrope",
   display: "swap",
 });
 
-const display = Cormorant_Garamond({
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
-  variable: "--font-display",
-  weight: ["500", "600", "700"],
-  style: ["normal", "italic"],
+  variable: "--font-bricolage",
+  display: "swap",
+});
+
+const dmMono = DM_Mono({
+  subsets: ["latin"],
+  variable: "--font-dm-mono",
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -42,16 +48,18 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#3E2723",
+  themeColor: "#1F1A15",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={`${inter.variable} ${display.variable}`}>
+    <html lang="fr" className={`${manrope.variable} ${bricolage.variable} ${dmMono.variable}`}>
       <body>
-        <PwaProvider>{children}</PwaProvider>
+        <PwaProvider>
+          <AuthGate>{children}</AuthGate>
+        </PwaProvider>
       </body>
     </html>
   );

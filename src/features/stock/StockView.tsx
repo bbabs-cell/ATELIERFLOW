@@ -5,7 +5,7 @@ import { Archive, PackagePlus, Shirt, TrendingDown, TrendingUp, Scale } from "lu
 import { Badge, Button, Dialog, Drawer, Field, Input, Select, StateView, Textarea } from "@/ui";
 import type { FabricRecord } from "@/domain/inventory/fabrics";
 import type { StockMovementRecord, StockMovementType } from "@/domain/inventory/stock";
-import { formatEuros } from "@/domain/money";
+import { formatFcfa } from "@/domain/money";
 import { formatCentiUnits, formatMeters } from "@/domain/inventory/units";
 import { getStockFacade } from "./facade";
 import {
@@ -76,7 +76,7 @@ export function StockView(): React.ReactElement {
         name: values.name,
         color: values.color || null,
         supplier: values.supplier || null,
-        unitPriceEuros: values.unitPriceEuros,
+        unitPriceInput: values.unitPriceInput,
         initialMeters: values.initialMeters,
       });
       if (!result.ok) {
@@ -156,7 +156,7 @@ export function StockView(): React.ReactElement {
     <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:py-10">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl text-ink sm:text-4xl">Stock · Tissus</h1>
+          <h1 className="page-title text-4xl text-ink sm:text-5xl">Stock · Tissus</h1>
           <p className="mt-1 text-sm text-ink-soft">
             Référentiel des tissus et journal des mouvements (entrées, sorties, ajustements).
           </p>
@@ -221,7 +221,7 @@ export function StockView(): React.ReactElement {
                   return (
                     <li
                       key={fabric.id}
-                      className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-outline bg-surface p-3"
+                      className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up p-3"
                     >
                       <button
                         type="button"
@@ -241,7 +241,7 @@ export function StockView(): React.ReactElement {
                             {low ? <Badge tone="warning">Stock bas</Badge> : null}
                           </span>
                           <span className="mt-0.5 block text-sm text-ink-faint">
-                            {[fabric.supplier, formatEuros(fabric.unit_price)].filter(Boolean).join(" · ") ||
+                            {[fabric.supplier, formatFcfa(fabric.unit_price)].filter(Boolean).join(" · ") ||
                               "Prix non renseigné"}
                           </span>
                         </span>
@@ -428,7 +428,7 @@ export function StockView(): React.ReactElement {
               <p className="text-ink-soft">Fournisseur</p>
               <p className="font-medium text-ink">{detail.supplier ?? "—"}</p>
               <p className="text-ink-soft">Prix au mètre</p>
-              <p className="font-medium text-ink">{formatEuros(detail.unit_price)}</p>
+              <p className="font-medium text-ink">{formatFcfa(detail.unit_price)}</p>
               <p className="text-ink-soft">Stock</p>
               <p className="font-display text-xl text-ink">{formatMeters(detail.quantity)}</p>
             </div>
@@ -449,7 +449,7 @@ export function StockView(): React.ReactElement {
                     return (
                       <li
                         key={m.id}
-                        className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-outline bg-surface-2 p-2.5 text-sm"
+                        className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-outline bg-surface-2/80 p-2.5 text-sm"
                       >
                         <Badge tone={meta.tone}>{meta.label}</Badge>
                         <span

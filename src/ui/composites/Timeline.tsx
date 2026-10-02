@@ -22,19 +22,19 @@ export function Timeline({
   return (
     <ol className={cx("space-y-0", className)}>
       {items.map((item, i) => (
-        <li key={i} className="relative flex gap-4 pb-6 last:pb-0">
+        <li key={i} className="relative flex gap-4 pb-6 animate-fade-up last:pb-0" style={{ animationDelay: `${i * 70}ms` }}>
           {i < items.length - 1 ? (
             <span
               aria-hidden="true"
-              className="absolute left-4 top-10 bottom-0 w-px bg-anthracite-200"
+              className="absolute left-4 top-10 bottom-0 w-0.5 rounded-full bg-gradient-to-b from-flamme-300 via-champagne-300 to-azur-300"
             />
           ) : null}
-          <span className="z-10 flex size-8 shrink-0 items-center justify-center rounded-full border border-outline bg-surface shadow-soft">
+          <span className="z-10 flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-flamme-300 bg-surface text-flamme-600 shadow-soft transition-transform duration-300 hover:scale-110">
             {item.icon}
           </span>
           <div className="min-w-0 pt-0.5">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm font-medium text-ink">{item.title}</span>
+              <span className="text-sm font-bold text-ink">{item.title}</span>
               {item.status ? <Badge tone={item.tone}>{item.status}</Badge> : null}
             </div>
             {item.description ? (

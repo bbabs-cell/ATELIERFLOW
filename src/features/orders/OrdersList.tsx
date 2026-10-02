@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { CalendarClock, Search, Scissors } from "lucide-react";
 import { Badge, Input, StateView, Skeleton } from "@/ui";
-import { formatEuros } from "@/domain/money";
+import { formatFcfa } from "@/domain/money";
 import type { OrderWithCustomer } from "@/application/orders/orderService";
 import { getClientsFacade } from "@/features/clients/facade";
 import {
@@ -64,7 +64,7 @@ export function OrdersList({
           title="Commandes indisponibles"
           description={error}
           action={
-            <button type="button" className="text-sm font-medium text-chocolat-900 underline underline-offset-2" onClick={onRetry}>
+            <button type="button" className="text-sm font-bold text-flamme-600 underline underline-offset-2" onClick={onRetry}>
               Réessayer
             </button>
           }
@@ -80,7 +80,7 @@ export function OrdersList({
           }
         />
       ) : (
-        <ul className="flex flex-col divide-y divide-anthracite-100 rounded-lg border border-outline bg-surface">
+        <ul className="stagger flex flex-col divide-y divide-anthracite-100 overflow-hidden rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up">
           {orders.map(({ order, customerName }) => {
             const meta = ORDER_STATUS_META[order.status];
             const priority = ORDER_PRIORITY_META[order.priority];
@@ -88,10 +88,10 @@ export function OrdersList({
               <li key={order.id}>
                 <button
                   type="button"
-                  className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 text-left transition-colors hover:bg-ivoire-100"
+                  className="group flex w-full flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 text-left transition-all duration-200 hover:bg-flamme-50 hover:pl-5"
                   onClick={() => onSelect(order.id)}
                 >
-                  <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-champagne-400 text-chocolat-950">
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-sunset-gradient text-chocolat-950 shadow-soft transition-transform duration-300 group-hover:scale-110">
                     <Scissors className="size-5" aria-hidden="true" />
                   </span>
                   <span className="min-w-0 flex-1">
@@ -115,7 +115,7 @@ export function OrdersList({
                     </span>
                   </span>
                   <span className="font-display text-lg text-ink">
-                    {formatEuros(order.total_price)}
+                    {formatFcfa(order.total_price)}
                   </span>
                 </button>
               </li>

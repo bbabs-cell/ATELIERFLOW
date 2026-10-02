@@ -6,7 +6,7 @@ Vérifié : typecheck, lint, build prod, 137 tests verts (dont 16 pour le stock)
 ## 1. Portée
 
 - **Tissus** (`fabrics`) : nom, couleur, fournisseur, **quantité**, unité (`m`), prix au
-  mètre (centimes), statut `ACTIVE`/`ARCHIVED`. `photo_key` en attente de R2 (phase 05).
+  mètre (F CFA entiers), statut `ACTIVE`/`ARCHIVED`. `photo_key` en attente de R2 (phase 05).
 - **Mouvements** (`stock_movements`) : journal **immuable en pratique** (INSERT seul),
   types `IN` (entrée), `OUT` (sortie), `ADJUST` (mise à blanc/ajustement), signé,
   `balance_after` recalculé à chaque opération, raison et auteur.
@@ -19,8 +19,8 @@ Vérifié : typecheck, lint, build prod, 137 tests verts (dont 16 pour le stock)
 
 ## 2. Règles
 
-- **Arithmétique exacte** : quantités en **centi-unités** (12,50 m = `1250`), comme les
-  centimes pour l'argent — aucun float. `parseCentiUnits`/`formatCentiUnits` (`units.ts`).
+- **Arithmétique exacte** : quantités en **centi-unités** (12,50 m = `1250`) ; argent en
+  F CFA entiers — aucun float. `parseCentiUnits`/`formatCentiUnits` (`units.ts`).
 - **Garde d'intégrité** : une sortie (`OUT`) qui ferait passer le stock sous zéro est
   **refusée** (`Stock insuffisant pour cette sortie.`). `ADJUST` impose une cible non
   négative (delta signé = cible − courant, zéro autorisé pour la perte totale).

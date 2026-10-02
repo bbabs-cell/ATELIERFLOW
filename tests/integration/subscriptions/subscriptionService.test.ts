@@ -117,7 +117,7 @@ describe("createSubscriptionService", () => {
       trial_ends_at: null,
       current_period_end: null,
       cancelled_at: null,
-      price_monthly_cents: 0,
+      price_monthly: 0,
       currency: "XOF",
     });
     for (const m of members) await h.deps.team.saveMember(m);
@@ -144,7 +144,7 @@ describe("createSubscriptionService", () => {
       trial_ends_at: null,
       current_period_end: "2026-07-01T00:00:00.000Z",
       cancelled_at: null,
-      price_monthly_cents: 500_000,
+      price_monthly: 5_000,
       currency: "XOF",
     });
     await h.deps.team.saveMember(owner);
@@ -153,7 +153,7 @@ describe("createSubscriptionService", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.overview.currentPlan.name).toBe("Essentiel");
-    expect(result.overview.currentPlan.priceMonthlyCents).toBe(500_000);
+    expect(result.overview.currentPlan.priceMonthly).toBe(5_000);
     expect(result.overview.status).toBe("ACTIVE");
     expect(result.overview.nextBillingLabel).not.toBeNull();
     expect(result.overview.features.find((f) => f.feature === "stock")?.enabled).toBe(true);

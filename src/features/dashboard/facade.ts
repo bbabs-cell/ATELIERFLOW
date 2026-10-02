@@ -7,7 +7,7 @@ import { makeLocalInventoryStores } from "@/repository/local/inventory";
 import { makeLocalOrderStores } from "@/repository/local/orders";
 import { makeLocalPaymentsRepository } from "@/repository/local/payments";
 import { makeLocalTeamRepository } from "@/repository/local/team";
-import { ORDERS_DEMO_PROFILE_ID, ORDERS_DEMO_TENANT_ID } from "@/features/orders/constants";
+import { scopedToSession } from "@/application/auth/session";
 
 export interface DashboardFacade {
   dashboard: DashboardService;
@@ -38,17 +38,13 @@ export function createDashboardFacade(input: {
   return { dashboard };
 }
 
-let singleton: DashboardFacade | null = null;
+const scopedDashboardFacade = scopedToSession((session) =>
+  createDashboardFacade({ tenantId: session.tenantId, profileId: session.profileId }),
+);
 
 export function getDashboardFacade(): DashboardFacade {
   if (typeof window === "undefined") {
     throw new Error("DASHBOARD_FACADE_SERVER_SIDE");
   }
-  if (singleton === null) {
-    singleton = createDashboardFacade({
-      tenantId: ORDERS_DEMO_TENANT_ID,
-      profileId: ORDERS_DEMO_PROFILE_ID,
-    });
-  }
-  return singleton;
+  return scopedDashboardFacade();
 }

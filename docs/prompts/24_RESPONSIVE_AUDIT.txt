@@ -1,0 +1,48 @@
+PROMPT 24 — AUDIT RESPONSIVE
+
+Effectue un audit systématique:
+
+320
+360
+375
+390
+414
+480
+640
+768
+820
+912
+1024
+1280
+1366
+1440
+1536
+1920
+
+Tester:
+- portrait;
+- paysage;
+- tactile;
+- clavier;
+- souris;
+- navigation;
+- tableaux;
+- formulaires;
+- modales;
+- drawers;
+- calendrier;
+- Kanban;
+- dashboard;
+- reçus;
+- recherche.
+
+Chercher:
+- débordements;
+- texte coupé;
+- boutons inaccessibles;
+- zones tactiles trop petites;
+- scroll horizontal involontaire;
+- mauvais reflow;
+- espaces incohérents.
+
+Corriger réellement, pas avec des hacks fragiles.

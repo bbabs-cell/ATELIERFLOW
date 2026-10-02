@@ -1,0 +1,30 @@
+PROMPT 10 — AUTH, RLS ET MULTI-TENANCY
+
+Implémente:
+- authentification
+- session
+- profil utilisateur
+- memberships
+- rôles
+- permissions
+- tenant isolation
+- RLS
+
+Rôles:
+OWNER
+MANAGER
+EMPLOYEE
+APPRENTICE
+SAAS_ADMIN
+
+Le tenant doit être déterminé par le contexte authentifié, jamais par une valeur client non vérifiée.
+
+Tester:
+- tenant A ne lit pas B;
+- tenant A ne modifie pas B;
+- rôle insuffisant refusé;
+- accès direct à un ID refusé;
+- fichiers cross-tenant refusés;
+- opérations financières protégées.
+
+Documenter SECURITY.md.

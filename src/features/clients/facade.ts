@@ -7,10 +7,7 @@ import { makeLocalClientsStores } from "@/repository/local/clients";
 import { createIndexedDbCache } from "@/repository/local/indexeddb/cache";
 import { createIndexedDbQueue } from "@/repository/local/indexeddb/queue";
 import { createRemoteSync } from "@/infrastructure/sync/chooseRemote";
-import {
-  CLIENTS_DEMO_PROFILE_ID,
-  CLIENTS_DEMO_TENANT_ID,
-} from "./constants";
+import { scopedToSession } from "@/application/auth/session";
 
 export interface ClientsFacade {
   clients: ClientsService;
@@ -52,17 +49,13 @@ export function createClientsFacade(input: {
   return { clients, measures, engine };
 }
 
-let singleton: ClientsFacade | null = null;
+const scopedClientsFacade = scopedToSession((session) =>
+  createClientsFacade({ tenantId: session.tenantId, profileId: session.profileId }),
+);
 
 export function getClientsFacade(): ClientsFacade {
   if (typeof window === "undefined") {
     throw new Error("CLIENTS_FACADE_SERVER_SIDE");
   }
-  if (singleton === null) {
-    singleton = createClientsFacade({
-      tenantId: CLIENTS_DEMO_TENANT_ID,
-      profileId: CLIENTS_DEMO_PROFILE_ID,
-    });
-  }
-  return singleton;
+  return scopedClientsFacade();
 }

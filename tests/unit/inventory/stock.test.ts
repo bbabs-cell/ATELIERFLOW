@@ -36,7 +36,7 @@ describe("validateFabricDraft", () => {
       name: "  Wax bleu  ",
       color: "  Bleu cobalt  ",
       supplier: "",
-      unitPriceEuros: "25,50",
+      unitPriceInput: "2 550",
       initialMeters: "10",
     });
     expect(draft.errors).toEqual({});
@@ -50,7 +50,7 @@ describe("validateFabricDraft", () => {
   it("exige un nom et signale prix/longueur invalides", () => {
     const draft = validateFabricDraft({
       name: "x",
-      unitPriceEuros: "abc",
+      unitPriceInput: "abc",
       initialMeters: "nimporte",
     });
     expect(draft.errors.name).toBeTruthy();

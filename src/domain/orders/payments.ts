@@ -49,7 +49,7 @@ export function validateNewPayment(
     errors.orderId = "Commande requise.";
   }
   if (!Number.isSafeInteger(input.amount) || input.amount <= 0) {
-    errors.amount = "Montant invalide (superieur a 0, en centimes).";
+    errors.amount = "Montant invalide : nombre entier de F CFA supérieur à 0.";
   }
   if (!PAYMENT_MODES.includes(input.method)) {
     errors.method = "Mode de paiement invalide.";

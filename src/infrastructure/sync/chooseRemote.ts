@@ -1,6 +1,7 @@
 import type { RemoteSyncPort } from "@/repository/ports/sync";
 import { createHttpRemoteSync } from "./remoteHttp";
 import { getSupabaseBrowserEnv } from "@/infrastructure/supabase/env";
+import { getAccessToken } from "@/infrastructure/supabase/browserClient";
 
 /**
  * Choisit le transport de synchronisation réel, ou un stub explicite
@@ -14,7 +15,7 @@ import { getSupabaseBrowserEnv } from "@/infrastructure/supabase/env";
 export function createRemoteSync(): RemoteSyncPort {
   const { provisioned } = getSupabaseBrowserEnv();
   if (provisioned) {
-    return createHttpRemoteSync();
+    return createHttpRemoteSync({ getAccessToken });
   }
   return {
     async push() {

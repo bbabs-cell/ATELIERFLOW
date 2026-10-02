@@ -158,7 +158,7 @@ export function OrdersView(): React.ReactElement {
     <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:py-10">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl text-ink sm:text-4xl">Commandes</h1>
+          <h1 className="page-title text-4xl text-ink sm:text-5xl">Commandes</h1>
           <p className="mt-1 text-sm text-ink-soft">
             Suivi des créations de l&apos;atelier, de la commande à la livraison.
           </p>

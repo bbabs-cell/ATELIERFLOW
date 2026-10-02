@@ -1,4 +1,4 @@
-import { parseEurosToCentimes } from "@/domain/money";
+import { parseFcfa } from "@/domain/money";
 import { parseCentiUnits } from "@/domain/inventory/units";
 
 export const FABRIC_STATUSES = ["ACTIVE", "ARCHIVED"] as const;
@@ -16,7 +16,7 @@ export interface FabricRecord {
   /** Quantité en centi-unités (ex : 1250 = 12,50 m) — arithmétique exacte. */
   quantity: number;
   unit: string;
-  /** Prix unitaire en centimes (ex : 2500 = 25,00 €/m). */
+  /** Prix au mètre en F CFA entiers (ex : 2500 = 2 500 F CFA/m). */
   unit_price: number;
   photo_key: string | null;
   status: FabricStatus;
@@ -29,7 +29,7 @@ export interface FabricDraftInput {
   name: string;
   color?: string | null;
   supplier?: string | null;
-  unitPriceEuros?: string;
+  unitPriceInput?: string;
   initialMeters?: string;
 }
 
@@ -57,10 +57,10 @@ export function validateFabricDraft(
   }
 
   let unitPrice = 0;
-  if (input.unitPriceEuros !== undefined && input.unitPriceEuros.trim() !== "") {
-    const parsed = parseEurosToCentimes(input.unitPriceEuros);
+  if (input.unitPriceInput !== undefined && input.unitPriceInput.trim() !== "") {
+    const parsed = parseFcfa(input.unitPriceInput);
     if (parsed === null) {
-      errors.unitPrice = "Prix invalide (ex : 25,50).";
+      errors.unitPrice = "Prix invalide : nombre entier de F CFA (ex : 2 500).";
     } else {
       unitPrice = parsed;
     }

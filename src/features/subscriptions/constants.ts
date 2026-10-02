@@ -3,9 +3,6 @@ import type { PlanCode } from "@/domain/subscriptions/plans";
 import { PLAN_CODES } from "@/domain/subscriptions/plans";
 import type { SubscriptionStatus } from "@/domain/subscriptions/plans";
 
-export const SUBSCRIPTIONS_DEMO_TENANT_ID = "0171c000-0000-4000-8000-000000000001";
-export const SUBSCRIPTIONS_DEMO_PROFILE_ID = "0171c000-0000-4000-8000-000000000002";
-
 export const PLAN_META: Record<PlanCode, { tone: BadgeTone; highlight: boolean }> = {
   FREE: { tone: "neutral", highlight: false },
   BASIC: { tone: "primary", highlight: false },
