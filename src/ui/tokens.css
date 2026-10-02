@@ -1,8 +1,12 @@
 /* =====================================================================
-   ATELIER — DESIGN TOKENS v2 « vivant »
-   Famille visuelle MagyaPro : crème chaud, espresso profond, flamme
-   orange, or vif, azur, touches wax. Typo Bricolage Grotesque / Manrope /
-   DM Mono. Animations partout (entrées, survols, fonds vivants).
+   ATELIER — DESIGN TOKENS v3 « vivant, palette resserrée »
+   Neutres crème + espresso, et TROIS couleurs, chacune avec un rôle :
+     ORANGE (flamme, pêche)  marque, actions, commandes, navigation ;
+     VERT   (menthe)         argent encaissé, succès, WhatsApp ;
+     ROUGE  (wax)            retards, annulations, erreurs.
+   Les anciens noms azur / violet / champagne restent (aucun composant à
+   réécrire) mais pointent vers ces familles. Animations inchangées.
+   Typo Bricolage Grotesque / Manrope / DM Mono.
    Toutes les valeurs passent par des tokens CSS — jamais de hex en dur
    dans les composants. Le branding reste configurable ici.
    ===================================================================== */
@@ -41,13 +45,15 @@
   --color-ivoire-200: #f6f0e4;
   --color-ivoire-300: #ece5d8;
 
-  /* ---------- Or vif (ex-champagne) : accents, prix ---------- */
-  --color-champagne-100: #fbf1cf;
-  --color-champagne-200: #f5e19a;
-  --color-champagne-300: #ecd06f;
-  --color-champagne-400: #e0bd52;
-  --color-champagne-500: #c99a2e;
-  --color-champagne-600: #9c7420;
+  /* ---------- « champagne » → pêche (famille ORANGE) ----------
+     Palette réduite (3 couleurs + neutres) : l'ancien or devient la nuance
+     claire de l'orange de marque. Noms conservés pour ne rien casser. */
+  --color-champagne-100: #ffe8d6;
+  --color-champagne-200: #ffd2b0;
+  --color-champagne-300: #ffb989;
+  --color-champagne-400: #ff9a4d;
+  --color-champagne-500: #e8611f;
+  --color-champagne-600: #b9480f;
 
   /* ---------- Flamme : couleur de marque ---------- */
   --color-flamme-50: #fff4ec;
@@ -59,20 +65,20 @@
   --color-flamme-600: #e8461a;
   --color-flamme-700: #c2360f;
 
-  /* ---------- Azur ---------- */
-  --color-azur-50: #eef3ff;
-  --color-azur-100: #dde7ff;
-  --color-azur-300: #8aa8f5;
-  --color-azur-500: #2f5bd8;
-  --color-azur-600: #2448b3;
-  --color-azur-700: #1b3788;
+  /* ---------- « azur » → espresso (NEUTRE) ---------- */
+  --color-azur-50: #f6f1ea;
+  --color-azur-100: #ece3d6;
+  --color-azur-300: #b9a58c;
+  --color-azur-500: #6b5a47;
+  --color-azur-600: #4d4033;
+  --color-azur-700: #3a3027;
 
-  /* ---------- Wax (magenta) ---------- */
-  --color-wax-50: #fff0f7;
-  --color-wax-100: #ffe0ef;
-  --color-wax-300: #ff8cc0;
-  --color-wax-500: #e5337f;
-  --color-wax-600: #c21f66;
+  /* ---------- « wax » → ROUGE d'alerte : retards, annulations, erreurs ---------- */
+  --color-wax-50: #fef2f2;
+  --color-wax-100: #fee2e2;
+  --color-wax-300: #fca5a5;
+  --color-wax-500: #dc2626;
+  --color-wax-600: #b91c1c;
 
   /* ---------- Menthe ---------- */
   --color-menthe-50: #ecfdf5;
@@ -81,11 +87,11 @@
   --color-menthe-500: #10b981;
   --color-menthe-600: #047857;
 
-  /* ---------- Violet ---------- */
-  --color-violet-50: #f4f0ff;
-  --color-violet-100: #e9e2ff;
-  --color-violet-500: #7c5cff;
-  --color-violet-600: #6241e8;
+  /* ---------- « violet » → espresso (NEUTRE) ---------- */
+  --color-violet-50: #f6f1ea;
+  --color-violet-100: #ece3d6;
+  --color-violet-500: #6b5a47;
+  --color-violet-600: #4d4033;
 
   /* ---------- Neutres chauds (ex-anthracite) ---------- */
   --color-anthracite-50: #f7f3ec;
@@ -107,8 +113,8 @@
   --color-warning-soft: #fff4ec;
   --color-danger: #dc2626;
   --color-danger-soft: #fef2f2;
-  --color-info: #2f5bd8;
-  --color-info-soft: #eef3ff;
+  --color-info: #4d4033;
+  --color-info-soft: #f6f1ea;
 
   /* ---------- Rôles ---------- */
   --color-bg: #fbf8f2;
@@ -118,7 +124,7 @@
   --color-ink-soft: #6a6153;
   --color-ink-faint: #857d6f;
   --color-primary: #ff5e2e;
-  --color-accent: #e0bd52;
+  --color-accent: #ff9a4d;
   --color-outline: #e2d8c6;
 
   /* ---------- Radius ---------- */
@@ -132,7 +138,7 @@
   --shadow-soft: 0 1px 2px rgb(33 29 22 / 0.05), 0 6px 18px -6px rgb(33 29 22 / 0.12);
   --shadow-lift: 0 4px 10px -2px rgb(33 29 22 / 0.08), 0 22px 40px -18px rgb(33 29 22 / 0.28);
   --shadow-modal: 0 12px 30px rgb(20 17 16 / 0.18), 0 40px 90px -20px rgb(20 17 16 / 0.35);
-  --shadow-glow: 0 10px 30px -8px rgb(255 94 46 / 0.55), 0 4px 12px -4px rgb(224 189 82 / 0.5);
+  --shadow-glow: 0 10px 30px -8px rgb(255 94 46 / 0.55), 0 4px 12px -4px rgb(255 154 77 / 0.5);
   --shadow-neo: 4px 4px 0 var(--color-ink);
   --shadow-neo-lg: 7px 7px 0 var(--color-ink);
 
@@ -227,10 +233,10 @@
 }
 
 :root {
-  --gradient-flamme: linear-gradient(120deg, #ff9a4d 0%, #ff5e2e 55%, #e5337f 100%);
-  --gradient-sunset: linear-gradient(120deg, #ff5e2e 0%, #ff9a4d 45%, #e0bd52 100%);
-  --gradient-ocean: linear-gradient(120deg, #2f5bd8 0%, #7c5cff 100%);
-  --gradient-aurora: linear-gradient(120deg, #ff5e2e, #e0bd52, #10b981, #2f5bd8, #7c5cff, #e5337f, #ff5e2e);
+  --gradient-flamme: linear-gradient(120deg, #ff9a4d 0%, #ff5e2e 55%, #e8461a 100%);
+  --gradient-sunset: linear-gradient(120deg, #ff5e2e 0%, #ff9a4d 45%, #ffb989 100%);
+  --gradient-ocean: linear-gradient(120deg, #6b5a47 0%, #2a231c 100%);
+  --gradient-aurora: linear-gradient(120deg, #ff5e2e, #ff9a4d, #ffd2b0, #10b981, #ff9a4d, #ff5e2e);
 }
 
 @layer base {

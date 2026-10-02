@@ -1,6 +1,6 @@
 ---
 name: atelierflow-design-system
-description: Use when building, styling, or auditing UI screens, components, tokens, or the theme of the atelierflow SaaS. Covers the vivid animated design system (crème, espresso, flamme orange, or, azur, wax; MagyaPro family), typography, spacing, radius, shadows, breakpoints 320-1920, mobile-first, accessibility, touch-friendly, states (loading/empty/error/success/offline/sync). Trigger keywords: design system, theme, tokens, palette, composant, component, responsive, breakpoint, layout, style, UI, CSS.
+description: Use when building, styling, or auditing UI screens, components, tokens, or the theme of the atelierflow SaaS. Covers the vivid animated design system (crème + espresso neutrals and three role colors: flamme orange, menthe green, red alert; MagyaPro family), typography, spacing, radius, shadows, breakpoints 320-1920, mobile-first, accessibility, touch-friendly, states (loading/empty/error/success/offline/sync). Trigger keywords: design system, theme, tokens, palette, composant, component, responsive, breakpoint, layout, style, UI, CSS.
 ---
 
 # atelierflow-design-system
@@ -9,7 +9,7 @@ Direction (v2, demandée par le client, 2026-09) : **vivante, colorée, animée*
 
 ## Tokens (source : `src/ui/tokens.css`)
 
-- **couleur** : crème `#fbf8f2` (fond), espresso `#1f1a15` (échelle `chocolat-*`, menu et bandeaux sombres), flamme `#ff5e2e` (marque, `flamme-*`), or vif `#e0bd52` (`champagne-*`), azur `#2f5bd8`, wax `#e5337f`, menthe `#10b981`, violet `#7c5cff`, texte `#211d16`.
+- **couleur** : palette resserrée (demande du client) — neutres crème `#fbf8f2` (fond) et espresso `#1f1a15` (`chocolat-*`, menu, bandeaux sombres), texte `#211d16`, et **trois couleurs à rôle fixe** : ORANGE `#ff5e2e` (`flamme-*`, nuance pêche `champagne-*`) = marque, actions, commandes, navigation ; VERT `#10b981` (`menthe-*`) = argent encaissé, succès, WhatsApp ; ROUGE `#dc2626` (`wax-*`, `danger`) = retards, annulations, erreurs, jamais décoratif. `azur-*` et `violet-*` pointent vers l'espresso (neutres). Ne pas réintroduire de bleu, violet, rose ou or. Les animations ne changent pas.
 - **dégradés** : `bg-flamme-gradient`, `bg-sunset-gradient`, `bg-ocean-gradient`, `bg-aurora-gradient`, `text-gradient`.
 - **typographie** : Bricolage Grotesque (titres, `font-display`), Manrope (interface), DM Mono (étiquettes, chiffres, `font-mono`). Titres de page : classe `page-title`.
 - **ombres** : `shadow-soft`, `shadow-lift`, `shadow-glow` (halo flamme), `shadow-neo` (décalée, boutons outline).

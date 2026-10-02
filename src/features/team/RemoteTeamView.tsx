@@ -24,7 +24,7 @@ import { createTeamRemote, type TeamRemote } from "@/infrastructure/team/teamRem
 import { MEMBERSHIP_STATUS_META, ROLE_META, ROLE_OPTIONS } from "./constants";
 import { PermissionsMatrix } from "./PermissionsMatrix";
 
-const AVATAR_TONES = ["bg-flamme-gradient", "bg-ocean-gradient", "bg-sunset-gradient", "bg-[linear-gradient(120deg,#10b981,#047857)]", "bg-[linear-gradient(120deg,#ff8cc0,#e5337f)]"];
+const AVATAR_TONES = ["bg-flamme-gradient", "bg-ocean-gradient", "bg-sunset-gradient", "bg-[linear-gradient(120deg,#10b981,#047857)]", "bg-[linear-gradient(120deg,#ffb989,#e8461a)]"];
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);

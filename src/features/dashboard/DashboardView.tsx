@@ -44,7 +44,8 @@ const TONES: Record<Tone, { chip: string; glow: string; bar: string }> = {
   violet: { chip: "from-violet-100 to-violet-600", glow: "bg-violet-500", bar: "from-violet-100 to-violet-600" },
 };
 
-const BAR_TONES: Tone[] = ["flamme", "or", "azur", "wax", "menthe", "violet"];
+// Barres : orange, vert et neutres ; le rouge (wax) reste réservé aux alertes.
+const BAR_TONES: Tone[] = ["flamme", "menthe", "or", "azur", "flamme", "menthe"];
 
 function AnimatedNumber({ value, format }: { value: number; format: (n: number) => string }) {
   const shown = useCountUp(value);
@@ -349,12 +350,12 @@ export function DashboardView(): React.ReactElement {
         ) : (
           <>
             <ul className="stagger grid grid-cols-2 gap-3 lg:grid-cols-4">
-              <KpiCard tone="flamme" href="/commandes" icon={<Wallet className="size-5" aria-hidden="true" />} title="Encaissé" value={kpis.money.revenuePeriod} format={formatFcfa} hint={`sur ${rangeLabel}`} />
+              <KpiCard tone="menthe" href="/commandes" icon={<Wallet className="size-5" aria-hidden="true" />} title="Encaissé" value={kpis.money.revenuePeriod} format={formatFcfa} hint={`sur ${rangeLabel}`} />
               <KpiCard tone="or" href="/commandes" icon={<Banknote className="size-5" aria-hidden="true" />} title="Facturé" value={kpis.money.invoicedPeriod} format={formatFcfa} hint="commandes créées sur la période" />
-              <KpiCard tone="wax" href="/commandes" icon={<CircleDollarSign className="size-5" aria-hidden="true" />} title="Reste à encaisser" value={kpis.money.outstanding} format={formatFcfa} hint="hors commandes annulées" />
-              <KpiCard tone="violet" href="/commandes" icon={<Hourglass className="size-5" aria-hidden="true" />} title="En retard" value={kpis.money.ordersLate} hint="échéance dépassée, non livrée" />
-              <KpiCard tone="azur" href="/commandes" icon={<Package className="size-5" aria-hidden="true" />} title="Commandes actives" value={kpis.money.ordersActive} hint={`${kpis.money.ordersReadyPickup} à retirer`} />
-              <KpiCard tone="menthe" href="/clients" icon={<PackageOpen className="size-5" aria-hidden="true" />} title="Clients actifs" value={kpis.context.customersActive} hint={`${kpis.context.customersNewPeriod} nouveaux sur la période`} />
+              <KpiCard tone="or" href="/commandes" icon={<CircleDollarSign className="size-5" aria-hidden="true" />} title="Reste à encaisser" value={kpis.money.outstanding} format={formatFcfa} hint="hors commandes annulées" />
+              <KpiCard tone="wax" href="/commandes" icon={<Hourglass className="size-5" aria-hidden="true" />} title="En retard" value={kpis.money.ordersLate} hint="échéance dépassée, non livrée" />
+              <KpiCard tone="flamme" href="/commandes" icon={<Package className="size-5" aria-hidden="true" />} title="Commandes actives" value={kpis.money.ordersActive} hint={`${kpis.money.ordersReadyPickup} à retirer`} />
+              <KpiCard tone="azur" href="/clients" icon={<PackageOpen className="size-5" aria-hidden="true" />} title="Clients actifs" value={kpis.context.customersActive} hint={`${kpis.context.customersNewPeriod} nouveaux sur la période`} />
               <KpiCard tone="flamme" href="/rdv" icon={<CalendarClock className="size-5" aria-hidden="true" />} title="Rendez-vous du jour" value={kpis.context.appointmentsToday} hint="planifiés ou confirmés" />
               <KpiCard tone="or" href="/stock" icon={<Shirt className="size-5" aria-hidden="true" />} title="Tissus en stock" value={kpis.context.stockUnitsCenti} format={(n) => `${formatCentiUnits(n)} m`} hint={`${kpis.context.fabricsLow} en stock bas`} />
             </ul>
@@ -462,7 +463,7 @@ export function DashboardView(): React.ReactElement {
             <Panel title="L'atelier en un coup d'œil" className="mt-6">
               <ul className="stagger mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
                 <KpiCard tone="azur" href="/equipe" icon={<Users className="size-5" aria-hidden="true" />} title="Équipe active" value={kpis.context.teamActive} hint="membres opérationnels" />
-                <KpiCard tone="wax" href="/stock" icon={<TrendingDown className="size-5" aria-hidden="true" />} title="Sorties stock" value={kpis.context.stockOutPeriodCenti} format={(n) => `${formatCentiUnits(n)} m`} hint="sur la période" />
+                <KpiCard tone="azur" href="/stock" icon={<TrendingDown className="size-5" aria-hidden="true" />} title="Sorties stock" value={kpis.context.stockOutPeriodCenti} format={(n) => `${formatCentiUnits(n)} m`} hint="sur la période" />
                 <KpiCard tone="or" href="/stock" icon={<Shirt className="size-5" aria-hidden="true" />} title="Stock bas" value={kpis.context.fabricsLow} hint="≤ 1 m (réapprovisionner)" />
                 <KpiCard tone="menthe" href="/clients" icon={<UserPlus className="size-5" aria-hidden="true" />} title="Nouveaux clients" value={kpis.context.customersNewPeriod} hint={`sur ${rangeLabel}`} />
               </ul>

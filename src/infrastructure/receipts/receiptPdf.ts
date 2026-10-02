@@ -5,7 +5,7 @@ import { receiptFileName, type ReceiptDocument } from "@/domain/orders/receiptDo
 /**
  * Rendu PDF du reçu (A5 portrait), entièrement dans le navigateur : il
  * fonctionne hors connexion et n'envoie aucune donnée à un service tiers.
- * Couleurs du Design System (espresso, flamme, champagne, wax, menthe) ;
+ * Couleurs du Design System (espresso, orange, vert ; rouge pour le contre-avoir) ;
  * polices PDF standard (Helvetica / Courier), encodage WinAnsi.
  */
 
@@ -24,21 +24,21 @@ const C = {
   faint: hex("#7a7163"),
   line: hex("#ede6da"),
   paper: hex("#f7f3ec"),
-  gold: hex("#ecd06f"),
-  goldDeep: hex("#9c7420"),
+  gold: hex("#ffb989"),
+  goldDeep: hex("#b9480f"),
   flamme: hex("#ff5e2e"),
   flammeSoft: hex("#fff4ec"),
   flammeDeep: hex("#c2360f"),
-  wax: hex("#e5337f"),
-  waxSoft: hex("#fff0f7"),
-  waxDeep: hex("#c21f66"),
+  wax: hex("#dc2626"),
+  waxSoft: hex("#fef2f2"),
+  waxDeep: hex("#b91c1c"),
   menthe: hex("#047857"),
   mentheSoft: hex("#ecfdf5"),
   white: rgb(1, 1, 1),
 };
 
-/** Dégradé « coucher de soleil » du Design System : flamme → champagne → wax. */
-const STRIPE = ["#ff5e2e", "#ff9a4d", "#ecd06f", "#ff8cc0", "#e5337f"];
+/** Dégradé orange du Design System (palette resserrée : orange, vert, rouge d'alerte). */
+const STRIPE = ["#e8461a", "#ff5e2e", "#ff9a4d", "#ffb989", "#ffd2b0"];
 
 /**
  * Les polices standard ne couvrent que WinAnsi (latin occidental) :
@@ -194,7 +194,7 @@ export async function renderReceiptPdf(doc: ReceiptDocument): Promise<Uint8Array
     top += 12;
   }
 
-  c.text(doc.title.toUpperCase(), right, 24, 8, fonts.bold, credit ? hex("#ff8cc0") : hex("#ff9a4d"), { align: "right", spacing: 1.4 });
+  c.text(doc.title.toUpperCase(), right, 24, 8, fonts.bold, credit ? hex("#fca5a5") : hex("#ff9a4d"), { align: "right", spacing: 1.4 });
   c.text(doc.reference, right, 38, 12, fonts.monoBold, C.white, { align: "right" });
   c.text(doc.issuedAtLabel, right, 56, 8, fonts.regular, C.gold, { align: "right" });
   if (doc.provisional) {
