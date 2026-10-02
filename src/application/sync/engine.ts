@@ -127,6 +127,15 @@ export class SyncEngine {
     }
   }
 
+  /**
+   * Vrai quand aucune opération locale n'attend encore le serveur pour
+   * cette entité : l'enregistrement en cache est la version confirmée.
+   */
+  async isSettled(entity: string, entityId: string): Promise<boolean> {
+    const ops = await this.queue.listAll();
+    return !ops.some((op) => op.entity === entity && op.entityId === entityId && op.status !== "SYNCED");
+  }
+
   subscribe(listener: SyncEngineStatusListener): () => void {
     this.statusListeners.add(listener);
     listener({ ...this.status });

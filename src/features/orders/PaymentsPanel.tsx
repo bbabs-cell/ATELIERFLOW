@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Banknote, FileText, ReceiptText, Undo2, Wallet } from "lucide-react";
+import { Banknote, Eye, FileText, ReceiptText, Undo2, Wallet } from "lucide-react";
 import { Badge, Button, Dialog, Field, Input, Select, Textarea, StateView, useCountUp } from "@/ui";
 import { formatFcfa, parseFcfa } from "@/domain/money";
 import {
@@ -13,6 +13,7 @@ import {
 import type { ReceiptRecord } from "@/domain/orders/receipts";
 import type { OrderPayments } from "@/application/orders/paymentService";
 import { getOrdersFacade } from "./facade";
+import { ReceiptViewer } from "./ReceiptViewer";
 
 export interface PaymentsPanelProps {
   orderId: string;
@@ -40,6 +41,7 @@ export function PaymentsPanel({
   const [issuingId, setIssuingId] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState<PaymentRecord | null>(null);
   const [cancelReason, setCancelReason] = useState("");
+  const [viewing, setViewing] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
     const facade = getOrdersFacade();
@@ -109,6 +111,8 @@ export function PaymentsPanel({
         return;
       }
       await reload();
+      // Le reçu émis s'ouvre aussitôt : imprimer, télécharger ou partager.
+      setViewing(result.receipt.id);
     } finally {
       setIssuingId(null);
     }
@@ -278,11 +282,17 @@ export function PaymentsPanel({
                 <span className="text-xs text-ink-faint">
                   {new Date(r.issued_at).toLocaleDateString("fr-FR")}
                 </span>
+                <Button type="button" size="sm" variant="ghost" onClick={() => setViewing(r.id)} aria-label={`Voir ${r.reference}`}>
+                  <Eye className="size-4" aria-hidden="true" />
+                  Voir
+                </Button>
               </li>
             ))}
           </ul>
         </div>
       ) : null}
+
+      {viewing ? <ReceiptViewer receiptId={viewing} onClose={() => setViewing(null)} /> : null}
 
       <Dialog
         open={recordOpen}
