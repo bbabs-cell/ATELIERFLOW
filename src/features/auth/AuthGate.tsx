@@ -28,6 +28,7 @@ import {
   loadLastIdentity,
   saveLastIdentity,
 } from "@/infrastructure/auth/lastIdentity";
+import { useSyncRunner } from "@/features/sync/useSyncRunner";
 
 /** Pages accessibles sans atelier actif. */
 const PUBLIC_PATHS = ["/connexion", "/bienvenue", "/offline", "/design"];
@@ -140,6 +141,14 @@ export function AuthGate({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (target) router.replace(target);
   }, [router, target]);
+
+  // Envoi de la file de synchronisation (session Supabase valide uniquement :
+  // hors ligne, le jeton n'est pas vérifiable ; en démo, pas de serveur).
+  useSyncRunner(
+    state.status === "ready" && state.session.mode === "SUPABASE"
+      ? `${state.session.tenantId}:${state.session.profileId}`
+      : null,
+  );
 
   if (isPublic && target === null) {
     return <>{children}</>;

@@ -36,3 +36,26 @@ describe("conflictPolicy", () => {
     expect(isFinancialEntity("orders")).toBe(false);
   });
 });
+import { adoptServerRecord } from "@/domain/sync/conflictPolicy";
+
+describe("adoptServerRecord (après SYNCED)", () => {
+  it("reçu : la référence et l'état calculés par le serveur remplacent la copie locale", () => {
+    const local = { id: "r", reference: "REC-2026-000001", state: { remaining: 30000 }, pdf_key: null };
+    const server = { id: "r", reference: "REC-2026-000002", state: { remaining: 25000 } };
+    expect(adoptServerRecord("receipts", local, server)).toEqual({ id: "r", reference: "REC-2026-000002", state: { remaining: 25000 }, pdf_key: null });
+  });
+
+  it("commande : seule la référence ORD définitive est reprise", () => {
+    const local = { id: "o", reference: "ORD-2026-000001", notes: "saisie locale", total_price: 50000 };
+    const server = { id: "o", reference: "ORD-2026-000004", notes: null, total_price: 50000 };
+    expect(adoptServerRecord("orders", local, server)).toEqual({ id: "o", reference: "ORD-2026-000004", notes: "saisie locale", total_price: 50000 });
+    expect(adoptServerRecord("orders", local, { ...server, reference: "ORD-2026-000001" })).toBeNull();
+  });
+
+  it("métadonnées : version serveur ; autres entités sensibles : copie locale conservée", () => {
+    expect(adoptServerRecord("notifications", { a: 1 }, { a: 2 })).toEqual({ a: 2 });
+    expect(adoptServerRecord("customers", { phone: "1" }, { phone: "2" })).toBeNull();
+    expect(adoptServerRecord("payments", { amount: 1 }, { amount: 1 })).toBeNull();
+    expect(adoptServerRecord("receipts", {}, null)).toBeNull();
+  });
+});
