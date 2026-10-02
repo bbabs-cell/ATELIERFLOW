@@ -1,5 +1,6 @@
 import { formatFcfa } from "@/domain/money";
 import { fcfaInWords } from "@/domain/moneyWords";
+import { toWhatsappNumber, whatsappUrl } from "@/domain/messaging/whatsapp";
 import { formatPaymentMethodLabel, type PaymentRecord } from "./payments";
 import type { OrderItemRecord, OrderRecord } from "./order";
 import { receiptKind, type ReceiptRecord, type ReceiptState } from "./receipts";
@@ -156,11 +157,5 @@ export function receiptShareMessage(doc: ReceiptDocument): string {
  * choisit le contact).
  */
 export function receiptWhatsappUrl(phone: string | null, message: string): string {
-  const text = encodeURIComponent(message);
-  const compact = (phone ?? "").replace(/[\s.\-()]/g, "");
-  const international = compact.startsWith("+") ? compact.slice(1) : compact.startsWith("00") ? compact.slice(2) : null;
-  if (international && /^\d{8,15}$/.test(international)) {
-    return `https://wa.me/${international}?text=${text}`;
-  }
-  return `https://wa.me/?text=${text}`;
+  return whatsappUrl(toWhatsappNumber(phone), message);
 }

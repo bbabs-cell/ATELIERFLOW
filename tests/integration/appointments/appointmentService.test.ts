@@ -3,11 +3,13 @@ import { describe, expect, it } from "vitest";
 import { createAppointmentService } from "@/application/appointments/appointmentService";
 import { createNotificationService } from "@/application/appointments/notificationService";
 import { createClientsService } from "@/application/clients/clientService";
+import { createOrderService } from "@/application/orders/orderService";
 import { SyncEngine } from "@/application/sync/engine";
 import { createIndexedDbCache } from "@/repository/local/indexeddb/cache";
 import { createIndexedDbQueue } from "@/repository/local/indexeddb/queue";
 import { makeLocalAppointmentsStores } from "@/repository/local/appointments";
 import { makeLocalClientsStores } from "@/repository/local/clients";
+import { makeLocalOrderStores } from "@/repository/local/orders";
 import { createFakeSyncServer } from "../../support/fakeSyncServer";
 
 let tenantSeq = 0;
@@ -24,6 +26,7 @@ function makeHarness(tenantId: string = uniqueTenant()) {
   const server = createFakeSyncServer();
   const clientStores = makeLocalClientsStores(cache);
   const appointmentStores = makeLocalAppointmentsStores(cache);
+  const orderStores = makeLocalOrderStores(cache);
   let t = 1_767_225_599_000;
   const now = () => new Date((t += 1_000)).toISOString();
   let n = 0;
@@ -45,12 +48,23 @@ function makeHarness(tenantId: string = uniqueTenant()) {
     now,
     uuid,
   });
+  const orders = createOrderService({
+    tenantId,
+    profileId: "p-owner",
+    orders: orderStores.orders,
+    items: orderStores.items,
+    history: orderStores.history,
+    customers: clientStores.customers,
+    engine,
+    now,
+    uuid,
+  });
   const appointments = createAppointmentService({
     tenantId,
     profileId: "p-owner",
     appointments: appointmentStores.appointments,
-    notifications: appointmentStores.notifications,
     customers: clientStores.customers,
+    orders: orderStores.orders,
     engine,
     now,
     uuid,
@@ -63,7 +77,7 @@ function makeHarness(tenantId: string = uniqueTenant()) {
     now,
     uuid,
   });
-  return { cache, server, engine, clients, appointments, notifications };
+  return { cache, server, engine, clients, orders, appointments, notifications };
 }
 
 describe("createAppointmentService", () => {
@@ -93,7 +107,7 @@ describe("createAppointmentService", () => {
     expect(reminded).toHaveLength(0);
   });
 
-  it("génère un rappel WhatsApp automatique si le client a un numéro", async () => {
+  it("ne crée plus de notification : le rappel est suivi sur le rendez-vous", async () => {
     const h = makeHarness();
     const customer = await h.clients.createCustomer({
       full_name: "Bineta Kone",
@@ -108,20 +122,90 @@ describe("createAppointmentService", () => {
     });
     expect(created.ok).toBe(true);
     if (!created.ok) return;
+    expect(created.appointment.reminder_sent_at).toBeNull();
+    expect(await h.notifications.listNotifications()).toHaveLength(0);
 
-    const reminded = await h.notifications.listNotifications();
-    expect(reminded).toHaveLength(1);
-    const toast = reminded[0];
-    expect(toast.channel).toBe("WHATSAPP");
-    expect(toast.type).toBe("APPOINTMENT_REMINDER");
-    expect(toast.title).toBe("Rappel de rendez-vous");
-    expect(toast.body).toContain("Bineta Kone");
-    expect(toast.body).toContain("Livraison");
-    expect((toast.payload as { appointment_id: string }).appointment_id).toBe(
-      created.appointment.id,
-    );
-    expect((toast.payload as { whatsapp: string }).whatsapp).toBe("+221771234567");
-    expect(toast.sent_at).toBeNull();
+    const sent = await h.appointments.markReminderSent(created.appointment.id);
+    expect(sent.ok).toBe(true);
+    if (sent.ok) expect(sent.appointment.reminder_sent_at).not.toBeNull();
+  });
+
+  it("modifie un rendez-vous : commande liée du client, nouvel horaire => rappel à renvoyer", async () => {
+    const h = makeHarness();
+    const awa = await h.clients.createCustomer({ full_name: "Awa Diop" });
+    const fatou = await h.clients.createCustomer({ full_name: "Fatou Sow" });
+    if (!awa.ok || !fatou.ok) return;
+    const order = await h.orders.createOrder({
+      customerId: awa.customer.id,
+      priority: "NORMAL",
+      items: [{ description: "Boubou", quantity: 1, unit_price: 50000 }],
+    });
+    if (!order.ok) return;
+
+    const wrong = await h.appointments.createAppointment({
+      customerId: fatou.customer.id,
+      orderId: order.order.id,
+      type: "FITTING",
+      startsAt: localDateTime(2026, 10, 6, 10, 0),
+    });
+    expect(wrong.ok).toBe(false);
+    if (!wrong.ok) expect(wrong.errors.orderId).toContain("autre client");
+
+    const created = await h.appointments.createAppointment({
+      customerId: awa.customer.id,
+      orderId: order.order.id,
+      type: "FITTING",
+      startsAt: localDateTime(2026, 10, 6, 10, 0),
+      endsAt: localDateTime(2026, 10, 6, 11, 0),
+    });
+    if (!created.ok) return;
+    const listed = await h.appointments.getAppointment(created.appointment.id);
+    expect(listed?.order?.reference).toBe(order.order.reference);
+
+    await h.appointments.markReminderSent(created.appointment.id);
+    const sameTime = await h.appointments.updateAppointment(created.appointment.id, {
+      customerId: awa.customer.id,
+      orderId: order.order.id,
+      type: "FITTING",
+      startsAt: localDateTime(2026, 10, 6, 10, 0),
+      endsAt: localDateTime(2026, 10, 6, 11, 0),
+      note: "Apporter le tissu",
+    });
+    expect(sameTime.ok).toBe(true);
+    if (sameTime.ok) {
+      expect(sameTime.rescheduled).toBe(false);
+      expect(sameTime.appointment.reminder_sent_at).not.toBeNull();
+      expect(sameTime.appointment.note).toBe("Apporter le tissu");
+    }
+
+    const moved = await h.appointments.updateAppointment(created.appointment.id, {
+      customerId: awa.customer.id,
+      orderId: null,
+      type: "ALTERATION",
+      startsAt: localDateTime(2026, 10, 7, 15, 0),
+      endsAt: null,
+    });
+    expect(moved.ok).toBe(true);
+    if (!moved.ok) return;
+    expect(moved.rescheduled).toBe(true);
+    expect(moved.appointment).toMatchObject({ order_id: null, ends_at: null, type: "ALTERATION", reminder_sent_at: null, status: "SCHEDULED" });
+
+    await h.engine.flush();
+    const updates = h.server.pushed().filter((op) => op.entity === "appointments" && op.operation === "UPDATE");
+    expect(updates.length).toBe(3);
+    const last = updates[updates.length - 1].payload as Record<string, unknown>;
+    expect(last).toHaveProperty("order_id", null);
+    expect(last).toHaveProperty("ends_at", null);
+    expect(last).toHaveProperty("reminder_sent_at", null);
+
+    await h.appointments.transitionAppointment(created.appointment.id, "CANCELLED");
+    const closed = await h.appointments.updateAppointment(created.appointment.id, {
+      customerId: awa.customer.id,
+      type: "OTHER",
+      startsAt: localDateTime(2026, 10, 8, 9, 0),
+    });
+    expect(closed.ok).toBe(false);
+    expect((await h.appointments.markReminderSent(created.appointment.id)).ok).toBe(false);
   });
 
   it("refuse un client introuvable", async () => {
@@ -188,7 +272,7 @@ describe("createAppointmentService", () => {
     expect(report.networkError).toBeNull();
     const pushed = h.server.pushed();
     expect(pushed.filter((op) => op.entity === "appointments")).toHaveLength(1);
-    expect(pushed.filter((op) => op.entity === "notifications")).toHaveLength(1);
+    expect(pushed.filter((op) => op.entity === "notifications")).toHaveLength(0);
     expect(pushed.every((op) => op.operation === "INSERT")).toBe(true);
 
     expect(await h.engine.flush()).toMatchObject({ synced: 0, attempted: 0 });

@@ -70,8 +70,8 @@ function makeHarness() {
   const appointments = createAppointmentService({
     ...base,
     appointments: appointmentStores.appointments,
-    notifications: appointmentStores.notifications,
     customers: clientStores.customers,
+    orders: orderStores.orders,
   });
   const stock = createStockService({
     ...base,
