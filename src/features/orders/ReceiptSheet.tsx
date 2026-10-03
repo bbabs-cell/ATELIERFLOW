@@ -12,7 +12,7 @@ export function ReceiptSheet({ doc, className }: { doc: ReceiptDocument; classNa
   return (
     <article
       className={cx(
-        "receipt-sheet mx-auto w-full max-w-[30rem] overflow-hidden rounded-2xl border border-outline bg-white text-[13px] text-anthracite-900 shadow-lift",
+        "receipt-sheet @container mx-auto w-full max-w-[30rem] overflow-hidden rounded-2xl border border-outline bg-white text-[13px] text-anthracite-900 shadow-lift",
         className,
       )}
       aria-label={`${doc.title} ${doc.reference}`}
@@ -89,18 +89,18 @@ export function ReceiptSheet({ doc, className }: { doc: ReceiptDocument; classNa
             <thead>
               <tr className="border-b border-anthracite-100 text-[9px] uppercase tracking-[0.12em] text-anthracite-500">
                 <th className="py-1.5 text-left font-bold">Désignation</th>
-                <th className="py-1.5 text-right font-bold">Qté</th>
-                <th className="hidden py-1.5 text-right font-bold sm:table-cell">P.U.</th>
-                <th className="py-1.5 text-right font-bold">Montant</th>
+                <th className="py-1.5 pl-3 text-right font-bold">Qté</th>
+                <th className="hidden py-1.5 pl-3 text-right font-bold @md:table-cell">P.U.</th>
+                <th className="py-1.5 pl-3 text-right font-bold">Montant</th>
               </tr>
             </thead>
             <tbody>
               {doc.order.lines.map((line, i) => (
                 <tr key={i} className="border-b border-anthracite-100/60 last:border-0">
                   <td className="py-1.5 pr-2 break-words">{line.description}</td>
-                  <td className="py-1.5 text-right tabular text-anthracite-600">{line.quantity}</td>
-                  <td className="hidden py-1.5 text-right tabular text-anthracite-600 sm:table-cell">{formatFcfa(line.unitPrice)}</td>
-                  <td className="py-1.5 text-right font-semibold tabular">{formatFcfa(line.total)}</td>
+                  <td className="py-1.5 pl-3 text-right align-top tabular text-anthracite-600">{line.quantity}</td>
+                  <td className="hidden whitespace-nowrap py-1.5 pl-3 text-right align-top tabular text-anthracite-600 @md:table-cell">{formatFcfa(line.unitPrice)}</td>
+                  <td className="whitespace-nowrap py-1.5 pl-3 text-right align-top font-semibold tabular">{formatFcfa(line.total)}</td>
                 </tr>
               ))}
             </tbody>

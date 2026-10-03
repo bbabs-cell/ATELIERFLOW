@@ -257,7 +257,7 @@ export function OrderForm({
                   onClick={() => removeRow(row.key)}
                   aria-label={`Supprimer l'article ${index + 1}`}
                   disabled={rows.length === 1}
-                  className="rounded-md p-2 text-ink-soft hover:bg-danger-soft hover:text-danger disabled:opacity-40"
+                  className="grid size-10 shrink-0 place-items-center rounded-md text-ink-soft hover:bg-danger-soft pointer-coarse:size-11 hover:text-danger disabled:opacity-40"
                 >
                   <Trash2 className="size-4" aria-hidden="true" />
                 </button>

@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cx } from "@/lib/cx";
+import { useModal } from "../hooks/useModal";
 
 export type DrawerSide = "left" | "right";
 
@@ -27,20 +28,8 @@ export function Drawer({
   title,
   children,
 }: DrawerProps) {
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    const { body } = document;
-    const prev = body.style.overflow;
-    body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      body.style.overflow = prev;
-    };
-  }, [open, onClose]);
+  const panelRef = useRef<HTMLDivElement>(null);
+  useModal(open, panelRef, onClose);
 
   if (!open) return null;
 
@@ -52,8 +41,10 @@ export function Drawer({
         aria-hidden="true"
       />
       <div
+        ref={panelRef}
+        tabIndex={-1}
         className={cx(
-          "absolute top-0 h-full w-full max-w-sm bg-surface shadow-modal sm:max-w-md",
+          "absolute top-0 h-full w-full max-w-sm bg-surface shadow-modal outline-none sm:max-w-md",
           position[side],
         )}
         aria-label={typeof title === "string" ? title : undefined}
@@ -64,7 +55,7 @@ export function Drawer({
             type="button"
             onClick={onClose}
             aria-label="Fermer"
-            className="rounded-full p-1.5 text-ink-soft transition-all duration-300 hover:rotate-90 hover:bg-flamme-50 hover:text-flamme-600"
+            className="grid size-10 shrink-0 place-items-center rounded-full text-ink-soft transition-all duration-300 hover:rotate-90 hover:bg-flamme-50 hover:text-flamme-600 pointer-coarse:size-11"
           >
             <X className="size-5" />
           </button>

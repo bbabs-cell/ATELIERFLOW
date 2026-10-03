@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  useEffect,
   useId,
   useRef,
   type ReactNode,
@@ -9,6 +8,7 @@ import {
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cx } from "@/lib/cx";
+import { useModal } from "../hooks/useModal";
 
 export type DialogSize = "sm" | "md" | "lg";
 
@@ -17,6 +17,8 @@ const sizes: Record<DialogSize, string> = {
   md: "max-w-lg",
   lg: "max-w-2xl",
 };
+
+// Le corps défile seul : en-tête et pied restent visibles, même en paysage sur téléphone.
 
 export interface DialogProps {
   open: boolean;
@@ -37,29 +39,7 @@ export function Dialog({
 }: DialogProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
-  // onClose est souvent une fonction recréée à chaque rendu (`() => setOpen(false)`) :
-  // on la garde dans une ref pour que l'effet ne se relance qu'à l'ouverture.
-  // Sinon le focus revenait sur la fenêtre à chaque frappe et la saisie s'arrêtait.
-  const onCloseRef = useRef(onClose);
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCloseRef.current();
-    };
-    document.addEventListener("keydown", onKey);
-    const { body } = document;
-    const prev = body.style.overflow;
-    body.style.overflow = "hidden";
-    panelRef.current?.focus();
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      body.style.overflow = prev;
-    };
-  }, [open]);
+  useModal(open, panelRef, onClose);
 
   if (!open) return null;
 
@@ -79,26 +59,26 @@ export function Dialog({
         ref={panelRef}
         tabIndex={-1}
         className={cx(
-          "relative w-full animate-scale-in overflow-hidden rounded-t-xl bg-surface shadow-modal before:absolute before:inset-x-0 before:top-0 before:h-1.5 before:bg-flamme-gradient sm:rounded-xl",
+          "relative flex max-h-[92dvh] w-full animate-scale-in flex-col overflow-hidden rounded-t-xl bg-surface shadow-modal outline-none before:absolute before:inset-x-0 before:top-0 before:h-1.5 before:bg-flamme-gradient sm:max-h-[calc(100dvh-3rem)] sm:rounded-xl",
           sizes[size],
         )}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-anthracite-100 p-4 sm:p-5">
-          <h2 id={titleId} className="font-display text-2xl text-ink">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-anthracite-100 p-4 sm:p-5 [@media(max-height:520px)]:py-2.5">
+          <h2 id={titleId} className="min-w-0 font-display text-2xl text-ink [@media(max-height:520px)]:text-xl">
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Fermer"
-            className="rounded-full p-1.5 text-ink-soft transition-all duration-300 hover:rotate-90 hover:bg-flamme-50 hover:text-flamme-600"
+            className="grid size-10 shrink-0 place-items-center rounded-full text-ink-soft transition-all duration-300 hover:rotate-90 hover:bg-flamme-50 hover:text-flamme-600 pointer-coarse:size-11"
           >
             <X className="size-5" />
           </button>
         </div>
-        <div className="max-h-[70vh] overflow-y-auto p-4 sm:p-5">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5">{children}</div>
         {footer ? (
-          <div className="flex flex-col-reverse gap-2 border-t border-anthracite-100 p-4 sm:flex-row sm:justify-end sm:p-5">
+          <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-anthracite-100 p-4 sm:flex-row sm:flex-wrap sm:justify-end sm:p-5 [@media(max-height:520px)]:py-2.5">
             {footer}
           </div>
         ) : null}

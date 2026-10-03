@@ -53,7 +53,7 @@ export function AbonnementView(): React.ReactElement {
 
   if (forbidden) {
     return (
-      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:py-10">
+      <div className="@container mx-auto w-full max-w-5xl px-4 py-6 sm:py-10">
         <StateView
           variant="empty"
           title="Abonnement non accessible"
@@ -64,7 +64,7 @@ export function AbonnementView(): React.ReactElement {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:py-10">
+    <div className="@container mx-auto w-full max-w-5xl px-4 py-6 sm:py-10">
       <header>
         <h1 className="page-title text-4xl text-ink sm:text-5xl">Abonnement · Plans</h1>
         <p className="mt-1 text-sm text-ink-soft">
@@ -123,7 +123,7 @@ export function AbonnementView(): React.ReactElement {
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="mt-6 grid grid-cols-1 gap-3 @lg:grid-cols-2 @4xl:grid-cols-4">
                 {RESOURCE_ORDER.map((kind) => {
                   const resource = overview.resources.find((r) => r.kind === kind);
                   if (!resource) return null;
@@ -167,7 +167,7 @@ export function AbonnementView(): React.ReactElement {
 
             <section className="mt-6 rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up p-4 sm:p-6">
               <h2 className="font-display text-xl text-ink">Fonctionnalités incluses</h2>
-              <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              <ul className="mt-4 grid grid-cols-1 gap-2 @lg:grid-cols-2 @3xl:grid-cols-3">
                 {overview.features.map((feature) => (
                   <li
                     key={feature.feature}
@@ -192,7 +192,7 @@ export function AbonnementView(): React.ReactElement {
 
             <section className="mt-6">
               <h2 className="font-display text-xl text-ink">Comparer les plans</h2>
-              <div className="mt-4 grid gap-3 md:grid-cols-3">
+              <div className="mt-4 grid grid-cols-1 gap-3 @2xl:grid-cols-3">
                 {PLAN_OPTIONS.map((code) => {
                   const plan = getPlan(code);
                   const meta = PLAN_META[code];

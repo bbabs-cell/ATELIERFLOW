@@ -45,6 +45,13 @@ src/features/orders/ReceiptViewer.tsx        archivage automatique du PDF du re�
 
 ## 4. Mise en service
 
+État au 2026-10-03 : **en service**. Bucket privé `atelier-fichiers` (WEUR, r2.dev
+désactivé, aucun domaine public), variables R2 dans Vercel (Production), `0020` appliquée,
+aller-retour réel vérifié (envoi, lien signé, refus sans signature, suppression) et
+première photo de commande présente dans le bucket.
+
+Procédure (pour un nouvel environnement) :
+
 1. Cloudflare → R2 : créer le bucket privé (ex. `atelier-fichiers`).
 2. R2 → « Manage API tokens » : jeton **Object Read & Write** limité à ce bucket.
 3. Vercel → variables d'environnement (Production) : `R2_ACCOUNT_ID`,

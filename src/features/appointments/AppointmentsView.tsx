@@ -202,7 +202,7 @@ export function AppointmentsView(): React.ReactElement {
   });
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:py-10">
+    <div className="@container mx-auto w-full max-w-6xl px-4 py-6 sm:py-10">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="page-title text-4xl text-ink sm:text-5xl">Rendez-vous</h1>
@@ -226,7 +226,7 @@ export function AppointmentsView(): React.ReactElement {
             <button
               type="button"
               onClick={() => setComposer({ item: flash.item, kind: flash.kind })}
-              className="inline-flex h-9 items-center gap-1.5 rounded-full bg-menthe-600 px-4 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5"
+              className="inline-flex h-9 pointer-coarse:h-11 items-center gap-1.5 rounded-full bg-menthe-600 px-4 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5"
             >
               <MessageCircle className="size-4" aria-hidden="true" />
               Message WhatsApp
@@ -247,7 +247,7 @@ export function AppointmentsView(): React.ReactElement {
           <StateView variant="loading" title="Chargement des rendez-vous…" />
         ) : (
           <>
-            <section aria-labelledby="reminders-title" className="gradient-border relative overflow-hidden rounded-2xl border border-outline bg-surface p-4 sm:p-5">
+            <section aria-labelledby="reminders-title" className="gradient-border @container relative overflow-hidden rounded-2xl border border-outline bg-surface p-4 sm:p-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h2 id="reminders-title" className="flex items-center gap-2 font-display text-xl text-ink">
                   <span className={cx("grid size-9 place-items-center rounded-full text-white shadow-soft", due.length > 0 ? "bg-flamme-gradient animate-pulse-ring" : "bg-menthe-500")}>
@@ -263,7 +263,7 @@ export function AppointmentsView(): React.ReactElement {
               {due.length === 0 ? (
                 <p className="mt-3 text-sm text-ink-soft">Tout est à jour : aucun client à prévenir pour le moment.</p>
               ) : (
-                <ul className="stagger mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <ul className="stagger mt-4 grid grid-cols-1 gap-3 @xl:grid-cols-2 @4xl:grid-cols-3">
                   {due.map((item) => {
                     const typeMeta = APPOINTMENT_TYPE_META[item.appointment.type];
                     return (
@@ -280,7 +280,7 @@ export function AppointmentsView(): React.ReactElement {
                         <button
                           type="button"
                           onClick={() => setComposer({ item, kind: "REMINDER" })}
-                          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-menthe-600 px-4 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-lift"
+                          className="inline-flex h-9 pointer-coarse:h-11 items-center justify-center gap-1.5 rounded-full bg-menthe-600 px-4 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-lift"
                         >
                           <MessageCircle className="size-4" aria-hidden="true" />
                           Préparer le rappel
@@ -292,7 +292,7 @@ export function AppointmentsView(): React.ReactElement {
               )}
             </section>
 
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,340px)_1fr]">
+            <div className="grid grid-cols-1 gap-6 @4xl:grid-cols-[minmax(0,340px)_1fr]">
               <aside className="rounded-xl border border-outline bg-surface p-4">
                 <Calendar events={events} onSelectDate={(day) => setSelectedDay(day)} />
               </aside>
@@ -353,7 +353,7 @@ export function AppointmentsView(): React.ReactElement {
                                 type="button"
                                 onClick={() => setComposer({ item, kind: defaultMessageKind(appointment) })}
                                 aria-label={`Message WhatsApp à ${item.customer?.full_name ?? "client"}`}
-                                className="inline-flex h-9 items-center gap-1.5 rounded-full bg-menthe-600 px-3 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5"
+                                className="inline-flex h-9 pointer-coarse:h-11 items-center gap-1.5 rounded-full bg-menthe-600 px-3 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5"
                               >
                                 <MessageCircle className="size-4" aria-hidden="true" />
                                 WhatsApp

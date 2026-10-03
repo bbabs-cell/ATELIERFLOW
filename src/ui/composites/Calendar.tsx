@@ -77,7 +77,7 @@ export function Calendar({
             onClick={() =>
               setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))
             }
-            className="grid size-9 place-items-center rounded-full bg-chocolat-900 text-ivoire-50 transition-all duration-300 hover:scale-110 hover:bg-flamme-500 hover:shadow-glow"
+            className="grid size-9 place-items-center rounded-full bg-chocolat-900 text-ivoire-50 transition-all duration-300 hover:scale-110 hover:bg-flamme-500 hover:shadow-glow pointer-coarse:size-11"
           >
             <ChevronLeft className="size-5" />
           </button>
@@ -87,14 +87,14 @@ export function Calendar({
             onClick={() =>
               setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))
             }
-            className="grid size-9 place-items-center rounded-full bg-chocolat-900 text-ivoire-50 transition-all duration-300 hover:scale-110 hover:bg-flamme-500 hover:shadow-glow"
+            className="grid size-9 place-items-center rounded-full bg-chocolat-900 text-ivoire-50 transition-all duration-300 hover:scale-110 hover:bg-flamme-500 hover:shadow-glow pointer-coarse:size-11"
           >
             <ChevronRight className="size-5" />
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 text-center">
+      <div className="grid grid-cols-7 gap-0.5 text-center xs:gap-1">
         {daysFr.map((d) => (
           <span key={d} className="font-mono text-[0.65rem] uppercase tracking-wider text-flamme-600">
             {d}
@@ -110,7 +110,7 @@ export function Calendar({
               type="button"
               onClick={() => onSelectDate?.(key)}
               aria-label={`${d.getDate()} ${monthLabel}${dayEvents.length ? `, ${dayEvents.length} évènement(s)` : ""}`}
-              className="group relative flex aspect-square items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:bg-flamme-50"
+              className="group relative flex aspect-square min-h-10 items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:bg-flamme-50"
             >
               <span
                 className={cx(
