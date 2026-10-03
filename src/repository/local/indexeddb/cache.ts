@@ -12,18 +12,14 @@ function entityKey(entity: string, id: string): string {
   return `${entity}::${id}`;
 }
 
-function isEntityRecord(
-  record: unknown,
-  entity: string,
-): record is Record<string, unknown> {
-  return (
-    typeof record === "object" &&
-    record !== null &&
-    "entity_id" in record &&
-    String((record as Record<string, unknown>).entity_id).startsWith(
-      `${entity}::`,
-    )
-  );
+/**
+ * Clés « entité::… » d'une seule entité. Les clés sont triées : on ne lit
+ * que cette tranche au lieu de tout le magasin (clients, commandes,
+ * historiques, paiements…), ce qui évite de désérialiser des milliers
+ * d'enregistrements à chaque écran.
+ */
+function entityRange(entity: string): IDBKeyRange {
+  return IDBKeyRange.bound(`${entity}::`, `${entity}::\uffff`);
 }
 
 function stripKey(record: Record<string, unknown>): unknown {
@@ -77,10 +73,8 @@ export class IndexedDbLocalCache implements LocalCachePort {
 
   async list(entity: string): Promise<unknown[]> {
     const db = await this.dbPromise;
-    const all = await idbGetAll<unknown>(db, RECORDS_STORE);
-    return all
-      .filter((record) => isEntityRecord(record, entity))
-      .map((record) => stripKey(record as Record<string, unknown>));
+    const records = await idbGetAll<Record<string, unknown>>(db, RECORDS_STORE, entityRange(entity));
+    return records.map(stripKey);
   }
 }
 

@@ -178,9 +178,13 @@ export function createOrderService(deps: OrderServiceDeps): OrderService {
 
   return {
     async listOrders(input = {}) {
-      const [orders, customers] = await Promise.all([
+      // Une lecture par type de données, puis regroupement en mémoire :
+      // jamais une lecture par commande (coût quadratique sur un gros atelier).
+      const [orders, customers, itemsByOrder, historyByOrder] = await Promise.all([
         deps.orders.listOrders({}),
         deps.customers.list("", true),
+        deps.items.groupByOrder(),
+        deps.history.groupByOrder(),
       ]);
       customerNames.clear();
       for (const customer of customers) customerNames.set(customer.id, customer.full_name);
@@ -194,13 +198,11 @@ export function createOrderService(deps: OrderServiceDeps): OrderService {
           const hay = `${order.reference} ${customerNames.get(order.customer_id) ?? ""}`.toLowerCase();
           if (!hay.includes(q)) continue;
         }
-        const items = await deps.items.listByOrder(order.id);
-        const history = await deps.history.listByOrder(order.id);
         rows.push({
           order,
           customerName: customerNames.get(order.customer_id) ?? null,
-          items,
-          history,
+          items: itemsByOrder.get(order.id) ?? [],
+          history: historyByOrder.get(order.id) ?? [],
         });
       }
       return rows;
