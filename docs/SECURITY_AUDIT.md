@@ -16,9 +16,8 @@ l'atelier réel ne voit aucune ligne en production (8 tables, 0 ligne).
 
 Six défauts ont été trouvés : un d'**élevé**, deux **moyens** et trois
 **bas**. Tous sont corrigés ici. La faille élevée (S1) peut être
-exploitée en production tant que la migration `0021` n'y est pas
-appliquée : il faut l'appliquer **avant d'ouvrir l'inscription à d'autres
-ateliers**.
+exploitée en production jusqu'à l'application de `0021`, faite le
+2026-10-03.
 
 ## Constats et correctifs
 
@@ -62,7 +61,7 @@ Résultat : 0 violation CSP, 0 opération refusée.
 
 ## Actions à faire de ton côté
 
-1. **Appliquer `0021` en production** (après accord explicite).
+1. ~~Appliquer `0021` en production~~ : fait le 2026-10-03. Vérifié : 0 droit d'écriture direct pour `authenticated` (hors réglages de l'atelier), `append_audit` fermé, déclencheur de débit actif, alerte `search_path` levée.
 2. Supabase → Authentication → *Leaked password protection* : à activer
    (vérification HaveIBeenPwned ; disponible selon le plan Supabase).
 3. Supprimer le jeton `CLOUDFLARE_API_TOKEN` s'il existe encore : il donne
