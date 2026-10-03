@@ -40,6 +40,10 @@ begin
   return v;
 end $$;
 
+drop table if exists pg_temp.rls_before;
+create temp table rls_before as
+  select tablename, policyname, qual, with_check from pg_policies where schemaname = 'public';
+
 do $$
 declare
   p record;
@@ -67,6 +71,26 @@ begin
     execute v_sql;
   end loop;
 end $$;
+
+-- Garde-fou : enveloppe retirée, chaque règle doit être identique à
+-- l'original ; sinon toute la migration est annulée.
+do $$
+declare
+  v_diff int;
+  v_unwrap constant text := '\( SELECT ((?:public\.)?(?:tenant_claim|is_saas_admin)\(\)|auth\.uid\(\)|(?:public\.)?has_permission\(''[a-z_.]+''::text\)) AS \w+\)';
+begin
+  select count(*) into v_diff
+  from rls_before b
+  full join pg_policies a
+    on a.schemaname = 'public' and a.tablename = b.tablename and a.policyname = b.policyname
+  where a.policyname is null or b.policyname is null
+     or regexp_replace(coalesce(a.qual, ''), v_unwrap, '\1', 'g') is distinct from regexp_replace(coalesce(b.qual, ''), v_unwrap, '\1', 'g')
+     or regexp_replace(coalesce(a.with_check, ''), v_unwrap, '\1', 'g') is distinct from regexp_replace(coalesce(b.with_check, ''), v_unwrap, '\1', 'g');
+  if v_diff > 0 then
+    raise exception 'RLS_REWRITE_MISMATCH: % règle(s) différente(s)', v_diff;
+  end if;
+end $$;
+drop table rls_before;
 
 -- ---------------------------------------------------------------------
 -- 2. Synchronisation descendante : (atelier, curseur, id)

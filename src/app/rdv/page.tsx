@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AppointmentsView } from "@/features/appointments/AppointmentsView";
 
 export const metadata: Metadata = {
-  title: "Rendez-vous — Atelier",
+  title: "Rendez-vous",
   description: "Planification des rendez-vous et rappels WhatsApp de l'atelier.",
 };
 

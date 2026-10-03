@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { OnboardingView } from "@/features/auth/OnboardingView";
 
 export const metadata: Metadata = {
-  title: "Votre atelier — Atelier",
+  title: "Votre atelier",
   description: "Création de votre atelier.",
 };
 
