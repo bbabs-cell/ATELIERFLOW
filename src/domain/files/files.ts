@@ -136,6 +136,7 @@ const MESSAGES: Record<string, string> = {
   "VALIDATION:size": "Fichier trop lourd.",
   "VALIDATION:body": "Envoi invalide.",
   TOO_MANY_FILES: `Maximum ${MAX_FILES_PER_ENTITY} photos par fiche.`,
+  "RATE_LIMITED:files": "Trop d'envois en peu de temps. Réessayez dans une heure.",
   ALREADY_ARCHIVED: "Ce reçu est déjà archivé.",
   RECEIPT_IMMUTABLE: "Un reçu archivé ne peut pas être supprimé.",
   "FORBIDDEN:files.write": "Votre rôle ne permet pas d'ajouter ou de supprimer des fichiers.",

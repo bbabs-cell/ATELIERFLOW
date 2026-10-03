@@ -94,3 +94,13 @@ Prérequis Supabase : hook activé dans Auth → Hooks → « Customize Access T
 - `accept_invitation(jeton)` : compte connecté dont l'e-mail est exactement celui de l'invitation ; usage unique, refus si expirée / révoquée / déjà membre / membre désactivé (la réactivation reste une décision du gestionnaire) ; crée la membership ACTIVE puis le client rafraîchit sa session pour que le hook pose `tenant_id`.
 - `list_team`, `set_member_role`, `set_member_status` : `team.read` / `team.manage` ; seul un OWNER nomme ou modifie un OWNER ; le trigger `tenant_memberships_rules` interdit toujours de changer son propre rôle, de se désactiver et de retirer le dernier OWNER.
 - Scénarios : `supabase/validations/invitations_local.sql` (20/20 PASS sur base locale ; ne pas exécuter en production, il crée des comptes).
+
+## 10. Écritures uniquement par fonctions serveur (étape 23, migration `0021_security_hardening.sql`)
+
+- `authenticated` n'a plus de droit d'écriture direct (REST) sur les tables métier ni sur `tenant_memberships` / `profiles` : toute écriture passe par une fonction SECURITY DEFINER qui vérifie l'atelier du JWT, la permission et les règles métier (`sync_push`, `register_file`, `delete_file`, invitations, `set_member_*`, `create_owner_tenant`). Seule exception : nom, devise et réglages de l'atelier (`tenants`, colonnes limitées, `tenant.settings`).
+- Le navigateur garde la lecture directe sous RLS.
+- `append_audit` n'est plus appelable par l'API.
+- Nouvelles tables : lecture seule par défaut. Toute nouvelle migration accorde explicitement ce dont elle a besoin.
+- Fichiers : 200 envois par heure et par atelier (`RATE_LIMITED:files`).
+- En-têtes HTTP : `src/infrastructure/http/securityHeaders.ts` (CSP limitée au site, à Supabase et à R2 ; pas de cadre ; `nosniff`).
+- Banc d'attaques : `supabase/validations/security_attacks_local.sql` (31 scénarios, base locale uniquement, transaction annulée). Détail et constats : `docs/SECURITY_AUDIT.md`.
