@@ -30,6 +30,7 @@ import {
   saveLastIdentity,
 } from "@/infrastructure/auth/lastIdentity";
 import { useSyncRunner } from "@/features/sync/useSyncRunner";
+import { SyncStatusChip } from "@/features/sync/SyncStatusChip";
 import { PlanBanner } from "@/features/subscriptions/PlanBanner";
 import { usePlatformAdmin } from "@/features/platform/usePlatformAdmin";
 
@@ -245,6 +246,7 @@ function AccountCard({ session }: { session: ActiveSession }) {
         <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-champagne-300 max-lg:text-flamme-600">
           {ROLE_LABELS[session.role ?? ""] ?? "Membre"}
         </span>
+        {session.mode === "SUPABASE" ? <SyncStatusChip className="mt-1.5" /> : null}
       </span>
       <button
         type="button"
