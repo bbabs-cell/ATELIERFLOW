@@ -7,7 +7,7 @@ import { cx } from "@/lib/cx";
  * Aperçu HTML du reçu — même modèle et même mise en page que le PDF,
  * utilisé à l'écran et à l'impression.
  */
-export function ReceiptSheet({ doc, className }: { doc: ReceiptDocument; className?: string }) {
+export function ReceiptSheet({ doc, className, logoUrl }: { doc: ReceiptDocument; className?: string; logoUrl?: string | null }) {
   const credit = doc.kind === "CREDIT";
   const tone = doc.balance.tone;
   return (
@@ -20,7 +20,13 @@ export function ReceiptSheet({ doc, className }: { doc: ReceiptDocument; classNa
     >
       <header className="relative bg-chocolat-950 px-5 pb-5 pt-4 text-white">
         <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
+          {logoUrl ? (
+            <span className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-white p-1">
+              {/* eslint-disable-next-line @next/next/no-img-element -- lien signé R2, hors optimiseur d'images */}
+              <img src={logoUrl} alt="" className="size-full object-contain" />
+            </span>
+          ) : null}
+          <div className="min-w-0 flex-1">
             <p className="font-display text-lg font-bold leading-tight break-words">{doc.atelier.name}</p>
             {doc.atelier.phone ? <p className="mt-1 text-xs text-menthe-300">{doc.atelier.phone}</p> : null}
             {doc.atelier.address ? <p className="text-xs text-menthe-300">{doc.atelier.address}</p> : null}

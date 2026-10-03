@@ -1,4 +1,4 @@
-import { parseFcfa } from "@/domain/money";
+import { currencySymbol, parseFcfa } from "@/domain/money";
 import { parseCentiUnits } from "@/domain/inventory/units";
 
 export const FABRIC_STATUSES = ["ACTIVE", "ARCHIVED"] as const;
@@ -60,7 +60,7 @@ export function validateFabricDraft(
   if (input.unitPriceInput !== undefined && input.unitPriceInput.trim() !== "") {
     const parsed = parseFcfa(input.unitPriceInput);
     if (parsed === null) {
-      errors.unitPrice = "Prix invalide : nombre entier de F CFA (ex : 2 500).";
+      errors.unitPrice = `Prix invalide : nombre entier de ${currencySymbol()} (ex : 2 500).`;
     } else {
       unitPrice = parsed;
     }

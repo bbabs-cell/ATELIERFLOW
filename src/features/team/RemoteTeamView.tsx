@@ -19,6 +19,7 @@ import {
   type TeamMember,
   type TeamSnapshot,
 } from "@/domain/team/invitations";
+import { peekActiveSession } from "@/application/auth/session";
 import { getSupabaseBrowserClient } from "@/infrastructure/supabase/browserClient";
 import { createTeamRemote, type TeamRemote } from "@/infrastructure/team/teamRemote";
 import { MEMBERSHIP_STATUS_META, ROLE_META, ROLE_OPTIONS } from "./constants";
@@ -51,6 +52,8 @@ export function RemoteTeamView(): React.ReactElement {
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<TeamMember | null>(null);
+  const isOwner = peekActiveSession()?.role === "OWNER";
 
   const [inviteOpen, setInviteOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -191,6 +194,7 @@ export function RemoteTeamView(): React.ReactElement {
                     busy={busyId === member.id}
                     onRole={(next) => void act(member.id, () => remote!.setMemberRole(member.id, next))}
                     onStatus={(next) => void act(member.id, () => remote!.setMemberStatus(member.id, next))}
+                    onRemove={isOwner && member.role !== "OWNER" ? () => setRemoving(member) : undefined}
                   />
                 ))}
               </ul>
@@ -331,6 +335,36 @@ export function RemoteTeamView(): React.ReactElement {
           </form>
         )}
       </Dialog>
+      <Dialog
+        open={removing !== null}
+        onClose={() => setRemoving(null)}
+        title="Retirer de l'atelier"
+        size="sm"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setRemoving(null)}>
+              Annuler
+            </Button>
+            <Button
+              variant="danger"
+              loading={removing !== null && busyId === removing.id}
+              onClick={() => {
+                const target = removing;
+                if (!target) return;
+                void act(target.id, () => remote!.removeMember(target.id)).then(() => setRemoving(null));
+              }}
+            >
+              Retirer
+            </Button>
+          </>
+        }
+      >
+        <p className="text-sm text-ink-soft">
+          <strong className="text-ink">{removing?.fullName}</strong> n&apos;aura plus accès à l&apos;atelier. Les
+          commandes, paiements et l&apos;historique déjà enregistrés restent intacts. Pour une absence temporaire,
+          préférez « Désactiver ». Vous pourrez l&apos;inviter de nouveau plus tard.
+        </p>
+      </Dialog>
       {plan.dialog}
     </div>
   );
@@ -343,6 +377,7 @@ function MemberCard({
   busy,
   onRole,
   onStatus,
+  onRemove,
 }: {
   member: TeamMember;
   tone: string;
@@ -350,6 +385,8 @@ function MemberCard({
   busy: boolean;
   onRole: (role: TenantRoleCode) => void;
   onStatus: (status: "ACTIVE" | "DEACTIVATED") => void;
+  /** Présent seulement pour le propriétaire, sur un membre retirable. */
+  onRemove?: () => void;
 }) {
   const status = MEMBERSHIP_STATUS_META[member.status];
   const editable = canManage && !member.isSelf;
@@ -409,6 +446,12 @@ function MemberCard({
               Désactiver
             </Button>
           )}
+          {onRemove ? (
+            <Button variant="ghost" size="sm" disabled={busy} onClick={onRemove} className="text-danger">
+              <Trash2 className="size-4" aria-hidden="true" />
+              Retirer
+            </Button>
+          ) : null}
         </div>
       ) : null}
     </li>

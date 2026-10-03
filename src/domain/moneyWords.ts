@@ -1,3 +1,5 @@
+import { currencyInfo } from "@/domain/geo/countries";
+import { getActiveCurrency } from "@/domain/money";
 /**
  * Montant en toutes lettres (français, orthographe traditionnelle avec
  * traits d'union) : « Arrêté le présent reçu à la somme de … francs CFA ».
@@ -72,7 +74,8 @@ export function numberToFrenchWords(value: number): string {
 }
 
 /** « cinquante mille francs CFA » ; « un franc CFA ». */
-export function fcfaInWords(amount: number): string {
+export function fcfaInWords(amount: number, currency: string = getActiveCurrency()): string {
   const words = numberToFrenchWords(amount);
-  return `${words} ${amount > 1 ? "francs" : "franc"} CFA`;
+  const info = currencyInfo(currency);
+  return `${words} ${amount > 1 ? info.plural : info.singular}`;
 }

@@ -7,6 +7,7 @@ import type { Customer } from "@/domain/clients/customer";
 import { parseFcfa, lineTotal, sumAmounts, formatFcfa } from "@/domain/money";
 import { ORDER_PRIORITIES, type OrderItemDraft, type OrderPriority } from "@/domain/orders/order";
 import { GARMENT_TYPES, ORDER_PRIORITY_LABELS } from "./constants";
+import { currencySymbol } from "@/domain/money";
 
 export interface OrderFormValues {
   customerId: string;
@@ -235,7 +236,7 @@ export function OrderForm({
                     onChange={(e) => updateRow(row.key, { quantity: Number(e.target.value) })}
                   />
                 </Field>
-                <Field label="Prix unitaire (F CFA)" htmlFor={`item-${row.key}-price`}>
+                <Field label={`Prix unitaire (${currencySymbol()})`} htmlFor={`item-${row.key}-price`}>
                   <Input
                     id={`item-${row.key}-price`}
                     inputMode="numeric"

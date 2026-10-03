@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Shirt } from "lucide-react";
 import { Button, Field, Input } from "@/ui";
+import { currencySymbol } from "@/domain/money";
 
 export interface FabricFormValues {
   name: string;
@@ -79,7 +80,7 @@ export function FabricForm({
 
         <div className="grid gap-4 min-[480px]:grid-cols-2">
           <Field
-            label="Prix au mètre (F CFA)"
+            label={`Prix au mètre (${currencySymbol()})`}
             htmlFor="fabric-price"
             error={errors?.unitPrice}
             hint="Optionnel"

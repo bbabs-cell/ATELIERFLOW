@@ -34,6 +34,9 @@ import { createPlanPaymentsClient, PlanPaymentError } from "@/infrastructure/sub
 import { openProof } from "./openProof";
 import { PlanPaymentDialog } from "./PlanPaymentDialog";
 import { setEntitlements, useEntitlements } from "./useEntitlements";
+import { approxFromXof } from "@/domain/geo/exchange";
+import { getActiveCurrency } from "@/domain/money";
+import { useRates } from "@/features/locale/useRates";
 
 const STATUS_TONES: Record<EntitlementStatus, BadgeTone> = {
   TRIAL: "info",
@@ -118,6 +121,7 @@ export function AbonnementView(): React.ReactElement {
   const [paying, setPaying] = useState<PlanInfo | null>(null);
   const { payments, reload: reloadPayments } = useMyPlanPayments(canManage);
   const pendingPayment = payments.find((p) => p.status === "PENDING") ?? null;
+  const rates = useRates();
 
   if (session?.mode === "DEMO") {
     return (
@@ -323,6 +327,9 @@ export function AbonnementView(): React.ReactElement {
                   {formatPrice(plan.priceMonthly, plan.currency)}
                   {plan.priceMonthly > 0 ? <span className="text-sm font-normal text-ink-faint"> / mois</span> : null}
                 </p>
+                {approxFromXof(plan.priceMonthly, getActiveCurrency(), rates) ? (
+                  <p className="text-xs text-ink-faint">{approxFromXof(plan.priceMonthly, getActiveCurrency(), rates)} / mois (indicatif)</p>
+                ) : null}
                 {plan.trialDays > 0 ? (
                   <p className="mt-0.5 text-xs text-menthe-600">Essai gratuit de {plan.trialDays} jours à la création de l&apos;atelier</p>
                 ) : null}

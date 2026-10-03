@@ -29,7 +29,7 @@ done
 
 # « critical » est autonome ; les suivants partagent l'atelier créé par
 # invitations (rendez-vous, fichiers, attaques et abonnements s'y appuient).
-SUITES=(critical performance invitations appointments files security_attacks subscriptions plan_payments branding)
+SUITES=(critical performance invitations appointments files security_attacks subscriptions plan_payments branding team_locale)
 failed=0
 echo "▸ Scénarios"
 for s in "${SUITES[@]}"; do

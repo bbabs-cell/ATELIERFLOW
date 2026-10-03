@@ -154,7 +154,12 @@ class Canvas {
 
 const MAX_LINES = 7;
 
-export async function renderReceiptPdf(doc: ReceiptDocument): Promise<Uint8Array> {
+export interface ReceiptPdfOptions {
+  /** Logo de l'atelier (JPEG ou PNG) ; ignoré s'il ne peut pas être lu. */
+  logo?: { bytes: Uint8Array; mime: string } | null;
+}
+
+export async function renderReceiptPdf(doc: ReceiptDocument, options: ReceiptPdfOptions = {}): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
   pdf.setTitle(toWinAnsi(`${doc.title} ${doc.reference}`));
   pdf.setAuthor(toWinAnsi(doc.atelier.name));
@@ -183,15 +188,37 @@ export async function renderReceiptPdf(doc: ReceiptDocument): Promise<Uint8Array
   const stripeW = W / STRIPE.length;
   STRIPE.forEach((color, i) => c.rect(i * stripeW, 104, stripeW + 0.5, 4, hex(color)));
 
-  const nameLines = c.wrap(doc.atelier.name, 15, fonts.bold, inner * 0.56, 2);
+  // Logo de l'atelier : pastille blanche à gauche, le nom se décale.
+  let textLeft = MARGIN;
+  let textWidth = inner * 0.56;
+  if (options.logo) {
+    try {
+      const image =
+        options.logo.mime === "image/png" ? await pdf.embedPng(options.logo.bytes) : options.logo.mime === "image/jpeg" ? await pdf.embedJpg(options.logo.bytes) : null;
+      if (image) {
+        const box = 56;
+        const [, pageH] = A5;
+        c.roundRect(MARGIN, 20, box, box, 10, C.white);
+        const scale = Math.min((box - 8) / image.width, (box - 8) / image.height);
+        const w = image.width * scale;
+        const h = image.height * scale;
+        page.drawImage(image, { x: MARGIN + (box - w) / 2, y: pageH - 20 - box + (box - h) / 2, width: w, height: h });
+        textLeft = MARGIN + box + 12;
+        textWidth -= box + 12;
+      }
+    } catch {
+      // image illisible : le reçu reste valable sans logo
+    }
+  }
+  const nameLines = c.wrap(doc.atelier.name, 15, fonts.bold, textWidth, 2);
   let top = 24;
   for (const l of nameLines) {
-    c.text(l, MARGIN, top, 15, fonts.bold, C.white);
+    c.text(l, textLeft, top, 15, fonts.bold, C.white);
     top += 18;
   }
   for (const info of [doc.atelier.phone, doc.atelier.address]) {
     if (!info) continue;
-    c.text(c.fit(info, 8.5, fonts.regular, inner * 0.56), MARGIN, top + 2, 8.5, fonts.regular, C.gold);
+    c.text(c.fit(info, 8.5, fonts.regular, textWidth), textLeft, top + 2, 8.5, fonts.regular, C.gold);
     top += 12;
   }
 
@@ -309,7 +336,7 @@ export async function renderReceiptPdf(doc: ReceiptDocument): Promise<Uint8Array
   const ink = tone === "settled" ? C.menthe : tone === "surplus" ? C.goldDeep : C.flammeDeep;
   c.roundRect(sumX - 10, top - 4, right - sumX + 10, 26, 6, fill);
   c.text(doc.balance.label, sumX, top + 4, 9.5, fonts.bold, ink);
-  c.text(tone === "settled" ? "0 F CFA" : formatFcfa(doc.balance.amount), right - 10, top + 3, 11, fonts.bold, ink, { align: "right" });
+  c.text(tone === "settled" ? formatFcfa(0) : formatFcfa(doc.balance.amount), right - 10, top + 3, 11, fonts.bold, ink, { align: "right" });
   top += 36;
 
   if (doc.payment.note) {

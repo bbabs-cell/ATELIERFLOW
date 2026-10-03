@@ -7,7 +7,7 @@
  * valeurs et les interpréter pour l'interface (prévenir avant de créer).
  * Le serveur reste l'arbitre : il refuse toute création au-delà du plan.
  */
-import { formatFcfa, groupThousands } from "@/domain/money";
+import { formatMoney, groupThousands } from "@/domain/money";
 
 export type EntitlementStatus = "TRIAL" | "ACTIVE" | "GRACE" | "EXPIRED" | "NONE";
 export type LimitKind = "users" | "customers" | "orders" | "storage";
@@ -325,7 +325,8 @@ export function isPlanError(code: string | null | undefined): boolean {
 /** « 5 000 F CFA » — montants entiers, jamais de flottant. */
 export function formatPrice(amount: number, currency = "XOF"): string {
   if (amount === 0) return "Gratuit";
-  return currency === "XOF" ? formatFcfa(amount) : `${groupThousands(amount)} ${currency}`;
+  // Toujours dans la monnaie du plan (F CFA), jamais dans celle de l'atelier.
+  return formatMoney(amount, currency);
 }
 
 export function formatLimit(value: number | null, unit = ""): string {

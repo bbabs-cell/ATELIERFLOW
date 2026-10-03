@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import { MAX_PROOF_BYTES } from "@/domain/subscriptions/planPayments";
 import { FileServiceError } from "@/infrastructure/files/fileService";
+import { sendPaymentAlert } from "@/infrastructure/notify/paymentAlert";
 import { planPaymentServiceFor } from "@/infrastructure/subscriptions/planPaymentsServer";
 
 /**
@@ -30,6 +31,21 @@ export async function POST(request: NextRequest) {
         reference: form.get("reference"),
       },
       new Uint8Array(await file.arrayBuffer()),
+    );
+    // Alerte e-mail à la plateforme, après la réponse (n'allonge pas l'envoi).
+    const origin = request.nextUrl.origin;
+    after(() =>
+      sendPaymentAlert({
+        amount: Number(payment.amount ?? 0),
+        currency: String(payment.currency ?? "XOF"),
+        months: Number(payment.months ?? 0),
+        planCode: String(form.get("planCode") ?? ""),
+        methodLabel: String(payment.method_label ?? ""),
+        countryName: String(payment.country_name ?? ""),
+        senderName: String(payment.sender_name ?? ""),
+        reference: typeof payment.transfer_reference === "string" ? payment.transfer_reference : null,
+        origin,
+      }),
     );
     return NextResponse.json({ payment }, { status: 201 });
   } catch (error) {

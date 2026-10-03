@@ -19,6 +19,9 @@ import {
 import { compressPhoto } from "@/infrastructure/files/filesClient";
 import { getSupabaseBrowserClient } from "@/infrastructure/supabase/browserClient";
 import { createPlanPaymentsClient, PlanPaymentError } from "@/infrastructure/subscriptions/planPaymentsClient";
+import { countryByCode } from "@/domain/geo/countries";
+import { approxFromXof } from "@/domain/geo/exchange";
+import { useRates } from "@/features/locale/useRates";
 
 export interface PlanPaymentDialogProps {
   plan: PlanInfo | null;
@@ -72,6 +75,8 @@ export function PlanPaymentDialog({ plan, onClose, onSubmitted }: PlanPaymentDia
   const countryMethods = useMemo(() => methodsForCountry(methods ?? [], country), [methods, country]);
   const method = countryMethods.find((m) => m.id === methodId) ?? null;
   const amount = plan ? paymentAmount(plan.priceMonthly, months) : 0;
+  const rates = useRates();
+  const localApprox = plan?.currency === "XOF" ? approxFromXof(amount, countryByCode(country)?.currency, rates) : null;
 
   function reset() {
     setMonths(1);
@@ -253,6 +258,12 @@ export function PlanPaymentDialog({ plan, onClose, onSubmitted }: PlanPaymentDia
                 <p className="rounded-md border border-menthe-200 bg-surface-2 px-3 py-2.5 text-ink">
                   Montant à envoyer : <strong className="font-display text-lg">{formatPrice(amount, plan.currency)}</strong>
                   <span className="text-ink-soft"> ({monthsLabel(months)}) par {method.label} au {method.accountNumber}.</span>
+                  {localApprox ? (
+                    <span className="mt-1 block text-ink-soft">
+                      Soit environ <strong className="text-ink">{localApprox.replace(/^≈\u00a0/, "")}</strong> au taux du jour
+                      (indicatif : c&apos;est le montant en {plan.currency === "XOF" ? "F CFA" : plan.currency} qui fait foi).
+                    </span>
+                  ) : null}
                 </p>
               ) : null}
 

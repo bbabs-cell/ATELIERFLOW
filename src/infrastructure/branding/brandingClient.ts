@@ -43,3 +43,15 @@ export async function removeBranding(kind: BrandingKind): Promise<void> {
   const response = await fetch(`/api/branding?kind=${kind}`, { method: "DELETE", headers: await authHeaders() });
   if (!response.ok) throw await readError(response);
 }
+
+/** Logo de l'atelier pour le reçu PDF ; null s'il n'y en a pas ou hors ligne. */
+export async function fetchLogoBytes(): Promise<{ bytes: Uint8Array; mime: string } | null> {
+  try {
+    const response = await fetch("/api/branding/logo", { headers: await authHeaders(), cache: "no-store" });
+    if (response.status !== 200) return null;
+    const mime = response.headers.get("content-type") ?? "";
+    return { bytes: new Uint8Array(await response.arrayBuffer()), mime };
+  } catch {
+    return null;
+  }
+}

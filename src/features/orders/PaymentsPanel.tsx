@@ -15,6 +15,7 @@ import type { OrderPayments } from "@/application/orders/paymentService";
 import { getOrdersFacade } from "./facade";
 import { ReceiptViewer } from "./ReceiptViewer";
 import { useDataChanged } from "@/features/sync/useDataChanged";
+import { currencySymbol } from "@/domain/money";
 
 export interface PaymentsPanelProps {
   orderId: string;
@@ -308,7 +309,7 @@ export function PaymentsPanel({
               {formErrors.generic}
             </p>
           ) : null}
-          <Field label="Montant (F CFA)" required htmlFor="pay-amount" error={formErrors?.amount}>
+          <Field label={`Montant (${currencySymbol()})`} required htmlFor="pay-amount" error={formErrors?.amount}>
             <Input
               id="pay-amount"
               inputMode="numeric"

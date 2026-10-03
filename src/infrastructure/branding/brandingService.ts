@@ -44,6 +44,18 @@ export function createBrandingService(deps: { storage: R2Storage; db: BrandingDb
       return { avatar, logo, cover };
     },
 
+    /** Octets du logo (pour les reçus PDF générés dans le navigateur, même origine). */
+    async logo(fetcher: typeof fetch = fetch): Promise<{ bytes: Uint8Array; mime: string } | null> {
+      const cur = await deps.db.current();
+      const url = await sign("LOGO", cur.logo, cur);
+      if (!url) return null;
+      const response = await fetcher(url);
+      if (!response.ok) return null;
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      const check = checkBrandingImage(bytes);
+      return check.ok ? { bytes, mime: check.mime } : null;
+    },
+
     async upload(kind: BrandingKind, bytes: Uint8Array): Promise<string> {
       const check = checkBrandingImage(bytes);
       if (!check.ok) throw new FileServiceError(check.code, check.code === "VALIDATION:size" ? 413 : 422);

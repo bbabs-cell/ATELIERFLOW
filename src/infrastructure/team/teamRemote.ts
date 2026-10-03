@@ -19,6 +19,8 @@ export interface TeamRemote {
   revokeInvitation(id: string): Promise<void>;
   setMemberRole(membershipId: string, role: TenantRoleCode): Promise<void>;
   setMemberStatus(membershipId: string, status: "ACTIVE" | "DEACTIVATED"): Promise<void>;
+  /** Retire la personne de l'atelier (propriétaire seulement) ; son travail passé reste. */
+  removeMember(membershipId: string): Promise<void>;
   getInvitation(token: string): Promise<PublicInvitation>;
   acceptInvitation(token: string): Promise<string>;
 }
@@ -86,6 +88,11 @@ export function createTeamRemote(client: SupabaseClient): TeamRemote {
 
     async setMemberStatus(membershipId, status) {
       const { error } = await client.rpc("set_member_status", { p_membership: membershipId, p_status: status });
+      fail(error);
+    },
+
+    async removeMember(membershipId) {
+      const { error } = await client.rpc("remove_member", { p_membership: membershipId });
       fail(error);
     },
 
