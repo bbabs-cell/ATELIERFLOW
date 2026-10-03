@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ClientsView } from "@/features/clients/ClientsView";
 
 export const metadata: Metadata = {
-  title: "Clients — Atelier",
+  title: "Clients",
   description: "Carnet de clients et profils de mesures de l'atelier.",
 };
 

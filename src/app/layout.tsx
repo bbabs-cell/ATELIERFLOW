@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, DM_Mono, Manrope } from "next/font/google";
 import "./globals.css";
 import { PwaProvider } from "@/features/pwa/PwaProvider";
 import { AuthGate } from "@/features/auth/AuthGate";
+import { BRAND_NAME, BRAND_TAGLINE } from "@/config/brand";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -24,9 +25,9 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  applicationName: "Atelier",
+  applicationName: BRAND_NAME,
   manifest: "/pwa/manifest.webmanifest",
-  title: "Atelier — Gestion d'atelier de couture",
+  title: { default: `${BRAND_NAME} — ${BRAND_TAGLINE}`, template: `%s — ${BRAND_NAME}` },
   description:
     "Logiciel de gestion premium pour ateliers de couture : clients, commandes, paiements, rendez-vous, stock.",
   icons: {
@@ -38,7 +39,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Atelier",
+    title: BRAND_NAME,
   },
   formatDetection: {
     telephone: false,

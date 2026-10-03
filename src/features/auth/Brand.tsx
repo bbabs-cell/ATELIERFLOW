@@ -1,12 +1,13 @@
 import { Scissors } from "lucide-react";
+import { BRAND_NAME } from "@/config/brand";
 import { cx } from "@/lib/cx";
 
+export { BRAND_NAME };
+
 /**
- * Marque de l'application (nom configurable, jamais « atelierflow »).
+ * Marque de l'application (nom : src/config/brand.ts).
  * Pastille en dégradé animé + ciseaux, anneau qui tourne lentement.
  */
-export const BRAND_NAME = "Atelier";
-
 export function BrandMark({ className }: { className?: string }) {
   return (
     <span className={cx("relative grid size-11 shrink-0 place-items-center", className)}>

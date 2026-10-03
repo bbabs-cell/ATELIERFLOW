@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { InvitationView } from "@/features/team/InvitationView";
 
 export const metadata: Metadata = {
-  title: "Invitation — Atelier",
+  title: "Invitation",
   description: "Rejoindre un atelier sur invitation.",
   robots: { index: false, follow: false },
 };

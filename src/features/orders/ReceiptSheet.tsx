@@ -1,3 +1,4 @@
+import { BRAND_NAME } from "@/config/brand";
 import { formatFcfa } from "@/domain/money";
 import type { ReceiptDocument } from "@/domain/orders/receiptDocument";
 import { cx } from "@/lib/cx";
@@ -132,7 +133,7 @@ export function ReceiptSheet({ doc, className }: { doc: ReceiptDocument; classNa
         <footer className="mt-1 border-t border-dashed border-anthracite-300 pt-3 text-xs text-anthracite-600">
           <p>{doc.atelier.footer ?? "Merci de votre confiance. Conservez ce reçu : il vous sera demandé au retrait."}</p>
           <p className="mt-2 flex justify-between gap-2 text-[10px] text-anthracite-500">
-            <span>Reçu émis avec AtelierFlow — document non modifiable.</span>
+            <span>Reçu émis avec {BRAND_NAME} — document non modifiable.</span>
           </p>
         </footer>
       </div>

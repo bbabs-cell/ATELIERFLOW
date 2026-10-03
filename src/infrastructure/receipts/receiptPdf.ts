@@ -1,4 +1,5 @@
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage, type RGB } from "pdf-lib";
+import { BRAND_NAME } from "@/config/brand";
 import { formatFcfa } from "@/domain/money";
 import { receiptFileName, type ReceiptDocument } from "@/domain/orders/receiptDocument";
 
@@ -158,8 +159,8 @@ export async function renderReceiptPdf(doc: ReceiptDocument): Promise<Uint8Array
   pdf.setTitle(toWinAnsi(`${doc.title} ${doc.reference}`));
   pdf.setAuthor(toWinAnsi(doc.atelier.name));
   pdf.setSubject(toWinAnsi(`${doc.title} — commande ${doc.order.reference}`));
-  pdf.setCreator("AtelierFlow");
-  pdf.setProducer("AtelierFlow");
+  pdf.setCreator(toWinAnsi(BRAND_NAME));
+  pdf.setProducer(toWinAnsi(BRAND_NAME));
   pdf.setCreationDate(new Date(doc.issuedAt));
   pdf.setModificationDate(new Date(doc.issuedAt));
 
@@ -323,7 +324,7 @@ export async function renderReceiptPdf(doc: ReceiptDocument): Promise<Uint8Array
   c.line(MARGIN, footTop, right, C.line, true);
   const footer = doc.atelier.footer ?? "Merci de votre confiance. Conservez ce reçu : il vous sera demandé au retrait.";
   c.wrap(footer, 8, fonts.regular, inner, 2).forEach((l, i) => c.text(l, MARGIN, footTop + 10 + i * 10, 8, fonts.regular, C.soft));
-  c.text("Reçu émis avec AtelierFlow — document non modifiable.", MARGIN, H - 26, 6.5, fonts.regular, C.faint);
+  c.text(`Reçu émis avec ${BRAND_NAME} — document non modifiable.`, MARGIN, H - 26, 6.5, fonts.regular, C.faint);
   c.text(receiptFileName(doc).replace(/\.pdf$/, ""), right, H - 26, 6.5, fonts.mono, C.faint, { align: "right" });
 
   return pdf.save();

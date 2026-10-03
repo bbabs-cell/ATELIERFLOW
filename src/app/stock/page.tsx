@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { StockView } from "@/features/stock/StockView";
 
 export const metadata: Metadata = {
-  title: "Stock — Atelier",
+  title: "Stock",
   description: "Tissus et journal des mouvements de stock de l'atelier.",
 };
 
