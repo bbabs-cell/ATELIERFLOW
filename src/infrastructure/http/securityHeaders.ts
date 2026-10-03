@@ -20,6 +20,8 @@ export interface SecurityHeadersOptions {
 /** Les liens signés R2 pointent vers <compte>.r2.cloudflarestorage.com. */
 const R2_ORIGIN = "https://*.r2.cloudflarestorage.com";
 const VERCEL_LIVE = "https://vercel.live";
+/** Photos de la galerie de modèles (Pexels). */
+const PEXELS_IMAGES = "https://images.pexels.com";
 
 function origin(url: string | undefined): string | null {
   if (!url) return null;
@@ -40,7 +42,7 @@ export function contentSecurityPolicy(options: SecurityHeadersOptions = {}): str
     "default-src": ["'self'"],
     "script-src": ["'self'", "'unsafe-inline'", ...extra([options.dev && "'unsafe-eval'", options.preview && VERCEL_LIVE])],
     "style-src": ["'self'", "'unsafe-inline'"],
-    "img-src": ["'self'", "data:", "blob:", R2_ORIGIN, ...extra([options.preview && VERCEL_LIVE])],
+    "img-src": ["'self'", "data:", "blob:", R2_ORIGIN, PEXELS_IMAGES, ...extra([options.preview && VERCEL_LIVE])],
     "font-src": ["'self'", "data:"],
     "connect-src": [
       "'self'",
