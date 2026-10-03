@@ -33,17 +33,17 @@ const config: Record<
   },
   error: {
     icon: <TriangleAlert className="size-7" />,
-    tone: "bg-[linear-gradient(120deg,#ef4444,#b91c1c)]",
+    tone: "bg-[linear-gradient(120deg,#fb7185,#e11d48)]",
     defaultTitle: "Une erreur est survenue",
   },
   success: {
     icon: <CheckCircle2 className="size-7" />,
-    tone: "bg-[linear-gradient(120deg,#10b981,#047857)]",
+    tone: "bg-[linear-gradient(120deg,#12c98a,#047857)]",
     defaultTitle: "Opération réussie",
   },
   offline: {
     icon: <CloudOff className="size-7" />,
-    tone: "bg-[linear-gradient(120deg,#6b5a47,#1f1a15)]",
+    tone: "bg-[linear-gradient(120deg,#7c5cf0,#24105c)]",
     defaultTitle: "Hors ligne",
   },
   sync: {

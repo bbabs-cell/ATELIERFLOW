@@ -47,7 +47,7 @@ export function ClientsList({
             className="pl-9"
           />
         </label>
-        <SyncStatusChip engine={null} />
+        <SyncStatusChip />
       </div>
 
       {loading ? (
