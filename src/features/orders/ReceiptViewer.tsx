@@ -248,7 +248,7 @@ export function ReceiptViewer({ receiptId, onClose }: ReceiptViewerProps) {
                 <button
                   type="button"
                   onClick={() => setEditing(true)}
-                  className="inline-flex items-center gap-1.5 self-end rounded-full px-3 py-1 text-xs font-semibold text-flamme-700 transition-colors hover:bg-flamme-50"
+                  className="inline-flex min-h-9 items-center gap-1.5 self-end rounded-full px-3 py-1 text-xs font-semibold text-flamme-700 pointer-coarse:min-h-11 transition-colors hover:bg-flamme-50"
                 >
                   <Pencil className="size-3.5" aria-hidden="true" />
                   Coordonnées de l&apos;atelier
@@ -318,7 +318,7 @@ function IdentityForm({
           {failure}
         </p>
       ) : null}
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Field label="Nom de l'atelier" required htmlFor="atelier-name" error={errors.name}>
           <Input id="atelier-name" value={draft.name} maxLength={IDENTITY_LIMITS.name} onChange={(e) => set("name")(e.target.value)} invalid={Boolean(errors.name)} />
         </Field>

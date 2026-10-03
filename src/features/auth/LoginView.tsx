@@ -120,7 +120,7 @@ export function LoginView() {
                 setNotice(null);
               }}
               className={
-                "relative z-10 h-10 rounded-full text-sm font-bold transition-colors duration-300 " +
+                "relative z-10 h-11 rounded-full text-sm font-bold transition-colors duration-300 " +
                 (mode === m ? "text-chocolat-950" : "text-chocolat-200 hover:text-white")
               }
             >

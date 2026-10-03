@@ -50,7 +50,16 @@ const BAR_TONES: Tone[] = ["flamme", "menthe", "or", "azur", "flamme", "menthe"]
 
 function AnimatedNumber({ value, format }: { value: number; format: (n: number) => string }) {
   const shown = useCountUp(value);
-  return <>{format(shown)}</>;
+  const text = format(shown);
+  // « 100 000 F CFA », « 12,50 m » : l'unité peut passer à la ligne dans une carte étroite,
+  // jamais le nombre lui-même.
+  const unit = /^(.*\d)\u00a0(\D+)$/.exec(text);
+  if (!unit) return <>{text}</>;
+  return (
+    <>
+      <span className="whitespace-nowrap">{unit[1]}</span> <span className="whitespace-nowrap">{unit[2]}</span>
+    </>
+  );
 }
 
 function KpiCard({
@@ -83,14 +92,14 @@ function KpiCard({
         ) : null}
       </span>
       <span className="relative mt-4 block text-xs font-semibold uppercase tracking-wider text-ink-soft">{title}</span>
-      <span className="relative mt-1 block font-display text-2xl font-extrabold leading-tight text-ink tabular sm:text-[1.65rem]">
+      <span className="relative mt-1 block font-display text-[clamp(1.2rem,13cqi,1.65rem)] font-extrabold leading-tight text-ink tabular">
         <AnimatedNumber value={value} format={format} />
       </span>
-      {hint ? <span className="relative mt-1 block text-xs text-ink-faint">{hint}</span> : null}
+      {hint ? <span className="relative mt-1 block hyphens-auto text-xs text-ink-faint [overflow-wrap:break-word]">{hint}</span> : null}
     </>
   );
   const className =
-    "group gradient-border relative block h-full overflow-hidden rounded-xl border border-outline bg-surface/90 p-4 shadow-soft backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift";
+    "group gradient-border @container relative block h-full overflow-hidden rounded-xl border border-outline bg-surface/90 p-4 shadow-soft backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift";
   return (
     <li className="min-w-0">
       {href ? (
@@ -202,7 +211,7 @@ export function DashboardView(): React.ReactElement {
 
   if (forbidden) {
     return (
-      <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+      <div className="@container mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
         <StateView
           variant="empty"
           title="Tableau de bord non autorisé"
@@ -226,7 +235,7 @@ export function DashboardView(): React.ReactElement {
     : [];
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+    <div className="@container mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
       {/* Bandeau d'accueil */}
       <section className="dot-grid relative overflow-hidden rounded-xl bg-chocolat-900 p-6 text-ivoire-50 shadow-lift animate-scale-in sm:p-8">
         <AmbientBlobs dark />
@@ -344,14 +353,14 @@ export function DashboardView(): React.ReactElement {
             action={<Button onClick={() => load().catch(() => undefined)}>Réessayer</Button>}
           />
         ) : loading || kpis === null ? (
-          <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Chargement">
+          <ul className="grid grid-cols-2 gap-3 @4xl:grid-cols-4" aria-label="Chargement">
             {Array.from({ length: 8 }, (_, i) => (
               <li key={i} className="skeleton-shimmer h-36 rounded-xl" />
             ))}
           </ul>
         ) : (
           <>
-            <ul className="stagger grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <ul className="stagger grid grid-cols-2 gap-3 @4xl:grid-cols-4">
               <KpiCard tone="menthe" href="/commandes" icon={<Wallet className="size-5" aria-hidden="true" />} title="Encaissé" value={kpis.money.revenuePeriod} format={formatFcfa} hint={`sur ${rangeLabel}`} />
               <KpiCard tone="or" href="/commandes" icon={<Banknote className="size-5" aria-hidden="true" />} title="Facturé" value={kpis.money.invoicedPeriod} format={formatFcfa} hint="commandes créées sur la période" />
               <KpiCard tone="or" href="/commandes" icon={<CircleDollarSign className="size-5" aria-hidden="true" />} title="Reste à encaisser" value={kpis.money.outstanding} format={formatFcfa} hint="hors commandes annulées" />
@@ -362,8 +371,8 @@ export function DashboardView(): React.ReactElement {
               <KpiCard tone="or" href="/stock" icon={<Shirt className="size-5" aria-hidden="true" />} title="Tissus en stock" value={kpis.context.stockUnitsCenti} format={(n) => `${formatCentiUnits(n)} m`} hint={`${kpis.context.fabricsLow} en stock bas`} />
             </ul>
 
-            <div className="mt-6 grid gap-4 lg:grid-cols-3">
-              <Panel title="Encaissements" subtitle={rangeLabel} className="lg:col-span-2">
+            <div className="mt-6 grid grid-cols-1 gap-4 @4xl:grid-cols-3">
+              <Panel title="Encaissements" subtitle={rangeLabel} className="@4xl:col-span-2">
                 {kpis.revenue.every((p) => p.amount === 0) ? (
                   <EmptyLine>Aucun encaissement sur la période — le premier paiement allumera ce graphique.</EmptyLine>
                 ) : (
@@ -400,7 +409,7 @@ export function DashboardView(): React.ReactElement {
                       return (
                         <li
                           key={group.method}
-                          className="flex items-center gap-2 rounded-lg bg-surface-2 px-3 py-2.5 text-sm transition-all duration-200 hover:translate-x-1 hover:bg-flamme-50"
+                          className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg bg-surface-2 px-3 py-2.5 text-sm transition-all duration-200 hover:translate-x-1 hover:bg-flamme-50"
                         >
                           <Badge tone={meta?.tone ?? "neutral"}>{meta?.label ?? group.method}</Badge>
                           <span className="ml-auto font-bold tabular text-ink">{formatFcfa(group.amount)}</span>
@@ -413,7 +422,7 @@ export function DashboardView(): React.ReactElement {
               </Panel>
             </div>
 
-            <div className="mt-6 grid gap-4 lg:grid-cols-2">
+            <div className="mt-6 grid grid-cols-1 gap-4 @3xl:grid-cols-2">
               <Panel title="Commandes par statut">
                 {kpis.ordersByStatus.length === 0 ? (
                   <EmptyLine>Aucune commande enregistrée.</EmptyLine>
@@ -463,7 +472,7 @@ export function DashboardView(): React.ReactElement {
             </div>
 
             <Panel title="L'atelier en un coup d'œil" className="mt-6">
-              <ul className="stagger mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+              <ul className="stagger mt-4 grid grid-cols-2 gap-3 @4xl:grid-cols-4">
                 <KpiCard tone="azur" href="/equipe" icon={<Users className="size-5" aria-hidden="true" />} title="Équipe active" value={kpis.context.teamActive} hint="membres opérationnels" />
                 <KpiCard tone="azur" href="/stock" icon={<TrendingDown className="size-5" aria-hidden="true" />} title="Sorties stock" value={kpis.context.stockOutPeriodCenti} format={(n) => `${formatCentiUnits(n)} m`} hint="sur la période" />
                 <KpiCard tone="or" href="/stock" icon={<Shirt className="size-5" aria-hidden="true" />} title="Stock bas" value={kpis.context.fabricsLow} hint="≤ 1 m (réapprovisionner)" />

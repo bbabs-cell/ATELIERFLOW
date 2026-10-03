@@ -33,3 +33,4 @@ yarn-error.log*
 node_modules/
 .env
 .env.*
+scripts/responsive-audit/audit-output/

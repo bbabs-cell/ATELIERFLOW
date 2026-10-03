@@ -59,7 +59,7 @@ Nom technique temporaire: atelierflow
 | 21 | Abonnements SaaS | FAIT (local) | `src/domain/subscriptions/*` + `src/application/subscriptions/subscriptionService.ts` + `/abonnement` + `docs/SUBSCRIPTIONS.md` (171 tests) |
 | 22 | Tests | FAIT | `tests/*` : recherche (unit) + E2E fil de l'eau + `docs/TESTS.md` (180 tests) |
 | 23 | Audit sécurité | FAIT | `docs/SECURITY_AUDIT.md` : 16 points, 13 PASS, 4 recommandations (headers HTTP, grants, compteurs, tenants démo) |
-| 24 | Audit responsive | FAIT | `docs/RESPONSIVE_AUDIT.md` : 12 points, 11 PASS, 3 recommandations (contraste ink-faint, tailles compactes, navigation produit AppShell) |
+| 24 | Audit responsive | FAIT | Mesuré dans le navigateur : 21 écrans × 20 tailles (320→1920, portrait + paysage, tactile/souris) + clavier. 0 défilement horizontal, 0 débordement, 0 texte coupé, 0 cible tactile < 40 px. Corrections : `pointer-coarse:` (44 px au doigt), container queries (grilles selon la place réelle à côté de la barre latérale), pistes `grid-cols-1`, KPI adaptatifs, fenêtres bornées à la hauteur d'écran, tableau du reçu, `useModal` (piège de focus, Échap sur la fenêtre du dessus, focus rendu). Banc : `scripts/responsive-audit/`, rapport `docs/RESPONSIVE_AUDIT.md`. |
 | 25 | Audit performance | FAIT | `docs/PERFORMANCE_AUDIT.md` : statique 100 %, ~977 Ko JS total (~71 Ko gz/chunk max), sync événementielle, 4 recommandations |
 | 26 | Finalisation production | FAIT (blueprint) | `docs/PRODUCTION.md` + `.env.example` : ordre de provisionnement, dettes tracées (AppShell, shortcut manifest, tenants réels, headers, revokes), go-live |
 

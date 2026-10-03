@@ -155,7 +155,7 @@ export function RemoteTeamView(): React.ReactElement {
             action={error.includes("réservée") ? undefined : <Button onClick={() => void load()}>Réessayer</Button>}
           />
         ) : team === null ? (
-          <ul className="grid gap-3 sm:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {Array.from({ length: 4 }, (_, i) => (
               <li key={i} className="skeleton-shimmer h-28 rounded-xl" />
             ))}
@@ -172,7 +172,7 @@ export function RemoteTeamView(): React.ReactElement {
               <h2 className="font-display text-xl text-ink">
                 Membres <span className="font-mono text-sm text-flamme-600">{team.members.length}</span>
               </h2>
-              <ul className="stagger mt-4 grid gap-3 sm:grid-cols-2">
+              <ul className="stagger mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {team.members.map((member, index) => (
                   <MemberCard
                     key={member.id}
@@ -253,7 +253,7 @@ export function RemoteTeamView(): React.ReactElement {
                 {copied ? "Copié" : "Copier"}
               </Button>
             </div>
-            <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               <a
                 href={whatsappShareUrl(message)}
                 target="_blank"

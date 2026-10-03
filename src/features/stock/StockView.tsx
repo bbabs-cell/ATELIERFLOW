@@ -190,7 +190,7 @@ export function StockView(): React.ReactElement {
                 onChange={(e) => setSearch(e.target.value)}
                 aria-label="Rechercher un tissu"
               />
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-ink-soft">
+              <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm text-ink-soft">
                 <input
                   type="checkbox"
                   checked={showArchived}
