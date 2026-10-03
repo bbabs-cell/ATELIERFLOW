@@ -22,10 +22,17 @@ export function BrandMark({ className }: { className?: string }) {
   );
 }
 
-export function Brand({ tone = "light", subtitle }: { tone?: "light" | "dark"; subtitle?: string }) {
+export function Brand({ tone = "light", subtitle, logo }: { tone?: "light" | "dark"; subtitle?: string; logo?: string | null }) {
   return (
     <span className="group flex items-center gap-3">
-      <BrandMark />
+      {logo ? (
+        <span className="grid size-11 shrink-0 place-items-center overflow-hidden rounded-[14px] bg-white shadow-soft">
+          {/* eslint-disable-next-line @next/next/no-img-element -- lien signé R2, hors optimiseur d'images */}
+          <img src={logo} alt="Logo de l'atelier" className="size-full object-contain p-1" />
+        </span>
+      ) : (
+        <BrandMark />
+      )}
       <span className="min-w-0">
         <span
           className={cx(

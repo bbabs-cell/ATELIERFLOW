@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { Session } from "@supabase/supabase-js";
 import {
   Building2,
+  Palette,
   CalendarDays,
   ClipboardList,
   CreditCard,
@@ -33,6 +35,7 @@ import { useSyncRunner } from "@/features/sync/useSyncRunner";
 import { SyncStatusChip } from "@/features/sync/SyncStatusChip";
 import { PlanBanner } from "@/features/subscriptions/PlanBanner";
 import { usePlatformAdmin } from "@/features/platform/usePlatformAdmin";
+import { useBranding } from "@/features/branding/useBranding";
 
 /** Pages accessibles sans atelier actif. */
 const PUBLIC_PATHS = ["/connexion", "/bienvenue", "/offline", "/design"];
@@ -45,6 +48,7 @@ const NAV: Omit<NavItem, "active">[] = [
   { label: "Stock", href: "/stock", icon: Shirt, tone: "brown" },
   { label: "Équipe", href: "/equipe", icon: UsersRound, tone: "brown" },
   { label: "Abonnement", href: "/abonnement", icon: CreditCard, tone: "green" },
+  { label: "Personnalisation", href: "/parametres", icon: Palette, tone: "brown" },
 ];
 /** Visible seulement pour l'administration de la plateforme (SAAS_ADMIN). */
 const PLATFORM_NAV: Omit<NavItem, "active"> = { label: "Plateforme", href: "/plateforme", icon: Building2, tone: "brown" };
@@ -156,6 +160,11 @@ export function AuthGate({ children }: { children: ReactNode }) {
       : null,
   );
   const platformAdmin = usePlatformAdmin(state.status === "ready" && state.session.mode === "SUPABASE");
+  const branding = useBranding(
+    state.status === "ready" && state.session.mode === "SUPABASE"
+      ? `${state.session.tenantId}:${state.session.profileId}`
+      : null,
+  );
 
   if (isPublic && target === null) {
     return <>{children}</>;
@@ -175,9 +184,10 @@ export function AuthGate({ children }: { children: ReactNode }) {
     <>
       {state.session.mode === "DEMO" ? <DemoBanner /> : null}
       <AppShell
-        brand={<Brand subtitle="Gestion d'atelier" />}
+        brand={<Brand subtitle="Gestion d'atelier" logo={branding.logo} />}
         navItems={navItems}
-        footer={state.session.mode === "DEMO" ? null : <AccountCard session={state.session} />}
+        cover={branding.cover}
+        footer={state.session.mode === "DEMO" ? null : <AccountCard session={state.session} avatar={branding.avatar} />}
       >
         {state.session.mode === "SUPABASE" ? <PlanBanner /> : null}
         {state.session.mode === "OFFLINE" ? (
@@ -221,7 +231,7 @@ function initials(email: string | null): string {
   return letters.toUpperCase();
 }
 
-function AccountCard({ session }: { session: ActiveSession }) {
+function AccountCard({ session, avatar }: { session: ActiveSession; avatar: string | null }) {
   const router = useRouter();
   const [leaving, setLeaving] = useState(false);
 
@@ -237,10 +247,20 @@ function AccountCard({ session }: { session: ActiveSession }) {
 
   return (
     <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur animate-fade-up max-lg:border-outline max-lg:bg-surface-2">
-      <span className="relative grid size-11 shrink-0 place-items-center rounded-full bg-ocean-gradient font-display text-sm font-bold text-white shadow-soft">
-        {initials(session.email)}
+      <Link
+        href="/parametres"
+        aria-label="Changer ma photo de profil"
+        title="Changer ma photo de profil"
+        className="relative grid size-11 shrink-0 place-items-center rounded-full bg-ocean-gradient font-display text-sm font-bold text-white shadow-soft transition-transform duration-300 hover:scale-105"
+      >
+        {avatar ? (
+          // eslint-disable-next-line @next/next/no-img-element -- lien signé R2, hors optimiseur d'images
+          <img src={avatar} alt="" className="size-full rounded-full object-cover" />
+        ) : (
+          initials(session.email)
+        )}
         <span className="absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full border-2 border-chocolat-900 bg-menthe-500 animate-pulse-ring max-lg:border-surface" />
-      </span>
+      </Link>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-semibold max-lg:text-ink">{session.email ?? "Compte connecté"}</span>
         <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-champagne-300 max-lg:text-flamme-600">

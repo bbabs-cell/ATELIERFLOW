@@ -13,6 +13,8 @@ export interface DrawerProps {
   onClose: () => void;
   side?: DrawerSide;
   title?: ReactNode;
+  /** Fond décoratif (ex. photo floutée) placé derrière l'en-tête et le contenu. */
+  backdrop?: ReactNode;
   children: ReactNode;
 }
 
@@ -26,6 +28,7 @@ export function Drawer({
   onClose,
   side = "right",
   title,
+  backdrop,
   children,
 }: DrawerProps) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -44,12 +47,13 @@ export function Drawer({
         ref={panelRef}
         tabIndex={-1}
         className={cx(
-          "absolute top-0 h-full w-full max-w-sm bg-surface shadow-modal outline-none sm:max-w-md",
+          "absolute top-0 h-full w-full max-w-sm overflow-hidden bg-surface shadow-modal outline-none sm:max-w-md",
           position[side],
         )}
         aria-label={typeof title === "string" ? title : undefined}
       >
-        <div className="flex items-center justify-between gap-4 border-b border-anthracite-100 p-4">
+        {backdrop}
+        <div className="relative flex items-center justify-between gap-4 border-b border-anthracite-100 p-4">
           <h2 className="font-display text-2xl text-ink">{title}</h2>
           <button
             type="button"
@@ -60,7 +64,7 @@ export function Drawer({
             <X className="size-5" />
           </button>
         </div>
-        <div className="h-[calc(100%-4rem)] overflow-y-auto p-4">{children}</div>
+        <div className="relative h-[calc(100%-4rem)] overflow-y-auto p-4">{children}</div>
       </div>
     </div>,
     document.body,
