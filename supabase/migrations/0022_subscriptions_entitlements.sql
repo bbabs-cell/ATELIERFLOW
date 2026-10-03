@@ -39,13 +39,13 @@ alter table public.plans
 
 create unique index if not exists plans_single_default_uq on public.plans (is_default) where is_default;
 
-update public.plans set is_default = (code = 'FREE');
+update public.plans set is_default = true where code = 'FREE' and not is_default;
 update public.plans set trial_days = 14 where code = 'PRO' and trial_days = 0;
 
 alter table public.subscriptions
-  add column if not exists requested_plan_id uuid references public.plans (id) on delete set null,
+  add column if not exists requested_plan_id uuid references public.plans (id),
   add column if not exists requested_at timestamptz,
-  add column if not exists requested_by uuid references public.profiles (id) on delete set null;
+  add column if not exists requested_by uuid references public.profiles (id);
 
 -- ---------------------------------------------------------------------
 -- 2) Droits effectifs d'un atelier

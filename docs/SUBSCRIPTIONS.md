@@ -118,3 +118,13 @@ déclencheurs) sont fermées à l'API.
   - demande de plan, puis activation depuis `/plateforme` ;
   - stock verrouillé sur FREE ;
   - 360 px sans débordement, 0 erreur console ou CSP.
+
+## Production (2026-10-03)
+
+- `0022` appliquée en quatre lots (`0022`, `0022.2`, `0022.3`, `0022.4` dans
+  `supabase_migrations.schema_migrations`), au contenu identique au fichier.
+- Le propriétaire de la plateforme est SAAS_ADMIN (`platform_members`). Son
+  atelier est en `PRO` ACTIVE sans échéance, prix figé à 0.
+- Vérifié avec son compte : `my_entitlements` renvoie PRO / ACTIVE avec l'usage
+  réel, `admin_list_tenants` répond, la synchronisation renvoie les codes
+  `PLAN_*`. Supabase ne signale aucune nouvelle alerte de sécurité.
