@@ -40,7 +40,7 @@ export function Tabs({ items, value, onChange, className }: TabsProps) {
             onClick={() => onChange(item.value)}
             className={cx(
               "h-9 flex-shrink-0 rounded-full px-4 text-sm font-semibold text-chocolat-200 transition-all duration-300",
-              "aria-selected:bg-sunset-gradient aria-selected:text-chocolat-950 aria-selected:shadow-glow",
+              "aria-selected:bg-sunset-gradient aria-selected:text-white aria-selected:shadow-glow",
               "hover:text-white disabled:opacity-50",
             )}
           >

@@ -8,13 +8,14 @@ import type {
   AppointmentType,
 } from "@/domain/appointments/appointments";
 
+/** Rendez-vous = BLEU ; paiement = vert (argent) ; annulé / absent = rouge. */
 export const APPOINTMENT_STATUS_META: Record<
   AppointmentStatus,
   { label: string; tone: BadgeTone }
 > = {
   SCHEDULED: { label: "Planifié", tone: "neutral" },
-  CONFIRMED: { label: "Confirmé", tone: "accent" },
-  COMPLETED: { label: "Terminé", tone: "success" },
+  CONFIRMED: { label: "Confirmé", tone: "blue" },
+  COMPLETED: { label: "Terminé", tone: "info" },
   CANCELLED: { label: "Annulé", tone: "danger" },
   NO_SHOW: { label: "Absent", tone: "warning" },
 };
@@ -28,11 +29,11 @@ export const APPOINTMENT_TYPE_META: Record<
   AppointmentType,
   { label: string; tone: BadgeTone }
 > = {
-  MEASUREMENTS: { label: "Prise de mesures", tone: "primary" },
-  FITTING: { label: "Essayage", tone: "info" },
-  ALTERATION: { label: "Retouches", tone: "warning" },
-  DELIVERY: { label: "Livraison", tone: "success" },
-  PICKUP: { label: "Retrait", tone: "accent" },
+  MEASUREMENTS: { label: "Prise de mesures", tone: "blue" },
+  FITTING: { label: "Essayage", tone: "blue" },
+  ALTERATION: { label: "Retouches", tone: "blue" },
+  DELIVERY: { label: "Livraison", tone: "blue" },
+  PICKUP: { label: "Retrait", tone: "blue" },
   PAYMENT: { label: "Paiement", tone: "success" },
   OTHER: { label: "Autre", tone: "neutral" },
 };

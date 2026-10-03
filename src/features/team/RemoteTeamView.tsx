@@ -25,7 +25,8 @@ import { MEMBERSHIP_STATUS_META, ROLE_META, ROLE_OPTIONS } from "./constants";
 import { PermissionsMatrix } from "./PermissionsMatrix";
 import { usePlanGate } from "@/features/subscriptions/PlanGate";
 
-const AVATAR_TONES = ["bg-flamme-gradient", "bg-ocean-gradient", "bg-sunset-gradient", "bg-[linear-gradient(120deg,#10b981,#047857)]", "bg-[linear-gradient(120deg,#ffb989,#e8461a)]"];
+/** Équipe = marron : avatars en nuances de marron uniquement. */
+const AVATAR_TONES = ["bg-ocean-gradient", "bg-chocolat-500", "bg-chocolat-700", "bg-chocolat-400"];
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -178,7 +179,7 @@ export function RemoteTeamView(): React.ReactElement {
 
             <section>
               <h2 className="font-display text-xl text-ink">
-                Membres <span className="font-mono text-sm text-flamme-600">{team.members.length}</span>
+                Membres <span className="font-mono text-sm text-chocolat-500">{team.members.length}</span>
               </h2>
               <ul className="stagger mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {team.members.map((member, index) => (
@@ -198,10 +199,10 @@ export function RemoteTeamView(): React.ReactElement {
             {team.canManage ? (
               <section>
                 <h2 className="font-display text-xl text-ink">
-                  Invitations en attente <span className="font-mono text-sm text-flamme-600">{team.invitations.length}</span>
+                  Invitations en attente <span className="font-mono text-sm text-chocolat-500">{team.invitations.length}</span>
                 </h2>
                 {team.invitations.length === 0 ? (
-                  <p className="mt-4 rounded-lg border border-dashed border-flamme-200 bg-flamme-50/60 p-3 text-sm text-ink-soft">
+                  <p className="mt-4 rounded-lg border border-dashed border-chocolat-200 bg-chocolat-50/60 p-3 text-sm text-ink-soft">
                     Aucune invitation en attente. Les liens expirent après 7 jours.
                   </p>
                 ) : (
@@ -211,7 +212,7 @@ export function RemoteTeamView(): React.ReactElement {
                         key={invite.id}
                         className="flex flex-wrap items-center gap-3 rounded-xl border border-outline bg-surface/90 px-4 py-3 shadow-soft backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lift"
                       >
-                        <span className="grid size-10 place-items-center rounded-full bg-champagne-200 text-chocolat-900 animate-float">
+                        <span className="grid size-10 place-items-center rounded-full bg-chocolat-100 text-chocolat-900 animate-float">
                           <Mail className="size-4" aria-hidden="true" />
                         </span>
                         <span className="min-w-0 flex-1">
@@ -254,7 +255,7 @@ export function RemoteTeamView(): React.ReactElement {
                 lien : il est valable 7 jours et ne sera plus affiché ensuite.
               </p>
             </div>
-            <div className="flex items-center gap-2 rounded-xl border-2 border-dashed border-flamme-300 bg-flamme-50 p-2 pl-3">
+            <div className="flex items-center gap-2 rounded-xl border-2 border-dashed border-chocolat-300 bg-chocolat-50 p-2 pl-3">
               <code className="min-w-0 flex-1 truncate font-mono text-xs text-chocolat-800">{link}</code>
               <Button size="sm" variant="secondary" onClick={() => void copyLink()}>
                 {copied ? <Check className="size-4" aria-hidden="true" /> : <Copy className="size-4" aria-hidden="true" />}
@@ -309,7 +310,7 @@ export function RemoteTeamView(): React.ReactElement {
                 ))}
               </Select>
             </Field>
-            <p className="flex items-start gap-2 rounded-lg bg-azur-50 p-3 text-xs text-azur-700">
+            <p className="flex items-start gap-2 rounded-lg bg-chocolat-50 p-3 text-xs text-chocolat-700">
               <ShieldCheck className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
               La personne devra se connecter (ou créer son compte) avec cette adresse e-mail pour rejoindre
               l&apos;atelier. Le lien est à usage unique.

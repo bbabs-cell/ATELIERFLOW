@@ -91,7 +91,7 @@ export function OrdersList({
                   className="group flex w-full flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 text-left transition-all duration-200 hover:bg-flamme-50 hover:pl-5"
                   onClick={() => onSelect(order.id)}
                 >
-                  <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-sunset-gradient text-chocolat-950 shadow-soft transition-transform duration-300 group-hover:scale-110">
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-sunset-gradient text-white shadow-soft transition-transform duration-300 group-hover:scale-110">
                     <Scissors className="size-5" aria-hidden="true" />
                   </span>
                   <span className="min-w-0 flex-1">

@@ -264,7 +264,7 @@ export function OrdersView(): React.ReactElement {
               onClick={() => switchMode(value)}
               className={cx(
                 "relative z-10 inline-flex h-10 items-center justify-center gap-2 rounded-full px-4 text-sm font-bold transition-colors duration-300",
-                mode === value ? "text-chocolat-950" : "text-chocolat-200 hover:text-white",
+                mode === value ? "text-white" : "text-chocolat-200 hover:text-white",
               )}
             >
               <Icon className="size-4" aria-hidden="true" />

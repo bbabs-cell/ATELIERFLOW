@@ -38,16 +38,16 @@ import { usePlatformAdmin } from "@/features/platform/usePlatformAdmin";
 const PUBLIC_PATHS = ["/connexion", "/bienvenue", "/offline", "/design"];
 
 const NAV: Omit<NavItem, "active">[] = [
-  { label: "Tableau de bord", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Clients", href: "/clients", icon: Users },
-  { label: "Commandes", href: "/commandes", icon: ClipboardList },
-  { label: "Rendez-vous", href: "/rdv", icon: CalendarDays },
-  { label: "Stock", href: "/stock", icon: Shirt },
-  { label: "Équipe", href: "/equipe", icon: UsersRound },
-  { label: "Abonnement", href: "/abonnement", icon: CreditCard },
+  { label: "Tableau de bord", href: "/dashboard", icon: LayoutDashboard, tone: "brown" },
+  { label: "Clients", href: "/clients", icon: Users, tone: "blue" },
+  { label: "Commandes", href: "/commandes", icon: ClipboardList, tone: "orange" },
+  { label: "Rendez-vous", href: "/rdv", icon: CalendarDays, tone: "blue" },
+  { label: "Stock", href: "/stock", icon: Shirt, tone: "brown" },
+  { label: "Équipe", href: "/equipe", icon: UsersRound, tone: "brown" },
+  { label: "Abonnement", href: "/abonnement", icon: CreditCard, tone: "green" },
 ];
 /** Visible seulement pour l'administration de la plateforme (SAAS_ADMIN). */
-const PLATFORM_NAV: Omit<NavItem, "active"> = { label: "Plateforme", href: "/plateforme", icon: Building2 };
+const PLATFORM_NAV: Omit<NavItem, "active"> = { label: "Plateforme", href: "/plateforme", icon: Building2, tone: "brown" };
 /** Pages qui n'ont plus de raison d'être une fois l'atelier prêt. */
 const ENTRY_PATHS = ["/connexion", "/bienvenue"];
 const HOME_PATH = "/dashboard";
@@ -199,7 +199,7 @@ function DemoBanner() {
   return (
     <div
       role="status"
-      className="relative z-40 overflow-hidden bg-sunset-gradient px-4 py-2 text-center text-xs font-semibold text-chocolat-950 animate-gradient"
+      className="relative z-40 overflow-hidden bg-sunset-gradient px-4 py-2 text-center text-xs font-semibold text-white animate-gradient"
     >
       Mode démo local : Supabase n&apos;est pas configuré, les données restent sur cet
       appareil et ne sont pas synchronisées.

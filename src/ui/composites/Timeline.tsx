@@ -26,7 +26,7 @@ export function Timeline({
           {i < items.length - 1 ? (
             <span
               aria-hidden="true"
-              className="absolute left-4 top-10 bottom-0 w-0.5 rounded-full bg-gradient-to-b from-flamme-300 via-champagne-300 to-azur-300"
+              className="absolute left-4 top-10 bottom-0 w-0.5 rounded-full bg-gradient-to-b from-flamme-300 via-flamme-200 to-flamme-100"
             />
           ) : null}
           <span className="z-10 flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-flamme-300 bg-surface text-flamme-600 shadow-soft transition-transform duration-300 hover:scale-110">

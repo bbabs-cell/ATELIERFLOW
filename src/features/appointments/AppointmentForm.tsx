@@ -62,7 +62,7 @@ export function AppointmentForm({ customers, orders, initial, mode = "create", b
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2">
-        <span className="flex size-9 items-center justify-center rounded-full bg-sunset-gradient text-chocolat-950 shadow-soft">
+        <span className="flex size-9 items-center justify-center rounded-full bg-azur-gradient text-white shadow-soft">
           {editing ? <CalendarClock className="size-4" aria-hidden="true" /> : <CalendarDays className="size-4" aria-hidden="true" />}
         </span>
         <h2 className="font-display text-2xl text-ink">{editing ? "Modifier le rendez-vous" : "Nouveau rendez-vous"}</h2>
@@ -157,7 +157,7 @@ export function AppointmentForm({ customers, orders, initial, mode = "create", b
         </Field>
 
         {editing && initial && values.startsAt !== initial.startsAt ? (
-          <p className="rounded-lg bg-champagne-100 px-3 py-2 text-xs text-chocolat-700">
+          <p className="rounded-lg bg-azur-100 px-3 py-2 text-xs text-chocolat-700">
             Nouvel horaire : vous pourrez prévenir le client par WhatsApp juste après l&apos;enregistrement.
           </p>
         ) : null}

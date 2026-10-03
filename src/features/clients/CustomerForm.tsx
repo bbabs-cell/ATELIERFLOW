@@ -49,7 +49,7 @@ export function CustomerForm({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2">
-        <span className="flex size-9 items-center justify-center rounded-full bg-sunset-gradient text-chocolat-950 shadow-soft transition-transform duration-300 group-hover:scale-110">
+        <span className="flex size-9 items-center justify-center rounded-full bg-azur-gradient text-white shadow-soft transition-transform duration-300 group-hover:scale-110">
           <UserPlus className="size-4" aria-hidden="true" />
         </span>
         <h2 className="font-display text-2xl text-ink">{title}</h2>

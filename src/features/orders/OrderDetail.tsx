@@ -46,7 +46,7 @@ export function OrderDetail({
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-3">
-        <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-sunset-gradient text-chocolat-950 shadow-soft transition-transform duration-300 group-hover:scale-110">
+        <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-sunset-gradient text-white shadow-soft transition-transform duration-300 group-hover:scale-110">
           <UserRound className="size-6" aria-hidden="true" />
         </span>
         <div className="min-w-0">
@@ -75,8 +75,8 @@ export function OrderDetail({
       </dl>
 
       {onAssign && !isTerminal(order.status) ? (
-        <label className="flex flex-col gap-1.5 rounded-xl bg-azur-50 px-3 py-2.5">
-          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-azur-700">Affectée à</span>
+        <label className="flex flex-col gap-1.5 rounded-xl bg-flamme-50 px-3 py-2.5">
+          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-flamme-700">Affectée à</span>
           <Select
             aria-label="Personne affectée"
             className="h-10 min-h-10 rounded-full py-0 text-sm"

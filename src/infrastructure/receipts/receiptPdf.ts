@@ -24,20 +24,20 @@ const C = {
   faint: hex("#7a7163"),
   line: hex("#ede6da"),
   paper: hex("#f7f3ec"),
-  gold: hex("#ffb989"),
-  goldDeep: hex("#b9480f"),
-  flamme: hex("#ff5e2e"),
-  flammeSoft: hex("#fff4ec"),
-  flammeDeep: hex("#c2360f"),
-  wax: hex("#dc2626"),
-  waxSoft: hex("#fef2f2"),
-  waxDeep: hex("#b91c1c"),
+  gold: hex("#6ee7b7"),
+  goldDeep: hex("#047857"),
+  flamme: hex("#10b981"),
+  flammeSoft: hex("#ecfdf5"),
+  flammeDeep: hex("#047857"),
+  wax: hex("#e11d48"),
+  waxSoft: hex("#fff1f2"),
+  waxDeep: hex("#be123c"),
   menthe: hex("#047857"),
   mentheSoft: hex("#ecfdf5"),
   white: rgb(1, 1, 1),
 };
 
-/** Dégradé orange du Design System (palette resserrée : orange, vert, rouge d'alerte). */
+/** Le reçu relève de l'ARGENT : vert (rouge réservé aux annulations). Noms de clés historiques. */
 const STRIPE = ["#e8461a", "#ff5e2e", "#ff9a4d", "#ffb989", "#ffd2b0"];
 
 /**

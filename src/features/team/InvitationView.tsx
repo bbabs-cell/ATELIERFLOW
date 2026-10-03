@@ -228,7 +228,7 @@ export function InvitationView({ token }: { token: string }) {
                   }}
                   className={
                     "h-10 rounded-full text-sm font-bold transition-all duration-300 " +
-                    (mode === m ? "bg-sunset-gradient text-chocolat-950 shadow-glow" : "text-chocolat-200 hover:text-white")
+                    (mode === m ? "bg-sunset-gradient text-white shadow-glow" : "text-chocolat-200 hover:text-white")
                   }
                 >
                   {m === "signup" ? "Créer mon accès" : "J'ai déjà un compte"}

@@ -21,15 +21,15 @@ export function ReceiptSheet({ doc, className }: { doc: ReceiptDocument; classNa
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <p className="font-display text-lg font-bold leading-tight break-words">{doc.atelier.name}</p>
-            {doc.atelier.phone ? <p className="mt-1 text-xs text-champagne-300">{doc.atelier.phone}</p> : null}
-            {doc.atelier.address ? <p className="text-xs text-champagne-300">{doc.atelier.address}</p> : null}
+            {doc.atelier.phone ? <p className="mt-1 text-xs text-menthe-300">{doc.atelier.phone}</p> : null}
+            {doc.atelier.address ? <p className="text-xs text-menthe-300">{doc.atelier.address}</p> : null}
           </div>
           <div className="shrink-0 text-right">
-            <p className={cx("text-[10px] font-bold uppercase tracking-[0.18em]", credit ? "text-wax-300" : "text-flamme-300")}>
+            <p className={cx("text-[10px] font-bold uppercase tracking-[0.18em]", credit ? "text-wax-300" : "text-menthe-300")}>
               {doc.title}
             </p>
             <p className="mt-1 font-mono text-sm font-semibold">{doc.reference}</p>
-            <p className="mt-1 text-[11px] text-champagne-300">{doc.issuedAtLabel}</p>
+            <p className="mt-1 text-[11px] text-menthe-300">{doc.issuedAtLabel}</p>
             {doc.provisional ? (
               <span className="mt-2 inline-block rounded-full bg-wax-500 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider">
                 Référence provisoire
@@ -37,7 +37,7 @@ export function ReceiptSheet({ doc, className }: { doc: ReceiptDocument; classNa
             ) : null}
           </div>
         </div>
-        <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 bg-sunset-gradient" />
+        <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 bg-menthe-gradient" />
       </header>
 
       <div className="flex flex-col gap-3 p-5">
@@ -66,17 +66,17 @@ export function ReceiptSheet({ doc, className }: { doc: ReceiptDocument; classNa
           </div>
         </div>
 
-        <div className={cx("relative rounded-xl py-3 pl-5 pr-3", credit ? "bg-wax-50" : "bg-flamme-50")}>
-          <span aria-hidden="true" className={cx("absolute inset-y-3 left-0 w-1 rounded-r", credit ? "bg-wax-500" : "bg-flamme-500")} />
+        <div className={cx("relative rounded-xl py-3 pl-5 pr-3", credit ? "bg-wax-50" : "bg-menthe-50")}>
+          <span aria-hidden="true" className={cx("absolute inset-y-3 left-0 w-1 rounded-r", credit ? "bg-wax-500" : "bg-menthe-500")} />
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div>
-              <p className={cx("text-[9px] font-bold uppercase tracking-[0.16em]", credit ? "text-wax-600" : "text-flamme-700")}>
+              <p className={cx("text-[9px] font-bold uppercase tracking-[0.16em]", credit ? "text-wax-600" : "text-menthe-600")}>
                 {credit ? "Montant annulé" : "Montant reçu"}
               </p>
               <p className="font-display text-3xl font-extrabold tabular">{doc.payment.amountLabel}</p>
             </div>
             {doc.payment.method ? (
-              <span className={cx("rounded-full border bg-white px-3 py-1 text-xs font-bold", credit ? "border-wax-500 text-wax-600" : "border-flamme-500 text-flamme-700")}>
+              <span className={cx("rounded-full border bg-white px-3 py-1 text-xs font-bold", credit ? "border-wax-500 text-wax-600" : "border-menthe-500 text-menthe-600")}>
                 {doc.payment.method}
               </span>
             ) : null}
@@ -119,7 +119,7 @@ export function ReceiptSheet({ doc, className }: { doc: ReceiptDocument; classNa
           <div
             className={cx(
               "flex justify-between gap-3 rounded-lg px-2.5 py-1.5 font-bold",
-              tone === "settled" ? "bg-menthe-50 text-menthe-600" : tone === "surplus" ? "bg-anthracite-50 text-champagne-600" : "bg-flamme-50 text-flamme-700",
+              tone === "settled" ? "bg-menthe-50 text-menthe-600" : tone === "surplus" ? "bg-anthracite-50 text-menthe-600" : "bg-menthe-50 text-menthe-600",
             )}
           >
             <dt>{doc.balance.label}</dt>

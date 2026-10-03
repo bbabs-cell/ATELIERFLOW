@@ -18,10 +18,10 @@ export const SEARCH_ENTITY_LABELS = {
 
 export const PAYMENT_METHOD_META: Record<PaymentMethod, { label: string; tone: BadgeTone }> = {
   CASH: { label: "Espèces", tone: "success" },
-  ORANGE_MONEY: { label: "Orange Money", tone: "info" },
-  MOOV_MONEY: { label: "Moov Money", tone: "info" },
-  WAVE: { label: "Wave", tone: "accent" },
-  TRANSFER: { label: "Virement", tone: "primary" },
+  ORANGE_MONEY: { label: "Orange Money", tone: "success" },
+  MOOV_MONEY: { label: "Moov Money", tone: "success" },
+  WAVE: { label: "Wave", tone: "success" },
+  TRANSFER: { label: "Virement", tone: "success" },
   OTHER: { label: "Autre", tone: "neutral" },
 };
 
