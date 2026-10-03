@@ -39,7 +39,7 @@ application (Vitest).
 - **E2E fil de l'eau** : un parcours métier complet traversant plusieurs
   domaines, puis flush vers le pseudo-serveur.
 
-## Inventaire application (43 fichiers, 312 tests)
+## Inventaire application (43 fichiers, 313 tests)
 
 | Dossier | Couvre |
 |---|---|
@@ -84,11 +84,12 @@ application (Vitest).
   OTHER`.
 - `FabricRecord` porte `quantity` (centi‑units) — pas `stock_centi`.
 
-## Inventaire serveur (`npm run test:db`, 157 vérifications)
+## Inventaire serveur (`npm run test:db`, 160 vérifications)
 
 | Scénario | Couvre |
 |---|---|
 | `critical` | les 7 cas critiques ci-dessus (autonome) |
+| `performance` | RLS évaluée une fois par requête, index de synchronisation (0023) |
 | `invitations` | invitations d'équipe (0017) — crée l'atelier de test des suivants |
 | `appointments` | rendez-vous et rappels (0019) |
 | `files` | `register_file` / `delete_file`, limite de débit (0020/0021) |
@@ -97,7 +98,7 @@ application (Vitest).
 
 ## État
 
-- **312 tests application** (43 fichiers) + **157 vérifications serveur**,
+- **313 tests application** (43 fichiers) + **160 vérifications serveur**,
   typecheck/eslint/build verts, CI GitHub Actions.
 - Contre-exemples couverts : montants invalides, types inconnus, doublons de
   référence de reçu, déplacement négatif de stock, suppression interdite,

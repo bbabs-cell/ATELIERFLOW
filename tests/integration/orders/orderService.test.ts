@@ -188,6 +188,24 @@ describe("createOrderService", () => {
     }
   });
 
+  it("la liste regroupe articles et historique exactement comme le détail de chaque commande", async () => {
+    const h = makeHarness(uniqueTenant());
+    const customer = await h.clients.createCustomer({ full_name: "Awa Diop" });
+    if (!customer.ok) throw new Error("client");
+    for (const items of [[ITEM_ROBE, ITEM_VOILE], [ITEM_VOILE], [ITEM_ROBE]]) {
+      const created = await h.orders.createOrder({ customerId: customer.customer.id, priority: "NORMAL", items });
+      if (!created.ok) throw new Error("commande");
+      await h.orders.transition(created.order.id, "FABRIC_RECEIVED");
+    }
+    const rows = await h.orders.listOrders({});
+    expect(rows).toHaveLength(3);
+    for (const row of rows) {
+      const detail = await h.orders.getOrderDetail(row.order.id);
+      expect(row.items).toEqual(detail?.items);
+      expect(row.history).toEqual(detail?.history);
+    }
+  });
+
   it("changement de prix : le total reste figé à la création, même après modification", async () => {
     const h = makeHarness(uniqueTenant());
     const customer = await h.clients.createCustomer({ full_name: "Awa Diop" });

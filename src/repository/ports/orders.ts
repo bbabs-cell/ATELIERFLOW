@@ -13,11 +13,15 @@ export interface OrdersRepository {
 
 export interface OrderItemsRepository {
   listByOrder(orderId: string): Promise<OrderItemRecord[]>;
+  /** Tous les articles en une lecture, regroupés par commande (même filtre et tri que listByOrder). */
+  groupByOrder(): Promise<Map<string, OrderItemRecord[]>>;
   getItem(id: string): Promise<OrderItemRecord | null>;
   saveItem(item: OrderItemRecord): Promise<void>;
 }
 
 export interface OrderHistoryRepository {
   listByOrder(orderId: string): Promise<OrderStatusHistoryRecord[]>;
+  /** Tout l'historique en une lecture, regroupé par commande (même tri que listByOrder). */
+  groupByOrder(): Promise<Map<string, OrderStatusHistoryRecord[]>>;
   saveEntry(entry: OrderStatusHistoryRecord): Promise<void>;
 }

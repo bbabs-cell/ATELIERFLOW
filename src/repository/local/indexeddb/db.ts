@@ -99,10 +99,11 @@ export function idbGet<T>(
 export function idbGetAll<T>(
   db: IDBDatabase,
   store: string,
+  range?: IDBKeyRange,
 ): Promise<T[]> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(store, "readonly");
-    const request = transaction.objectStore(store).getAll();
+    const request = transaction.objectStore(store).getAll(range);
     request.onsuccess = () => resolve(request.result as T[]);
     request.onerror = () =>
       reject(new Error(`IDB_READ_FAILED: ${request.error?.message ?? "unknown"}`));
