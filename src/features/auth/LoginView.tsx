@@ -95,6 +95,34 @@ export function LoginView() {
     }
   }
 
+  /** Envoie le lien de réinitialisation à l'adresse saisie (réponse identique que le compte existe ou non). */
+  async function forgotPassword() {
+    setError(null);
+    setNotice(null);
+    const trimmed = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setError("Saisissez d'abord votre adresse e-mail, puis touchez « Mot de passe oublié ? ».");
+      return;
+    }
+    const client = getSupabaseBrowserClient();
+    if (!client) return;
+    setBusy(true);
+    try {
+      const { error: resetError } = await client.auth.resetPasswordForEmail(trimmed, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (resetError && resetError.status === 429) {
+        setError(authErrorMessage(resetError));
+      } else {
+        setNotice(`Si un compte existe pour ${trimmed}, un e-mail vient d'être envoyé avec un lien pour choisir un nouveau mot de passe. Pensez à regarder les courriers indésirables.`);
+      }
+    } catch (e) {
+      setError(authErrorMessage(e instanceof Error ? e : null));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const signup = mode === "signup";
 
   return (
@@ -172,6 +200,17 @@ export function LoginView() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </Field>
+
+          {!signup ? (
+            <button
+              type="button"
+              onClick={() => void forgotPassword()}
+              disabled={busy}
+              className="-mt-2 min-h-11 self-end text-sm font-semibold text-flamme-600 underline-offset-4 hover:underline disabled:opacity-50"
+            >
+              Mot de passe oublié ?
+            </button>
+          ) : null}
 
           {error ? (
             <p role="alert" className="rounded-lg border-2 border-wax-300 bg-wax-50 px-3 py-2 text-sm font-semibold text-wax-600 animate-wiggle">

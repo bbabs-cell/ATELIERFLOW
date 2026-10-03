@@ -19,6 +19,9 @@ export function authErrorMessage(error: { message?: string; code?: string; statu
   if (code === "weak_password" || message.includes("password should be")) {
     return "Mot de passe trop faible : 8 caractères minimum, avec lettres et chiffres.";
   }
+  if (code === "same_password" || message.includes("should be different")) {
+    return "Choisissez un mot de passe différent de l'ancien.";
+  }
   if (code === "over_request_rate_limit" || code === "over_email_send_rate_limit" || error.status === 429) {
     return "Trop de tentatives. Patientez quelques minutes puis réessayez.";
   }

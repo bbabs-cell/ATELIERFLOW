@@ -38,7 +38,7 @@ import { usePlatformAdmin } from "@/features/platform/usePlatformAdmin";
 import { useBranding } from "@/features/branding/useBranding";
 
 /** Pages accessibles sans atelier actif. */
-const PUBLIC_PATHS = ["/connexion", "/bienvenue", "/offline", "/design"];
+const PUBLIC_PATHS = ["/connexion", "/bienvenue", "/offline", "/design", "/reset-password"];
 
 const NAV: Omit<NavItem, "active">[] = [
   { label: "Tableau de bord", href: "/dashboard", icon: LayoutDashboard, tone: "brown" },
