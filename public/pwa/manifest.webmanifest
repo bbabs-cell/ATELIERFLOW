@@ -4,7 +4,7 @@
   "short_name": "Atelier",
   "description": "Logiciel de gestion premium pour ateliers de couture : clients, commandes, paiements, rendez-vous, stock, travail hors ligne.",
   "lang": "fr",
-  "start_url": "/",
+  "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
