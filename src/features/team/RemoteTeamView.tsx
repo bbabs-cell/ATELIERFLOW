@@ -23,6 +23,7 @@ import { getSupabaseBrowserClient } from "@/infrastructure/supabase/browserClien
 import { createTeamRemote, type TeamRemote } from "@/infrastructure/team/teamRemote";
 import { MEMBERSHIP_STATUS_META, ROLE_META, ROLE_OPTIONS } from "./constants";
 import { PermissionsMatrix } from "./PermissionsMatrix";
+import { usePlanGate } from "@/features/subscriptions/PlanGate";
 
 const AVATAR_TONES = ["bg-flamme-gradient", "bg-ocean-gradient", "bg-sunset-gradient", "bg-[linear-gradient(120deg,#10b981,#047857)]", "bg-[linear-gradient(120deg,#ffb989,#e8461a)]"];
 
@@ -57,6 +58,7 @@ export function RemoteTeamView(): React.ReactElement {
   const [inviting, setInviting] = useState(false);
   const [created, setCreated] = useState<CreatedInvitation | null>(null);
   const [copied, setCopied] = useState(false);
+  const plan = usePlanGate();
 
   const load = useCallback(async () => {
     if (!remote) return;
@@ -75,6 +77,12 @@ export function RemoteTeamView(): React.ReactElement {
   }, [load]);
 
   function openInvite() {
+    // Les invitations en attente occupent une place, comme sur le serveur.
+    const localUsed = team ? team.members.filter((m) => m.status === "ACTIVE").length + team.invitations.length : 0;
+    plan.guard("users", localUsed, startInvite);
+  }
+
+  function startInvite() {
     setEmail("");
     setRole("EMPLOYEE");
     setInviteErrors({});
@@ -322,6 +330,7 @@ export function RemoteTeamView(): React.ReactElement {
           </form>
         )}
       </Dialog>
+      {plan.dialog}
     </div>
   );
 }

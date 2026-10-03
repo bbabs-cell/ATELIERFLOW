@@ -21,7 +21,7 @@ export function parseFcfa(input: string): number | null {
   return Number.isSafeInteger(value) ? value : null;
 }
 
-function groupThousands(value: number): string {
+export function groupThousands(value: number): string {
   return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 

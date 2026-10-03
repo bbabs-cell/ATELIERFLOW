@@ -108,6 +108,15 @@ export class IndexedDbSyncQueue implements SyncQueuePort {
       .sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
   }
 
+  /** Opérations refusées définitivement par le serveur (exclues de listAll). */
+  async listFailed(): Promise<SyncOperation[]> {
+    const db = await this.dbPromise;
+    const all = await idbGetAll<SyncOperation>(db, OPERATIONS_STORE);
+    return all
+      .filter((op) => op.status === "FAILED")
+      .sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
+  }
+
   async drop(idempotencyKey: string): Promise<void> {
     const db = await this.dbPromise;
     await idbDelete(db, OPERATIONS_STORE, idempotencyKey);

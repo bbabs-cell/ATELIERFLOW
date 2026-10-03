@@ -1,5 +1,6 @@
 "use client";
 
+import { FeatureLocked, usePlanGate } from "@/features/subscriptions/PlanGate";
 import { useCallback, useEffect, useState } from "react";
 import { Archive, PackagePlus, Shirt, TrendingDown, TrendingUp, Scale } from "lucide-react";
 import { Badge, Button, Dialog, Drawer, Field, Input, Select, StateView, Textarea } from "@/ui";
@@ -20,6 +21,7 @@ import { useDataChanged } from "@/features/sync/useDataChanged";
 const isStrictlyPositive = (v: string) => v.trim() !== "";
 
 export function StockView(): React.ReactElement {
+  const plan = usePlanGate();
   const [fabrics, setFabrics] = useState<FabricRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -164,11 +166,16 @@ export function StockView(): React.ReactElement {
             Référentiel des tissus et journal des mouvements (entrées, sorties, ajustements).
           </p>
         </div>
-        <Button onClick={() => void openCreate()}>
+        <Button onClick={() => plan.guardFeature("stock", () => void openCreate())}>
           <PackagePlus className="size-4" aria-hidden="true" />
           Nouveau tissu
         </Button>
       </header>
+      {plan.allows("stock") ? null : (
+        <div className="mt-4 animate-fade-up">
+          <FeatureLocked feature="stock">Vos tissus restent consultables.</FeatureLocked>
+        </div>
+      )}
 
       <main className="mt-8">
         {error ? (
@@ -214,7 +221,7 @@ export function StockView(): React.ReactElement {
                 variant="empty"
                 title="Aucun tissu"
                 description="Ajoutez votre premier tissu pour démarrer le stock."
-                action={<Button onClick={() => void openCreate()}>Nouveau tissu</Button>}
+                action={<Button onClick={() => plan.guardFeature("stock", () => void openCreate())}>Nouveau tissu</Button>}
               />
             ) : (
               <ul className="flex flex-col gap-2">
@@ -265,7 +272,7 @@ export function StockView(): React.ReactElement {
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => void openMovement(fabric, "IN")}
+                            onClick={() => plan.guardFeature("stock", () => void openMovement(fabric, "IN"))}
                           >
                             <TrendingUp className="size-4" aria-hidden="true" />
                             Entrée
@@ -274,7 +281,7 @@ export function StockView(): React.ReactElement {
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => void openMovement(fabric, "OUT")}
+                            onClick={() => plan.guardFeature("stock", () => void openMovement(fabric, "OUT"))}
                           >
                             <TrendingDown className="size-4" aria-hidden="true" />
                             Sortie
@@ -283,7 +290,7 @@ export function StockView(): React.ReactElement {
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => void openMovement(fabric, "ADJUST")}
+                            onClick={() => plan.guardFeature("stock", () => void openMovement(fabric, "ADJUST"))}
                           >
                             <Scale className="size-4" aria-hidden="true" />
                             Ajuster
@@ -487,6 +494,7 @@ export function StockView(): React.ReactElement {
           </div>
         ) : null}
       </Drawer>
+      {plan.dialog}
     </div>
   );
 }

@@ -12,6 +12,7 @@ import { MeasurementsPanel } from "./MeasurementsPanel";
 import { PhotoGallery } from "@/features/files/PhotoGallery";
 import { ProfileForm } from "./ProfileForm";
 import { useDataChanged } from "@/features/sync/useDataChanged";
+import { usePlanGate } from "@/features/subscriptions/PlanGate";
 
 export function ClientsView(): React.ReactElement {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -24,6 +25,7 @@ export function ClientsView(): React.ReactElement {
   const [formErrors, setFormErrors] = useState<ContactErrors | null>(null);
   const [saving, setSaving] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const plan = usePlanGate();
   const searchTimer = useRef<number | null>(null);
 
   const load = useCallback(async (query: string) => {
@@ -73,9 +75,13 @@ export function ClientsView(): React.ReactElement {
   }, [search, load]);
 
   function openCreate() {
-    setEditing(null);
-    setFormErrors(null);
-    setFormOpen(true);
+    // Décompte local (créations hors ligne comprises) quand la liste est complète.
+    const localUsed = search.trim() === "" ? customers.filter((c) => c.status === "ACTIVE" && c.deleted_at === null).length : 0;
+    plan.guard("customers", localUsed, () => {
+      setEditing(null);
+      setFormErrors(null);
+      setFormOpen(true);
+    });
   }
 
   function openEdit() {
@@ -237,6 +243,7 @@ export function ClientsView(): React.ReactElement {
           />
         ) : null}
       </Dialog>
+      {plan.dialog}
     </div>
   );
 }

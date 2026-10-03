@@ -6,6 +6,7 @@
  * Disposition des objets, indépendante du nom commercial :
  *   tenants/{tenantId}/{customers|orders|fabrics|receipts}/{entityId}/{fileId}.{ext}
  */
+import { planErrorMessage } from "@/domain/subscriptions/entitlements";
 
 export const FILE_CATEGORIES = ["CUSTOMER", "ORDER", "FABRIC", "RECEIPT"] as const;
 export type FileCategory = (typeof FILE_CATEGORIES)[number];
@@ -145,6 +146,8 @@ const MESSAGES: Record<string, string> = {
 
 export function fileErrorMessage(code: string | null | undefined): string {
   if (!code) return "L'opération a échoué. Réessayez.";
+  const plan = planErrorMessage(code);
+  if (plan) return plan;
   if (MESSAGES[code]) return MESSAGES[code];
   if (code.startsWith("NOT_FOUND")) {
     return "Cette fiche n'est pas encore enregistrée sur le serveur (synchronisation en attente) : réessayez dans un instant.";
