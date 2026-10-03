@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card, Field, Input, StateView } from "@/ui";
 import { authErrorMessage, MIN_PASSWORD_LENGTH, validateCredentials } from "@/domain/auth/errors";
@@ -22,6 +22,13 @@ export function LoginView() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // Arrivée depuis la vitrine (« Commencer gratuitement ») : création de compte.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).has("inscription")) {
+      void Promise.resolve().then(() => setMode("signup"));
+    }
+  }, []);
 
   if (!provisioned) {
     return (

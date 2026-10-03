@@ -54,7 +54,7 @@ returns text language sql as $$
     p_id, p_plan, p_months, p_method,
     coalesce(p_key, 'tenants/' || p_tenant || '/plan-payments/' || p_id || '.jpg'), p_mime));
 $$;
-grant execute on all functions in schema pg_temp to authenticated;
+grant execute on all functions in schema pg_temp to authenticated, anon;
 
 -- ---------------------------------------------------------------------
 -- 1. Moyens de paiement : la plateforme seule les publie
@@ -168,6 +168,14 @@ insert into r select '5.d', 'Échéance prolongée : 3 + 1 = 4 mois', '4',
    from public.subscriptions s where s.tenant_id = :'tA' and s.status = 'ACTIVE');
 insert into r select '5.e', 'Annuler une demande déjà traitée', 'NOT_FOUND:plan_payment_requests',
   (select pg_temp.try(format('select public.cancel_plan_payment(%L)', :'req3')) from (select pg_temp.jwt(:'ownerA', :'tA')) x);
+
+-- Visiteur non connecté (vitrine)
+set local role anon;
+select jsonb_array_length(public.public_plans())::text as anon_plans \gset
+select pg_temp.try('select to_jsonb(x) from (select count(*) from public.plan_payment_requests) x') as anon_requests \gset
+reset role;
+insert into r select '6.a', 'Visiteur : tarifs publics lisibles (plans actifs)', (select count(*)::text from public.plans where is_active), :'anon_plans';
+insert into r select '6.b', 'Visiteur : aucune demande de paiement lisible', 'permission denied for table plan_payment_requests', :'anon_requests';
 
 select n, label, expected, got, got = expected as ok from r order by n;
 rollback;

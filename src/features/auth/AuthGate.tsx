@@ -38,7 +38,7 @@ import { usePlatformAdmin } from "@/features/platform/usePlatformAdmin";
 import { useBranding } from "@/features/branding/useBranding";
 
 /** Pages accessibles sans atelier actif. */
-const PUBLIC_PATHS = ["/connexion", "/bienvenue", "/offline", "/design", "/reset-password"];
+const PUBLIC_PATHS = ["/", "/connexion", "/bienvenue", "/offline", "/design", "/reset-password"];
 
 const NAV: Omit<NavItem, "active">[] = [
   { label: "Tableau de bord", href: "/dashboard", icon: LayoutDashboard, tone: "brown" },
@@ -53,7 +53,7 @@ const NAV: Omit<NavItem, "active">[] = [
 /** Visible seulement pour l'administration de la plateforme (SAAS_ADMIN). */
 const PLATFORM_NAV: Omit<NavItem, "active"> = { label: "Plateforme", href: "/plateforme", icon: Building2, tone: "brown" };
 /** Pages qui n'ont plus de raison d'être une fois l'atelier prêt. */
-const ENTRY_PATHS = ["/connexion", "/bienvenue"];
+const ENTRY_PATHS = ["/", "/connexion", "/bienvenue"];
 const HOME_PATH = "/dashboard";
 
 type GateState =

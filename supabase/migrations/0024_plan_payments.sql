@@ -11,6 +11,7 @@
 --    payée (prolonge si le même plan court encore), « Refuser » exige un
 --    motif visible par l'atelier.
 --
+-- Les tarifs (plans actifs) sont lisibles sans connexion pour la vitrine.
 -- Aucune écriture directe : tout passe par des RPC SECURITY DEFINER qui
 -- revérifient atelier, permission et état. Aucune donnée existante
 -- modifiée.
@@ -365,6 +366,28 @@ begin
   return to_jsonb(v_row);
 end;
 $$;
+
+-- ---------------------------------------------------------------------
+-- 5 bis. Tarifs publics (page vitrine, sans connexion) : seulement les
+--        champs d'affichage des plans actifs, jamais les abonnements.
+-- ---------------------------------------------------------------------
+create or replace function public.public_plans()
+returns jsonb
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'code', p.code, 'name', p.name, 'description', p.description,
+    'price_monthly', p.price_monthly, 'currency', p.currency,
+    'limits', p.limits, 'trial_days', p.trial_days, 'is_default', p.is_default
+  ) order by p.sort_order), '[]'::jsonb)
+  from public.plans p
+  where p.is_active;
+$$;
+revoke execute on function public.public_plans() from public;
+grant execute on function public.public_plans() to anon, authenticated, service_role;
 
 -- ---------------------------------------------------------------------
 -- 6. Exécution : utilisateurs connectés uniquement
