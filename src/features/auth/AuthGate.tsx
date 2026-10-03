@@ -36,6 +36,8 @@ import { SyncStatusChip } from "@/features/sync/SyncStatusChip";
 import { PlanBanner } from "@/features/subscriptions/PlanBanner";
 import { usePlatformAdmin } from "@/features/platform/usePlatformAdmin";
 import { useBranding } from "@/features/branding/useBranding";
+import { readCachedLocale, useTenantLocale } from "@/features/locale/tenantLocale";
+import { setActiveCurrency } from "@/domain/money";
 
 /** Pages accessibles sans atelier actif. */
 const PUBLIC_PATHS = ["/", "/connexion", "/bienvenue", "/offline", "/design", "/reset-password"];
@@ -160,6 +162,10 @@ export function AuthGate({ children }: { children: ReactNode }) {
       : null,
   );
   const platformAdmin = usePlatformAdmin(state.status === "ready" && state.session.mode === "SUPABASE");
+  const locale = useTenantLocale(
+    state.status === "ready" && state.session.mode !== "DEMO" ? state.session.tenantId : null,
+    state.status === "ready" && state.session.mode === "SUPABASE",
+  );
   const branding = useBranding(
     state.status === "ready" && state.session.mode === "SUPABASE"
       ? `${state.session.tenantId}:${state.session.profileId}`
@@ -175,6 +181,11 @@ export function AuthGate({ children }: { children: ReactNode }) {
         <StateView variant="loading" title="Ouverture de l'atelier…" className="w-full" />
       </div>
     );
+  }
+  // Monnaie de l'atelier posée AVANT le rendu des écrans (cache de l'appareil),
+  // pour qu'aucun montant ne s'affiche d'abord dans une autre monnaie.
+  if (state.session.mode !== "DEMO") {
+    setActiveCurrency(readCachedLocale(state.session.tenantId)?.currency ?? locale.currency);
   }
   const navItems: NavItem[] = (platformAdmin ? [...NAV, PLATFORM_NAV] : NAV).map((item) => ({
     ...item,
@@ -197,7 +208,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
             </Badge>
           </div>
         ) : null}
-        <div key={pathname} className="animate-fade-up">
+        <div key={`${pathname}:${locale.currency}`} className="animate-fade-up">
           {children}
         </div>
       </AppShell>

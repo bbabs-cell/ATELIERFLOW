@@ -39,7 +39,7 @@ application (Vitest).
 - **E2E fil de l'eau** : un parcours métier complet traversant plusieurs
   domaines, puis flush vers le pseudo-serveur.
 
-## Inventaire application (45 fichiers, 329 tests)
+## Inventaire application (47 fichiers, 341 tests)
 
 | Dossier | Couvre |
 |---|---|
@@ -84,7 +84,7 @@ application (Vitest).
   OTHER`.
 - `FabricRecord` porte `quantity` (centi‑units) — pas `stock_centi`.
 
-## Inventaire serveur (`npm run test:db`, 213 vérifications)
+## Inventaire serveur (`npm run test:db`, 254 vérifications)
 
 | Scénario | Couvre |
 |---|---|
@@ -92,6 +92,7 @@ application (Vitest).
 | `performance` | RLS évaluée une fois par requête, index de synchronisation (0023) |
 | `plan_payments` | paiement des plans avec preuve : moyens, envoi, isolation, validation, refus, prolongation (0024) |
 | `branding` | photo de profil, logo, couverture : emplacements, droits, isolation (0025) |
+| `team_locale` | retirer un membre, pays et monnaie de l'atelier, monnaie figée (0026) |
 | `invitations` | invitations d'équipe (0017) — crée l'atelier de test des suivants |
 | `appointments` | rendez-vous et rappels (0019) |
 | `files` | `register_file` / `delete_file`, limite de débit (0020/0021) |
@@ -100,7 +101,7 @@ application (Vitest).
 
 ## État
 
-- **329 tests application** (45 fichiers) + **213 vérifications serveur**,
+- **341 tests application** (47 fichiers) + **254 vérifications serveur**,
   typecheck/eslint/build verts, CI GitHub Actions.
 - Contre-exemples couverts : montants invalides, types inconnus, doublons de
   référence de reçu, déplacement négatif de stock, suppression interdite,

@@ -113,4 +113,20 @@ describe("renderReceiptPdf", () => {
     expect(raw).toContain(hexOf("RÉFÉRENCE PROVISOIRE"));
     expect(raw).toContain(hexOf("autres articles"));
   });
+
+  it("intègre le logo de l'atelier ; un logo illisible est ignoré", async () => {
+    // PNG 1×1 valide
+    const png = Uint8Array.from(
+      atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="),
+      (ch) => ch.charCodeAt(0),
+    );
+    const withLogo = await renderReceiptPdf(doc(), { logo: { bytes: png, mime: "image/png" } });
+    const parsed = await PDFDocument.load(withLogo);
+    expect(parsed.getPageCount()).toBe(1);
+    expect(new TextDecoder("latin1").decode(withLogo)).toContain("/Subtype /Image");
+    expect(contentOf(withLogo)).toContain(hexOf(receipt.reference));
+
+    const broken = await renderReceiptPdf(doc(), { logo: { bytes: new Uint8Array([1, 2, 3]), mime: "image/png" } });
+    expect((await PDFDocument.load(broken)).getPageCount()).toBe(1);
+  });
 });

@@ -16,6 +16,7 @@ import {
 } from "@/domain/branding/branding";
 import { compressPhoto } from "@/infrastructure/files/filesClient";
 import { BrandingError, removeBranding, uploadBranding } from "@/infrastructure/branding/brandingClient";
+import { LocaleCard } from "@/features/locale/LocaleCard";
 import { setBrandingUrls, useBranding } from "./useBranding";
 
 const FIELD: Record<BrandingKind, keyof BrandingUrls> = { AVATAR: "avatar", LOGO: "logo", COVER: "cover" };
@@ -41,7 +42,7 @@ export function PersonnalisationView(): React.ReactElement {
     <div className="@container mx-auto w-full max-w-4xl px-4 py-6 sm:py-10">
       <header className="mb-8">
         <h1 className="page-title text-4xl text-ink sm:text-5xl">Personnalisation</h1>
-        <p className="mt-1 text-sm text-ink-soft">Votre photo, le logo et la couverture de l&apos;atelier.</p>
+        <p className="mt-1 text-sm text-ink-soft">Votre photo, le logo, la couverture, le pays et la monnaie de l&apos;atelier.</p>
       </header>
       {session?.mode !== "SUPABASE" ? (
         <StateView variant="empty" title="Connexion nécessaire" description="Les images sont enregistrées sur le serveur : connectez-vous en ligne pour les changer." />
@@ -50,6 +51,7 @@ export function PersonnalisationView(): React.ReactElement {
           <ImageCard kind="AVATAR" url={urls.avatar} editable />
           <ImageCard kind="LOGO" url={urls.logo} editable={canManage} />
           <ImageCard kind="COVER" url={urls.cover} editable={canManage} className="@2xl:col-span-2" />
+          <LocaleCard tenantId={session.tenantId} editable={canManage} />
         </div>
       )}
     </div>

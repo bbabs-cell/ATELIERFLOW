@@ -14,6 +14,8 @@ import {
 } from "@/domain/orders/receiptDocument";
 import { IDENTITY_LIMITS, validateIdentity, type IdentityErrors } from "@/domain/tenant/identity";
 import { peekActiveSession } from "@/application/auth/session";
+import { fetchLogoBytes } from "@/infrastructure/branding/brandingClient";
+import { useBranding } from "@/features/branding/useBranding";
 import type { ReceiptSources } from "@/application/orders/receiptService";
 import { getOrdersFacade } from "./facade";
 import { ReceiptSheet } from "./ReceiptSheet";
@@ -30,7 +32,9 @@ export interface ReceiptViewerProps {
 async function buildPdfFile(doc: ReceiptDocument): Promise<File> {
   // pdf-lib n'est chargé qu'au premier PDF (pas dans le bundle initial).
   const { renderReceiptPdf } = await import("@/infrastructure/receipts/receiptPdf");
-  const bytes = await renderReceiptPdf(doc);
+  // Logo de l'atelier si disponible (en ligne) ; sinon reçu sans logo.
+  const logo = peekActiveSession()?.mode === "SUPABASE" ? await fetchLogoBytes() : null;
+  const bytes = await renderReceiptPdf(doc, { logo });
   return new File([bytes as BlobPart], receiptFileName(doc), { type: "application/pdf" });
 }
 
@@ -52,6 +56,8 @@ export function ReceiptViewer({ receiptId, onClose }: ReceiptViewerProps) {
   const [actionError, setActionError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const { identity, canEdit, save } = useAtelierIdentity();
+  const session = peekActiveSession();
+  const branding = useBranding(session?.mode === "SUPABASE" ? `${session.tenantId}:${session.profileId}` : null);
 
   useEffect(() => {
     // Précharge le moteur PDF dès l'ouverture : une fois mis en cache par le
@@ -255,14 +261,14 @@ export function ReceiptViewer({ receiptId, onClose }: ReceiptViewerProps) {
                 </button>
               )
             ) : null}
-            <ReceiptSheet doc={doc} className="animate-scale-in" />
+            <ReceiptSheet doc={doc} logoUrl={branding.logo} className="animate-scale-in" />
           </div>
         )}
       </Dialog>
       {doc && receiptId !== null
         ? createPortal(
             <div id="receipt-print-root" aria-hidden="true">
-              <ReceiptSheet doc={doc} />
+              <ReceiptSheet doc={doc} logoUrl={branding.logo} />
             </div>,
             document.body,
           )

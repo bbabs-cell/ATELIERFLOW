@@ -5,6 +5,9 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { formatLimit, formatPrice } from "@/domain/subscriptions/entitlements";
 import { getSupabaseBrowserClient } from "@/infrastructure/supabase/browserClient";
+import { COUNTRY_OPTIONS, countryByCode, currencyInfo, guessCountry } from "@/domain/geo/countries";
+import { approxFromXof } from "@/domain/geo/exchange";
+import { useRates } from "@/features/locale/useRates";
 
 interface PublicPlan {
   code: string;
@@ -29,11 +32,28 @@ function parse(rows: unknown): PublicPlan[] {
   }));
 }
 
+/** Une entrée par monnaie (« Francs guinéens (GNF) »), triée par nom. */
+const CURRENCY_CHOICES = [...new Set(COUNTRY_OPTIONS.map((c) => c.currency))]
+  .map((code) => {
+    const info = currencyInfo(code);
+    const name = code === "XOF" ? "F CFA (Afrique de l'Ouest)" : code === "XAF" ? "F CFA (Afrique centrale)" : `${info.plural} (${code})`;
+    return { code, label: name.charAt(0).toUpperCase() + name.slice(1) };
+  })
+  .sort((a, b) => a.label.localeCompare(b.label, "fr"));
+
 const lim = (v: unknown) => (typeof v === "number" ? v : null);
 
 /** Tarifs lus en direct (public_plans) : la vitrine suit les prix fixés dans « Plateforme ». */
 export function PublicPricing(): React.ReactElement {
   const [plans, setPlans] = useState<PublicPlan[] | null>(null);
+  const [display, setDisplay] = useState("XOF");
+  const rates = useRates();
+
+  // Monnaie d'affichage devinée d'après la langue du navigateur (« fr-GN » → franc guinéen).
+  useEffect(() => {
+    const guessed = countryByCode(guessCountry(navigator.language))?.currency ?? "XOF";
+    void Promise.resolve().then(() => setDisplay(guessed));
+  }, []);
 
   useEffect(() => {
     const client = getSupabaseBrowserClient();
@@ -55,7 +75,24 @@ export function PublicPricing(): React.ReactElement {
     );
   }
   return (
-    <div className="mt-12 grid gap-5 lg:grid-cols-3">
+    <>
+    <div className="mt-8 flex flex-wrap items-center gap-3 text-sm text-ivoire-50/70">
+      <label htmlFor="vitrine-currency">Voir aussi les prix en</label>
+      <select
+        id="vitrine-currency"
+        value={display}
+        onChange={(e) => setDisplay(e.target.value)}
+        className="h-11 rounded-xl border border-white/15 bg-white/5 px-3 text-ivoire-50"
+      >
+        {CURRENCY_CHOICES.map((c) => (
+          <option key={c.code} value={c.code} className="text-chocolat-900">
+            {c.label}
+          </option>
+        ))}
+      </select>
+      <span className="text-xs text-ivoire-50/45">Équivalent indicatif au taux du jour ; le paiement se fait en F CFA.</span>
+    </div>
+    <div className="mt-8 grid gap-5 lg:grid-cols-3">
       {plans.map((plan) => {
         const featured = plan.code === "PRO";
         const count = (v: unknown, some: string, all: string) => {
@@ -89,6 +126,9 @@ export function PublicPricing(): React.ReactElement {
               {formatPrice(plan.priceMonthly, plan.currency)}
               {plan.priceMonthly > 0 ? <span className="text-sm font-normal text-ivoire-50/50"> / mois</span> : null}
             </p>
+            {approxFromXof(plan.priceMonthly, display, rates) ? (
+              <p className="mt-1 text-sm text-ivoire-50/55">{approxFromXof(plan.priceMonthly, display, rates)} / mois</p>
+            ) : null}
             <ul className="mt-6 flex-1 space-y-2 text-sm text-ivoire-50/75">
               {features.map((f) => (
                 <li key={f} className="flex items-start gap-2">
@@ -110,5 +150,6 @@ export function PublicPricing(): React.ReactElement {
         );
       })}
     </div>
+    </>
   );
 }

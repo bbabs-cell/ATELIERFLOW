@@ -99,6 +99,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   MEMBER_DEACTIVATED: "Votre accès à cet atelier est désactivé. Demandez au responsable de le réactiver.",
   ROLE_MISMATCH: "Invitation incohérente avec votre accès actuel. Demandez une nouvelle invitation.",
   MEMBER_NOT_FOUND: "Membre introuvable.",
+  CANNOT_REMOVE_SELF: "Vous ne pouvez pas vous retirer vous-même de l'atelier.",
+  CANNOT_REMOVE_OWNER: "Un propriétaire ne peut pas être retiré.",
   INVALID_STATUS: "Statut invalide.",
   FORBIDDEN: "Action réservée aux responsables de l'équipe.",
 };

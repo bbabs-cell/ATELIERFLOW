@@ -2,7 +2,8 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card, Field, Input, StateView } from "@/ui";
+import { Button, Card, Field, Input, Select, StateView } from "@/ui";
+import { COUNTRY_OPTIONS, guessCountry } from "@/domain/geo/countries";
 import { authErrorMessage, MIN_PASSWORD_LENGTH, validateCredentials } from "@/domain/auth/errors";
 import { resolveIdentity } from "@/domain/auth/claims";
 import { AuthLayout } from "./AuthLayout";
@@ -17,11 +18,17 @@ export function LoginView() {
   const { provisioned } = getSupabaseBrowserEnv();
   const [mode, setMode] = useState<Mode>("signin");
   const [fullName, setFullName] = useState("");
+  const [country, setCountry] = useState("SN");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // Pays proposé d'après la langue du navigateur (« fr-CI » → Côte d'Ivoire).
+  useEffect(() => {
+    void Promise.resolve().then(() => setCountry(guessCountry(navigator.language)));
+  }, []);
 
   // Arrivée depuis la vitrine (« Commencer gratuitement ») : création de compte.
   useEffect(() => {
@@ -76,7 +83,7 @@ export function LoginView() {
         email: email.trim(),
         password,
         options: {
-          data: { full_name: fullName.trim() },
+          data: { full_name: fullName.trim(), country },
           emailRedirectTo: `${window.location.origin}/bienvenue`,
         },
       });
@@ -181,6 +188,17 @@ export function LoginView() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
               />
+            </Field>
+          ) : null}
+          {signup ? (
+            <Field label="Pays" htmlFor="auth-country" required hint="La monnaie de votre atelier en dépend (modifiable ensuite).">
+              <Select id="auth-country" value={country} onChange={(e) => setCountry(e.target.value)} autoComplete="country">
+                {COUNTRY_OPTIONS.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.name}
+                  </option>
+                ))}
+              </Select>
             </Field>
           ) : null}
           <Field label="E-mail" htmlFor="auth-email" required>
