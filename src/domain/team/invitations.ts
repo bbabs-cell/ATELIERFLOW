@@ -1,3 +1,4 @@
+import { planErrorMessage } from "@/domain/subscriptions/entitlements";
 import type { TenantRoleCode } from "./roles";
 
 /**
@@ -105,6 +106,8 @@ const ERROR_MESSAGES: Record<string, string> = {
 /** Traduit une erreur RPC (message = code levé par 0017) en français. */
 export function teamErrorMessage(error: { message?: string; code?: string } | null | undefined): string {
   const raw = error?.message ?? "";
+  const plan = planErrorMessage(raw);
+  if (plan) return plan;
   if (raw.startsWith("FORBIDDEN")) return ERROR_MESSAGES.FORBIDDEN;
   if (raw.includes("interdit :")) return raw.slice(raw.indexOf("interdit :")).replace(/^interdit : /, "Interdit : ");
   const code = Object.keys(ERROR_MESSAGES).find((key) => raw === key || raw.startsWith(`${key}:`));

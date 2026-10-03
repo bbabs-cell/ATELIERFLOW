@@ -37,6 +37,8 @@ export interface EnqueueInput {
   entityId: string;
   operation: SyncOperationKind;
   payload: unknown;
+  /** Horodatage d'origine (renvoi d'une opération refusée : garde l'ordre). */
+  createdAt?: string;
 }
 
 export interface SyncEngineStatus {
@@ -92,7 +94,7 @@ export class SyncEngine {
       entityId: input.entityId,
       operation: input.operation,
       payload: input.payload,
-      createdAt: new Date(this.now()).toISOString(),
+      createdAt: input.createdAt ?? new Date(this.now()).toISOString(),
       status: "PENDING",
       retryCount: 0,
       lastAttemptAt: null,
@@ -140,6 +142,38 @@ export class SyncEngine {
   async isSettled(entity: string, entityId: string): Promise<boolean> {
     const ops = await this.queue.listAll();
     return !ops.some((op) => op.entity === entity && op.entityId === entityId && op.status !== "SYNCED");
+  }
+
+  /** Opérations refusées par le serveur pour une limite ou une fonction du plan (0022). */
+  async planRefusals(): Promise<SyncOperation[]> {
+    const ops = await this.queue.listFailed();
+    return ops.filter((op) => isPlanRefusal(op.lastError));
+  }
+
+  /**
+   * Renvoie les opérations refusées (par exemple après un changement de
+   * plan). Le serveur garde la réponse d'une clé d'idempotence : chaque
+   * opération repart avec une NOUVELLE clé, à sa date d'origine, et
+   * l'ancienne est retirée. Les opérations qui en dépendaient (refusées
+   * en NOT_FOUND) repartent avec elles, dans le même ordre.
+   */
+  async retryRefused(): Promise<number> {
+    const failed = await this.queue.listFailed();
+    if (!failed.some((op) => isPlanRefusal(op.lastError))) return 0;
+    const ops = failed.filter((op) => isPlanRefusal(op.lastError) || /^NOT_FOUND:/.test(op.lastError ?? ""));
+    for (const op of ops) {
+      await this.enqueue({
+        tenantId: op.tenantId,
+        profileId: op.profileId,
+        entity: op.entity,
+        entityId: op.entityId,
+        operation: op.operation,
+        payload: op.payload,
+        createdAt: op.createdAt,
+      });
+      await this.queue.drop(op.idempotencyKey);
+    }
+    return ops.length;
   }
 
   subscribe(listener: SyncEngineStatusListener): () => void {
@@ -245,4 +279,8 @@ export class SyncEngine {
     await this.queue.requeueStuck(this.now() - this.stuckSyncingMs);
     return this.flush();
   }
+}
+
+function isPlanRefusal(error: string | null): boolean {
+  return typeof error === "string" && /^PLAN_(LIMIT|FEATURE):/.test(error);
 }

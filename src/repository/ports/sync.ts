@@ -20,7 +20,10 @@ export interface SyncQueuePort {
     error: string | null,
   ): Promise<void>;
   requeueStuck(cutoffMs: number): Promise<number>;
+  /** Opérations en cours (hors SYNCED, FAILED, CONFLICT). */
   listAll(): Promise<SyncOperation[]>;
+  listFailed(): Promise<SyncOperation[]>;
+  drop(idempotencyKey: string): Promise<void>;
 }
 
 export interface LocalCachePort {

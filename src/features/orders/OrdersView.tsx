@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AlarmClock, KanbanSquare, List, PackagePlus } from "lucide-react";
 import { Button, Dialog, Drawer, Field, Select, Textarea } from "@/ui";
+import { usePlanGate } from "@/features/subscriptions/PlanGate";
 import { cx } from "@/lib/cx";
 import { ORDER_PRIORITIES } from "@/domain/orders/order";
 import { DEFAULT_BOARD_FILTERS, deadlineState, matchesFilters, type BoardFilters } from "@/domain/orders/board";
@@ -51,6 +52,7 @@ export function OrdersView(): React.ReactElement {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [boardMessage, setBoardMessage] = useState<string | null>(null);
   const assignees = useAssignees();
+  const plan = usePlanGate();
 
   function switchMode(next: OrdersMode) {
     setMode(next);
@@ -137,7 +139,15 @@ export function OrdersView(): React.ReactElement {
     }
   }
 
-  async function openCreate() {
+  function openCreate() {
+    const localUsed =
+      search.trim() === ""
+        ? orders.filter(({ order: o }) => o.deleted_at === null && o.status !== "DELIVERED" && o.status !== "CANCELLED").length
+        : 0;
+    plan.guard("orders", localUsed, () => void startCreate());
+  }
+
+  async function startCreate() {
     setFormErrors(null);
     setFormOpen(true);
     if (customers.length === 0) {
@@ -227,7 +237,7 @@ export function OrdersView(): React.ReactElement {
             Suivi des créations de l&apos;atelier, de la commande à la livraison.
           </p>
         </div>
-        <Button onClick={() => void openCreate()}>
+        <Button onClick={openCreate}>
           <PackagePlus className="size-4" aria-hidden="true" />
           Nouvelle commande
         </Button>
@@ -417,6 +427,7 @@ export function OrdersView(): React.ReactElement {
           </div>
         </div>
       </Dialog>
+      {plan.dialog}
     </div>
   );
 }

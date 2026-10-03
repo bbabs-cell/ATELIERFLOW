@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { Session } from "@supabase/supabase-js";
 import {
+  Building2,
   CalendarDays,
   ClipboardList,
   CreditCard,
@@ -29,6 +30,8 @@ import {
   saveLastIdentity,
 } from "@/infrastructure/auth/lastIdentity";
 import { useSyncRunner } from "@/features/sync/useSyncRunner";
+import { PlanBanner } from "@/features/subscriptions/PlanBanner";
+import { usePlatformAdmin } from "@/features/platform/usePlatformAdmin";
 
 /** Pages accessibles sans atelier actif. */
 const PUBLIC_PATHS = ["/connexion", "/bienvenue", "/offline", "/design"];
@@ -42,6 +45,8 @@ const NAV: Omit<NavItem, "active">[] = [
   { label: "Équipe", href: "/equipe", icon: UsersRound },
   { label: "Abonnement", href: "/abonnement", icon: CreditCard },
 ];
+/** Visible seulement pour l'administration de la plateforme (SAAS_ADMIN). */
+const PLATFORM_NAV: Omit<NavItem, "active"> = { label: "Plateforme", href: "/plateforme", icon: Building2 };
 /** Pages qui n'ont plus de raison d'être une fois l'atelier prêt. */
 const ENTRY_PATHS = ["/connexion", "/bienvenue"];
 const HOME_PATH = "/dashboard";
@@ -149,6 +154,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
       ? `${state.session.tenantId}:${state.session.profileId}`
       : null,
   );
+  const platformAdmin = usePlatformAdmin(state.status === "ready" && state.session.mode === "SUPABASE");
 
   if (isPublic && target === null) {
     return <>{children}</>;
@@ -160,7 +166,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
       </div>
     );
   }
-  const navItems: NavItem[] = NAV.map((item) => ({
+  const navItems: NavItem[] = (platformAdmin ? [...NAV, PLATFORM_NAV] : NAV).map((item) => ({
     ...item,
     active: pathname === item.href || pathname.startsWith(`${item.href}/`),
   }));
@@ -172,6 +178,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
         navItems={navItems}
         footer={state.session.mode === "DEMO" ? null : <AccountCard session={state.session} />}
       >
+        {state.session.mode === "SUPABASE" ? <PlanBanner /> : null}
         {state.session.mode === "OFFLINE" ? (
           <div className="mx-auto flex max-w-5xl justify-end px-4 pt-4">
             <Badge tone="warning" dot>
