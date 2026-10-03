@@ -41,13 +41,14 @@ export class FileServiceError extends Error {
 
 /** Code d'erreur métier d'une exception Postgres (« NOT_FOUND:customers »…). */
 export function dbErrorCode(message: string | undefined): string {
-  const match = /(FORBIDDEN:[\w.]+|NOT_FOUND:\w+|VALIDATION:\w+|RECEIPT_IMMUTABLE|ALREADY_ARCHIVED|TOO_MANY_FILES)/.exec(message ?? "");
+  const match = /(FORBIDDEN:[\w.]+|NOT_FOUND:\w+|VALIDATION:\w+|RECEIPT_IMMUTABLE|ALREADY_ARCHIVED|TOO_MANY_FILES|RATE_LIMITED:\w+)/.exec(message ?? "");
   return match ? match[1] : "DB_ERROR";
 }
 
 export function statusForCode(code: string): number {
   if (code.startsWith("FORBIDDEN")) return 403;
   if (code.startsWith("NOT_FOUND")) return 404;
+  if (code.startsWith("RATE_LIMITED")) return 429;
   if (code.startsWith("VALIDATION") || code === "TOO_MANY_FILES") return 422;
   if (code === "ALREADY_ARCHIVED" || code === "RECEIPT_IMMUTABLE") return 409;
   return 500;

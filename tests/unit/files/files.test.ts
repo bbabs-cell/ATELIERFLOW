@@ -7,7 +7,7 @@ import {
   sniffMime,
   type FileRecord,
 } from "@/domain/files/files";
-import { createFileService, dbErrorCode, FileServiceError, type FilesDb } from "@/infrastructure/files/fileService";
+import { createFileService, dbErrorCode, FileServiceError, statusForCode, type FilesDb } from "@/infrastructure/files/fileService";
 import { createR2Storage, getR2Env, type R2Storage } from "@/infrastructure/files/r2";
 
 const T = "11111111-1111-4111-8111-111111111111";
@@ -58,6 +58,8 @@ describe("types réels et contrôles", () => {
     expect(fileErrorMessage("FORBIDDEN:files.write")).toContain("rôle");
     expect(dbErrorCode('new row… "NOT_FOUND:customers"')).toBe("NOT_FOUND:customers");
     expect(dbErrorCode("boom")).toBe("DB_ERROR");
+    expect(dbErrorCode("RATE_LIMITED:files")).toBe("RATE_LIMITED:files");
+    expect(statusForCode("RATE_LIMITED:files")).toBe(429);
   });
 });
 
