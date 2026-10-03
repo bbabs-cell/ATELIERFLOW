@@ -81,6 +81,24 @@ describe("createClientsService (offline-first)", () => {
     expect(list[0].id).toBe(res.customer.id);
   });
 
+  it("cross-tenant : deux ateliers sur le même appareil ne se voient jamais", async () => {
+    const a = makeHarness("tenant-iso-a");
+    const b = makeHarness("tenant-iso-b", "p-b");
+    const created = await a.clients.createCustomer(CONTACT);
+    if (!created.ok) throw new Error("client");
+
+    expect(await b.clients.listCustomers({ includeArchive: true })).toHaveLength(0);
+    expect(await b.clients.getCustomer(created.customer.id)).toBeNull();
+    expect(await b.cache.get("customers", created.customer.id)).toBeNull();
+    // Le même téléphone reste libre dans l'autre atelier.
+    expect((await b.clients.createCustomer(CONTACT)).ok).toBe(true);
+
+    // Chaque file n'envoie que les opérations de son atelier.
+    await a.engine.flush();
+    expect(a.server.pushed().every((op) => op.tenantId === "tenant-iso-a")).toBe(true);
+    expect(await b.queue.listAll()).toHaveLength(1);
+  });
+
   it("rejette un numéro de téléphone doublon actif", async () => {
     const h = makeHarness();
     await h.clients.createCustomer(CONTACT);

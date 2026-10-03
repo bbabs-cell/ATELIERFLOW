@@ -188,6 +188,29 @@ describe("createOrderService", () => {
     }
   });
 
+  it("changement de prix : le total reste figé à la création, même après modification", async () => {
+    const h = makeHarness(uniqueTenant());
+    const customer = await h.clients.createCustomer({ full_name: "Awa Diop" });
+    if (!customer.ok) throw new Error("client");
+    const created = await h.orders.createOrder({ customerId: customer.customer.id, priority: "NORMAL", items: [ITEM_ROBE] });
+    if (!created.ok) throw new Error("commande");
+    const id = created.order.id;
+
+    // Une saisie qui glisserait un autre prix n'a aucun effet : seul l'en-tête change.
+    const updated = await h.orders.updateHeader(id, {
+      priority: "URGENT",
+      notes: "retouche",
+      total_price: 1,
+    } as Parameters<typeof h.orders.updateHeader>[1]);
+    expect(updated?.total_price).toBe(25000);
+    expect(updated?.priority).toBe("URGENT");
+    expect((await h.orders.getOrderDetail(id))?.order.total_price).toBe(25000);
+
+    await h.engine.flush();
+    const update = h.server.pushed().find((op) => op.entity === "orders" && op.operation === "UPDATE");
+    expect((update?.payload as { total_price: number }).total_price).toBe(25000);
+  });
+
   it("affecte puis retire l'affectation, chaque changement part en sync", async () => {
     const h = makeHarness(uniqueTenant());
     const customer = await h.clients.createCustomer({ full_name: "Awa Diop" });
