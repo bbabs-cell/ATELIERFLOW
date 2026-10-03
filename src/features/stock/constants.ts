@@ -10,7 +10,7 @@ export const FABRIC_STATUS_META: Record<
   FabricStatus,
   { label: string; tone: BadgeTone }
 > = {
-  ACTIVE: { label: "Actif", tone: "success" },
+  ACTIVE: { label: "Actif", tone: "info" },
   ARCHIVED: { label: "Archivé", tone: "neutral" },
 };
 
@@ -18,9 +18,9 @@ export const STOCK_MOVEMENT_TYPE_META: Record<
   StockMovementType,
   { label: string; tone: BadgeTone }
 > = {
-  IN: { label: "Entrée", tone: "success" },
-  OUT: { label: "Sortie", tone: "warning" },
-  ADJUST: { label: "Ajustement", tone: "info" },
+  IN: { label: "Entrée", tone: "info" },
+  OUT: { label: "Sortie", tone: "neutral" },
+  ADJUST: { label: "Ajustement", tone: "neutral" },
 };
 
 export const STOCK_MOVEMENT_TYPES_LIST: StockMovementType[] = [

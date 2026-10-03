@@ -7,9 +7,9 @@ import {
 import type { MembershipStatus } from "@/domain/team/teamMember";
 
 export const ROLE_META: Record<TenantRoleCode, { label: string; tone: BadgeTone }> = {
-  OWNER: { label: ROLE_LABELS.OWNER, tone: "danger" },
-  MANAGER: { label: ROLE_LABELS.MANAGER, tone: "accent" },
-  EMPLOYEE: { label: ROLE_LABELS.EMPLOYEE, tone: "primary" },
+  OWNER: { label: ROLE_LABELS.OWNER, tone: "info" },
+  MANAGER: { label: ROLE_LABELS.MANAGER, tone: "info" },
+  EMPLOYEE: { label: ROLE_LABELS.EMPLOYEE, tone: "neutral" },
   APPRENTICE: { label: ROLE_LABELS.APPRENTICE, tone: "neutral" },
 };
 
@@ -19,7 +19,7 @@ export const MEMBERSHIP_STATUS_META: Record<
   MembershipStatus,
   { label: string; tone: BadgeTone }
 > = {
-  INVITED: { label: "Invitée", tone: "warning" },
-  ACTIVE: { label: "Active", tone: "success" },
-  DEACTIVATED: { label: "Désactivée", tone: "neutral" },
+  INVITED: { label: "Invitée", tone: "neutral" },
+  ACTIVE: { label: "Active", tone: "info" },
+  DEACTIVATED: { label: "Désactivée", tone: "warning" },
 };

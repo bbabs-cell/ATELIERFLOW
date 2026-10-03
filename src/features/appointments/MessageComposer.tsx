@@ -85,7 +85,7 @@ export function MessageComposer({ item, initialKind, atelier, onClose, onOpened 
             type="button"
             onClick={() => void open()}
             disabled={text.trim() === ""}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-menthe-600 px-5 text-sm font-semibold text-white shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift disabled:pointer-events-none disabled:opacity-50"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-azur-600 px-5 text-sm font-semibold text-white shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift disabled:pointer-events-none disabled:opacity-50"
           >
             <MessageCircle className="size-4" aria-hidden="true" />
             Ouvrir WhatsApp
@@ -108,7 +108,7 @@ export function MessageComposer({ item, initialKind, atelier, onClose, onOpened 
             <Input id="message-phone" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+221 77 000 00 00" />
           </Field>
         </div>
-        <p className={cx("-mt-2 text-xs", number ? "text-menthe-600" : "text-ink-soft")}>
+        <p className={cx("-mt-2 text-xs", number ? "text-azur-600" : "text-ink-soft")}>
           {number
             ? `Conversation directe avec +${number}.`
             : "Numéro absent ou non reconnu : WhatsApp vous laissera choisir le contact. Ajoutez l'indicatif (+221…) pour ouvrir directement la conversation."}
@@ -122,7 +122,7 @@ export function MessageComposer({ item, initialKind, atelier, onClose, onOpened 
             {text.length} / {WHATSAPP_MESSAGE_MAX}
           </span>
           {edited ? (
-            <button type="button" onClick={() => setText(generate(kind))} className="inline-flex items-center gap-1 font-semibold text-flamme-700 hover:underline">
+            <button type="button" onClick={() => setText(generate(kind))} className="inline-flex items-center gap-1 font-semibold text-azur-700 hover:underline">
               <RotateCcw className="size-3.5" aria-hidden="true" />
               Revenir au message proposé
             </button>

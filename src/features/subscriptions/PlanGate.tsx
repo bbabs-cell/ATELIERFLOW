@@ -84,7 +84,7 @@ export function FeatureLocked({ feature, children }: { feature: FeatureFlag; chi
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-outline bg-surface-2 px-4 py-3 text-sm">
       <p className="min-w-0 text-ink-soft">{planErrorMessage(`PLAN_FEATURE:${feature}`)} {children}</p>
-      <Link href="/abonnement" className="font-semibold text-flamme-700 underline-offset-4 hover:underline">
+      <Link href="/abonnement" className="font-semibold text-menthe-600 underline-offset-4 hover:underline">
         Voir les plans
       </Link>
     </div>

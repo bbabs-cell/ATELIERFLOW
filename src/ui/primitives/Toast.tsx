@@ -29,8 +29,8 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 const toneStyles: Record<ToastTone, { box: string; icon: ReactNode }> = {
   success: { box: "border-menthe-300", icon: <CheckCircle2 className="text-success" /> },
   error: { box: "border-wax-300", icon: <OctagonX className="text-danger" /> },
-  warning: { box: "border-flamme-300", icon: <AlertTriangle className="text-warning" /> },
-  info: { box: "border-azur-300", icon: <Info className="text-info" /> },
+  warning: { box: "border-wax-200", icon: <AlertTriangle className="text-warning" /> },
+  info: { box: "border-chocolat-200", icon: <Info className="text-info" /> },
 };
 
 let nextId = 1;

@@ -13,7 +13,7 @@ export interface CalendarEvent {
 
 const tones: Record<NonNullable<CalendarEvent["tone"]>, string> = {
   primary: "bg-chocolat-900 text-ivoire-100",
-  accent: "bg-champagne-400 text-chocolat-950",
+  accent: "bg-azur-500 text-white",
   success: "bg-success text-white",
   danger: "bg-danger text-white",
 };
@@ -77,7 +77,7 @@ export function Calendar({
             onClick={() =>
               setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))
             }
-            className="grid size-9 place-items-center rounded-full bg-chocolat-900 text-ivoire-50 transition-all duration-300 hover:scale-110 hover:bg-flamme-500 hover:shadow-glow pointer-coarse:size-11"
+            className="grid size-9 place-items-center rounded-full bg-chocolat-900 text-ivoire-50 transition-all duration-300 hover:scale-110 hover:bg-azur-500 hover:shadow-glow pointer-coarse:size-11"
           >
             <ChevronLeft className="size-5" />
           </button>
@@ -87,7 +87,7 @@ export function Calendar({
             onClick={() =>
               setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))
             }
-            className="grid size-9 place-items-center rounded-full bg-chocolat-900 text-ivoire-50 transition-all duration-300 hover:scale-110 hover:bg-flamme-500 hover:shadow-glow pointer-coarse:size-11"
+            className="grid size-9 place-items-center rounded-full bg-chocolat-900 text-ivoire-50 transition-all duration-300 hover:scale-110 hover:bg-azur-500 hover:shadow-glow pointer-coarse:size-11"
           >
             <ChevronRight className="size-5" />
           </button>
@@ -96,7 +96,7 @@ export function Calendar({
 
       <div className="grid grid-cols-7 gap-0.5 text-center xs:gap-1">
         {daysFr.map((d) => (
-          <span key={d} className="font-mono text-[0.65rem] uppercase tracking-wider text-flamme-600">
+          <span key={d} className="font-mono text-[0.65rem] uppercase tracking-wider text-azur-600">
             {d}
           </span>
         ))}
@@ -110,12 +110,12 @@ export function Calendar({
               type="button"
               onClick={() => onSelectDate?.(key)}
               aria-label={`${d.getDate()} ${monthLabel}${dayEvents.length ? `, ${dayEvents.length} évènement(s)` : ""}`}
-              className="group relative flex aspect-square min-h-10 items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:bg-flamme-50"
+              className="group relative flex aspect-square min-h-10 items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:bg-azur-50"
             >
               <span
                 className={cx(
                   "flex size-9 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110",
-                  isToday && "bg-flamme-gradient font-bold text-white shadow-glow animate-gradient",
+                  isToday && "bg-azur-gradient font-bold text-white shadow-glow animate-gradient",
                   !inMonth(d) && "text-ink-faint",
                 )}
               >

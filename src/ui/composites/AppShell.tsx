@@ -6,12 +6,16 @@ import { Menu, type LucideIcon } from "lucide-react";
 import { cx } from "@/lib/cx";
 import { Drawer } from "../primitives/Drawer";
 
+/** Couleur de la fonctionnalité (une couleur = une fonctionnalité). */
+export type FeatureTone = "orange" | "blue" | "green" | "brown";
+
 export interface NavItem {
   label: string;
   href: string;
   icon: LucideIcon;
   active?: boolean;
   badge?: ReactNode;
+  tone?: FeatureTone;
 }
 
 export interface AppShellProps {
@@ -24,19 +28,17 @@ export interface AppShellProps {
 }
 
 /**
- * Pastille d'icône de chaque entrée de menu — palette resserrée :
- * orange pour le travail de l'atelier, espresso pour la gestion, vert pour
- * l'argent. Le rouge reste réservé aux alertes.
+ * Pastille d'icône et état actif de chaque entrée de menu, selon la
+ * couleur de sa fonctionnalité : ORANGE commandes, BLEU clients et
+ * rendez-vous, VERT argent, MARRON le reste. Le rouge reste réservé aux
+ * alertes.
  */
-const ICON_TONES = [
-  "from-flamme-300 to-flamme-500", // Tableau de bord
-  "from-azur-300 to-azur-500", // Clients
-  "from-champagne-300 to-champagne-500", // Commandes
-  "from-flamme-200 to-flamme-600", // Rendez-vous
-  "from-azur-300 to-azur-600", // Stock
-  "from-violet-100 to-violet-500", // Équipe
-  "from-menthe-300 to-menthe-500", // Abonnement
-];
+const TONES: Record<FeatureTone, { icon: string; active: string }> = {
+  orange: { icon: "from-flamme-300 to-flamme-600", active: "bg-flamme-gradient text-white" },
+  blue: { icon: "from-azur-300 to-azur-600", active: "bg-azur-gradient text-white" },
+  green: { icon: "from-menthe-300 to-menthe-600", active: "bg-menthe-gradient text-white" },
+  brown: { icon: "from-chocolat-300 to-chocolat-600", active: "bg-chocolat-200 text-chocolat-950" },
+};
 
 /** Formes lumineuses qui dérivent lentement (fond vivant). */
 export function AmbientBlobs({ dark = false, className }: { dark?: boolean; className?: string }) {
@@ -45,7 +47,7 @@ export function AmbientBlobs({ dark = false, className }: { dark?: boolean; clas
     <div aria-hidden="true" className={cx("pointer-events-none absolute inset-0 overflow-hidden", className)}>
       <div className={cx("absolute -left-20 -top-24 size-80 rounded-full bg-flamme-400 blur-3xl animate-blob", tone)} />
       <div
-        className={cx("absolute -right-24 top-1/3 size-96 rounded-full bg-azur-500 blur-3xl animate-blob", tone)}
+        className={cx("absolute -right-24 top-1/3 size-96 rounded-full bg-chocolat-400 blur-3xl animate-blob", tone)}
         style={{ animationDelay: "-5s" }}
       />
       <div
@@ -73,7 +75,7 @@ export function AppShell({
 
   const nav = (dark: boolean) => (
     <nav aria-label="Navigation principale" className="stagger flex flex-col gap-1.5">
-      {navItems.map((item, index) => (
+      {navItems.map((item) => (
         <Link
           key={item.href}
           href={item.href}
@@ -84,7 +86,7 @@ export function AppShell({
           className={cx(
             "group relative flex min-h-12 items-center gap-3 overflow-hidden rounded-full px-2 pr-4 text-sm font-semibold transition-all duration-300",
             item.active
-              ? "bg-sunset-gradient text-chocolat-950 shadow-glow animate-gradient"
+              ? cx(TONES[item.tone ?? "brown"].active, "shadow-soft")
               : dark
                 ? "text-chocolat-200 hover:translate-x-1 hover:bg-white/8 hover:text-white"
                 : "text-ink-soft hover:translate-x-1 hover:bg-flamme-50 hover:text-ink",
@@ -95,8 +97,8 @@ export function AppShell({
             className={cx(
               "grid size-9 shrink-0 place-items-center rounded-full transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-8deg]",
               item.active
-                ? "bg-chocolat-950 text-champagne-300"
-                : cx("bg-gradient-to-br text-white shadow-soft", ICON_TONES[index % ICON_TONES.length]),
+                ? "bg-chocolat-950 text-white"
+                : cx("bg-gradient-to-br text-white shadow-soft", TONES[item.tone ?? "brown"].icon),
             )}
           >
             <item.icon aria-hidden="true" className="size-[18px]" />

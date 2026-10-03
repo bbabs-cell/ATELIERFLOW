@@ -230,7 +230,7 @@ export function ReceiptViewer({ receiptId, onClose }: ReceiptViewerProps) {
               </p>
             ) : null}
             {identity === null ? (
-              <p className="rounded-lg bg-champagne-100 px-3 py-2 text-xs text-chocolat-700">
+              <p className="rounded-lg bg-menthe-100 px-3 py-2 text-xs text-chocolat-700">
                 Coordonnées de l&apos;atelier pas encore chargées sur cet appareil : reconnectez-vous une fois en ligne.
               </p>
             ) : null}
@@ -248,7 +248,7 @@ export function ReceiptViewer({ receiptId, onClose }: ReceiptViewerProps) {
                 <button
                   type="button"
                   onClick={() => setEditing(true)}
-                  className="inline-flex min-h-9 items-center gap-1.5 self-end rounded-full px-3 py-1 text-xs font-semibold text-flamme-700 pointer-coarse:min-h-11 transition-colors hover:bg-flamme-50"
+                  className="inline-flex min-h-9 items-center gap-1.5 self-end rounded-full px-3 py-1 text-xs font-semibold text-menthe-600 pointer-coarse:min-h-11 transition-colors hover:bg-menthe-50"
                 >
                   <Pencil className="size-3.5" aria-hidden="true" />
                   Coordonnées de l&apos;atelier

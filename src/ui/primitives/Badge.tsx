@@ -8,16 +8,23 @@ export type BadgeTone =
   | "success"
   | "warning"
   | "danger"
-  | "info";
+  | "info"
+  | "blue";
 
 const tones: Record<BadgeTone, string> = {
   neutral: "bg-anthracite-100 text-anthracite-700 ring-1 ring-inset ring-anthracite-200",
-  primary: "bg-flamme-gradient text-white shadow-[0_4px_12px_-4px_rgb(255_94_46/0.6)]",
-  accent: "bg-champagne-300 text-chocolat-950 ring-1 ring-inset ring-champagne-500/40",
+  // ORANGE : commandes, actions
+  primary: "bg-flamme-gradient text-white shadow-[0_4px_12px_-4px_rgb(245_116_9/0.6)]",
+  accent: "bg-flamme-100 text-flamme-700 ring-1 ring-inset ring-flamme-200",
+  // VERT : argent
   success: "bg-menthe-100 text-menthe-600 ring-1 ring-inset ring-menthe-300",
-  warning: "bg-flamme-100 text-flamme-700 ring-1 ring-inset ring-flamme-200",
+  // ROUGE : alertes (attention / grave)
+  warning: "bg-wax-50 text-wax-600 ring-1 ring-inset ring-wax-200",
   danger: "bg-wax-100 text-wax-600 ring-1 ring-inset ring-wax-300",
-  info: "bg-azur-100 text-azur-600 ring-1 ring-inset ring-azur-300",
+  // MARRON : information neutre
+  info: "bg-chocolat-50 text-chocolat-700 ring-1 ring-inset ring-chocolat-200",
+  // BLEU : clients, rendez-vous
+  blue: "bg-azur-100 text-azur-700 ring-1 ring-inset ring-azur-300",
 };
 
 export interface BadgeProps {

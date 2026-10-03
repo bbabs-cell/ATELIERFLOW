@@ -160,7 +160,7 @@ export function ClientsView(): React.ReactElement {
         {selected ? (
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-3">
-              <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-sunset-gradient text-chocolat-950 shadow-soft transition-transform duration-300 group-hover:scale-110">
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-azur-gradient text-white shadow-soft transition-transform duration-300 group-hover:scale-110">
                 <UserRound className="size-6" aria-hidden="true" />
               </span>
               <div className="min-w-0">

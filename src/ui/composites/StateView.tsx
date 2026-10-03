@@ -33,17 +33,17 @@ const config: Record<
   },
   error: {
     icon: <TriangleAlert className="size-7" />,
-    tone: "bg-[linear-gradient(120deg,#fb7185,#e11d48)]",
+    tone: "bg-wax-gradient",
     defaultTitle: "Une erreur est survenue",
   },
   success: {
     icon: <CheckCircle2 className="size-7" />,
-    tone: "bg-[linear-gradient(120deg,#12c98a,#047857)]",
+    tone: "bg-menthe-gradient",
     defaultTitle: "Opération réussie",
   },
   offline: {
     icon: <CloudOff className="size-7" />,
-    tone: "bg-[linear-gradient(120deg,#7c5cf0,#24105c)]",
+    tone: "bg-ocean-gradient",
     defaultTitle: "Hors ligne",
   },
   sync: {
@@ -72,7 +72,7 @@ export function StateView({
   return (
     <div
       className={cx(
-        "relative flex min-h-48 flex-col items-center justify-center gap-4 overflow-hidden rounded-xl border-2 border-dashed border-flamme-200 bg-surface/70 p-8 text-center backdrop-blur animate-scale-in",
+        "relative flex min-h-48 flex-col items-center justify-center gap-4 overflow-hidden rounded-xl border-2 border-dashed border-chocolat-200 bg-surface/70 p-8 text-center backdrop-blur animate-scale-in",
         className,
       )}
     >

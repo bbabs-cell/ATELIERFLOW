@@ -34,19 +34,19 @@ import { getDashboardFacade } from "./facade";
 import { DASHBOARD_PERIOD_OPTIONS, PAYMENT_METHOD_META, SEARCH_ENTITY_LABELS } from "./constants";
 import { useDataChanged } from "@/features/sync/useDataChanged";
 
-type Tone = "flamme" | "azur" | "or" | "wax" | "menthe" | "violet";
+/**
+ * Une couleur = une fonctionnalité : VERT argent, ORANGE commandes,
+ * BLEU clients et rendez-vous, MARRON stock et équipe, ROUGE alertes.
+ */
+type Tone = "green" | "orange" | "blue" | "brown" | "red";
 
 const TONES: Record<Tone, { chip: string; glow: string; bar: string }> = {
-  flamme: { chip: "from-flamme-300 to-flamme-600", glow: "bg-flamme-400", bar: "from-flamme-300 to-flamme-600" },
-  azur: { chip: "from-azur-300 to-azur-600", glow: "bg-azur-500", bar: "from-azur-300 to-azur-600" },
-  or: { chip: "from-champagne-300 to-champagne-600", glow: "bg-champagne-400", bar: "from-champagne-300 to-champagne-600" },
-  wax: { chip: "from-wax-300 to-wax-600", glow: "bg-wax-500", bar: "from-wax-300 to-wax-600" },
-  menthe: { chip: "from-menthe-300 to-menthe-600", glow: "bg-menthe-500", bar: "from-menthe-300 to-menthe-600" },
-  violet: { chip: "from-violet-100 to-violet-600", glow: "bg-violet-500", bar: "from-violet-100 to-violet-600" },
+  green: { chip: "from-menthe-300 to-menthe-600", glow: "bg-menthe-500", bar: "from-menthe-300 to-menthe-600" },
+  orange: { chip: "from-flamme-300 to-flamme-600", glow: "bg-flamme-400", bar: "from-flamme-300 to-flamme-600" },
+  blue: { chip: "from-azur-300 to-azur-600", glow: "bg-azur-500", bar: "from-azur-300 to-azur-600" },
+  brown: { chip: "from-chocolat-300 to-chocolat-600", glow: "bg-chocolat-400", bar: "from-chocolat-300 to-chocolat-600" },
+  red: { chip: "from-wax-300 to-wax-600", glow: "bg-wax-500", bar: "from-wax-300 to-wax-600" },
 };
-
-// Barres : orange, vert et neutres ; le rouge (wax) reste réservé aux alertes.
-const BAR_TONES: Tone[] = ["flamme", "menthe", "or", "azur", "flamme", "menthe"];
 
 function AnimatedNumber({ value, format }: { value: number; format: (n: number) => string }) {
   const shown = useCountUp(value);
@@ -255,7 +255,7 @@ export function DashboardView(): React.ReactElement {
           </div>
           <div className="min-w-0 text-left sm:text-right">
             <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-chocolat-200">Encaissé sur la période</p>
-            <p className="mt-1 font-display text-4xl font-extrabold tabular text-champagne-300 sm:text-5xl">
+            <p className="mt-1 font-display text-4xl font-extrabold tabular text-menthe-300 sm:text-5xl">
               {kpis ? <AnimatedNumber value={kpis.money.revenuePeriod} format={formatFcfa} /> : "—"}
             </p>
           </div>
@@ -267,7 +267,7 @@ export function DashboardView(): React.ReactElement {
           <Link href="/clients" className="inline-flex h-11 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-semibold text-ivoire-50 backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:bg-azur-500">
             <UserPlus className="size-4" aria-hidden="true" /> Nouveau client
           </Link>
-          <Link href="/rdv" className="inline-flex h-11 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-semibold text-ivoire-50 backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:bg-wax-500">
+          <Link href="/rdv" className="inline-flex h-11 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-semibold text-ivoire-50 backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:bg-azur-500">
             <CalendarPlus className="size-4" aria-hidden="true" /> Rendez-vous
           </Link>
         </div>
@@ -294,7 +294,7 @@ export function DashboardView(): React.ReactElement {
           />
           <input
             aria-label="Rechercher dans l'atelier"
-            className="h-12 w-full rounded-full border-2 border-outline bg-surface/90 pl-11 pr-4 text-sm font-medium text-ink shadow-soft backdrop-blur transition-all duration-300 placeholder:text-ink-faint hover:border-flamme-300 focus:border-flamme-500 focus:shadow-[0_0_0_4px_rgb(255_94_46/0.18)] focus:outline-none"
+            className="h-12 w-full rounded-full border-2 border-outline bg-surface/90 pl-11 pr-4 text-sm font-medium text-ink shadow-soft backdrop-blur transition-all duration-300 placeholder:text-ink-faint hover:border-flamme-300 focus:border-flamme-500 focus:shadow-[0_0_0_4px_rgb(245_116_9/0.18)] focus:outline-none"
             placeholder="Rechercher… (clients, commandes, tissus)"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -361,14 +361,14 @@ export function DashboardView(): React.ReactElement {
         ) : (
           <>
             <ul className="stagger grid grid-cols-2 gap-3 @4xl:grid-cols-4">
-              <KpiCard tone="menthe" href="/commandes" icon={<Wallet className="size-5" aria-hidden="true" />} title="Encaissé" value={kpis.money.revenuePeriod} format={formatFcfa} hint={`sur ${rangeLabel}`} />
-              <KpiCard tone="or" href="/commandes" icon={<Banknote className="size-5" aria-hidden="true" />} title="Facturé" value={kpis.money.invoicedPeriod} format={formatFcfa} hint="commandes créées sur la période" />
-              <KpiCard tone="or" href="/commandes" icon={<CircleDollarSign className="size-5" aria-hidden="true" />} title="Reste à encaisser" value={kpis.money.outstanding} format={formatFcfa} hint="hors commandes annulées" />
-              <KpiCard tone="wax" href="/commandes" icon={<Hourglass className="size-5" aria-hidden="true" />} title="En retard" value={kpis.money.ordersLate} hint="échéance dépassée, non livrée" />
-              <KpiCard tone="flamme" href="/commandes" icon={<Package className="size-5" aria-hidden="true" />} title="Commandes actives" value={kpis.money.ordersActive} hint={`${kpis.money.ordersReadyPickup} à retirer`} />
-              <KpiCard tone="azur" href="/clients" icon={<PackageOpen className="size-5" aria-hidden="true" />} title="Clients actifs" value={kpis.context.customersActive} hint={`${kpis.context.customersNewPeriod} nouveaux sur la période`} />
-              <KpiCard tone="flamme" href="/rdv" icon={<CalendarClock className="size-5" aria-hidden="true" />} title="Rendez-vous du jour" value={kpis.context.appointmentsToday} hint="planifiés ou confirmés" />
-              <KpiCard tone="or" href="/stock" icon={<Shirt className="size-5" aria-hidden="true" />} title="Tissus en stock" value={kpis.context.stockUnitsCenti} format={(n) => `${formatCentiUnits(n)} m`} hint={`${kpis.context.fabricsLow} en stock bas`} />
+              <KpiCard tone="green" href="/commandes" icon={<Wallet className="size-5" aria-hidden="true" />} title="Encaissé" value={kpis.money.revenuePeriod} format={formatFcfa} hint={`sur ${rangeLabel}`} />
+              <KpiCard tone="green" href="/commandes" icon={<Banknote className="size-5" aria-hidden="true" />} title="Facturé" value={kpis.money.invoicedPeriod} format={formatFcfa} hint="commandes créées sur la période" />
+              <KpiCard tone="green" href="/commandes" icon={<CircleDollarSign className="size-5" aria-hidden="true" />} title="Reste à encaisser" value={kpis.money.outstanding} format={formatFcfa} hint="hors commandes annulées" />
+              <KpiCard tone="red" href="/commandes" icon={<Hourglass className="size-5" aria-hidden="true" />} title="En retard" value={kpis.money.ordersLate} hint="échéance dépassée, non livrée" />
+              <KpiCard tone="orange" href="/commandes" icon={<Package className="size-5" aria-hidden="true" />} title="Commandes actives" value={kpis.money.ordersActive} hint={`${kpis.money.ordersReadyPickup} à retirer`} />
+              <KpiCard tone="blue" href="/clients" icon={<PackageOpen className="size-5" aria-hidden="true" />} title="Clients actifs" value={kpis.context.customersActive} hint={`${kpis.context.customersNewPeriod} nouveaux sur la période`} />
+              <KpiCard tone="blue" href="/rdv" icon={<CalendarClock className="size-5" aria-hidden="true" />} title="Rendez-vous du jour" value={kpis.context.appointmentsToday} hint="planifiés ou confirmés" />
+              <KpiCard tone="brown" href="/stock" icon={<Shirt className="size-5" aria-hidden="true" />} title="Tissus en stock" value={kpis.context.stockUnitsCenti} format={(n) => `${formatCentiUnits(n)} m`} hint={`${kpis.context.fabricsLow} en stock bas`} />
             </ul>
 
             <div className="mt-6 grid grid-cols-1 gap-4 @4xl:grid-cols-3">
@@ -380,7 +380,7 @@ export function DashboardView(): React.ReactElement {
                     {kpis.revenue.map((p, i) => {
                       const maxAmount = Math.max(...kpis.revenue.map((x) => x.amount), 1);
                       const h = Math.max(4, Math.round((p.amount / maxAmount) * 100));
-                      const tone = TONES[BAR_TONES[i % BAR_TONES.length]];
+                      const tone = TONES.green;
                       return (
                         <div key={i} className="group flex h-full min-w-0 flex-1 flex-col items-center justify-end">
                           <span className="mb-1 truncate font-mono text-[10px] text-ink-soft opacity-0 transition-opacity group-hover:opacity-100">
@@ -428,9 +428,9 @@ export function DashboardView(): React.ReactElement {
                   <EmptyLine>Aucune commande enregistrée.</EmptyLine>
                 ) : (
                   <ul className="stagger mt-4 flex flex-col gap-2.5">
-                    {kpis.ordersByStatus.map((b, i) => {
+                    {kpis.ordersByStatus.map((b) => {
                       const meta = ORDER_STATUS_META[b.status];
-                      const tone = TONES[BAR_TONES[i % BAR_TONES.length]];
+                      const tone = TONES.orange;
                       return (
                         <li key={b.status} className="flex items-center gap-3 text-sm">
                           <span className="w-32 shrink-0 truncate">
@@ -473,10 +473,10 @@ export function DashboardView(): React.ReactElement {
 
             <Panel title="L'atelier en un coup d'œil" className="mt-6">
               <ul className="stagger mt-4 grid grid-cols-2 gap-3 @4xl:grid-cols-4">
-                <KpiCard tone="azur" href="/equipe" icon={<Users className="size-5" aria-hidden="true" />} title="Équipe active" value={kpis.context.teamActive} hint="membres opérationnels" />
-                <KpiCard tone="azur" href="/stock" icon={<TrendingDown className="size-5" aria-hidden="true" />} title="Sorties stock" value={kpis.context.stockOutPeriodCenti} format={(n) => `${formatCentiUnits(n)} m`} hint="sur la période" />
-                <KpiCard tone="or" href="/stock" icon={<Shirt className="size-5" aria-hidden="true" />} title="Stock bas" value={kpis.context.fabricsLow} hint="≤ 1 m (réapprovisionner)" />
-                <KpiCard tone="menthe" href="/clients" icon={<UserPlus className="size-5" aria-hidden="true" />} title="Nouveaux clients" value={kpis.context.customersNewPeriod} hint={`sur ${rangeLabel}`} />
+                <KpiCard tone="brown" href="/equipe" icon={<Users className="size-5" aria-hidden="true" />} title="Équipe active" value={kpis.context.teamActive} hint="membres opérationnels" />
+                <KpiCard tone="brown" href="/stock" icon={<TrendingDown className="size-5" aria-hidden="true" />} title="Sorties stock" value={kpis.context.stockOutPeriodCenti} format={(n) => `${formatCentiUnits(n)} m`} hint="sur la période" />
+                <KpiCard tone="red" href="/stock" icon={<Shirt className="size-5" aria-hidden="true" />} title="Stock bas" value={kpis.context.fabricsLow} hint="≤ 1 m (réapprovisionner)" />
+                <KpiCard tone="blue" href="/clients" icon={<UserPlus className="size-5" aria-hidden="true" />} title="Nouveaux clients" value={kpis.context.customersNewPeriod} hint={`sur ${rangeLabel}`} />
               </ul>
             </Panel>
           </>

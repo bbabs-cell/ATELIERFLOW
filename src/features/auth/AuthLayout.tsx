@@ -56,7 +56,7 @@ function ReceiptPreview() {
       </div>
 
       <div className="absolute -left-4 top-28 flex items-center gap-2 rounded-full bg-surface px-3 py-2 text-xs font-semibold text-ink shadow-lift animate-float sm:-left-10" style={{ animationDelay: "-1.5s" }}>
-        <span className="grid size-6 place-items-center rounded-full bg-menthe-500 text-white">
+        <span className="grid size-6 place-items-center rounded-full bg-azur-500 text-white">
           <Ruler className="size-3.5" aria-hidden="true" />
         </span>
         Mesures enregistrées
@@ -67,7 +67,7 @@ function ReceiptPreview() {
         </span>
         Essayage 16:00
       </div>
-      <div className="absolute -bottom-5 left-8 flex items-center gap-2 rounded-full bg-flamme-gradient px-3 py-2 text-xs font-semibold text-white shadow-glow animate-pop" style={{ animationDelay: "0.6s" }}>
+      <div className="absolute -bottom-5 left-8 flex items-center gap-2 rounded-full bg-menthe-gradient px-3 py-2 text-xs font-semibold text-white shadow-soft animate-pop" style={{ animationDelay: "0.6s" }}>
         <CheckCircle2 className="size-4" aria-hidden="true" />
         Paiement synchronisé
       </div>

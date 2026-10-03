@@ -62,7 +62,7 @@ export function ClientsList({
           title="Clients indisponibles"
           description={error}
           action={
-            <button type="button" className="text-sm font-bold text-flamme-600 underline underline-offset-2" onClick={onRetry}>
+            <button type="button" className="text-sm font-bold text-azur-600 underline underline-offset-2" onClick={onRetry}>
               Réessayer
             </button>
           }
@@ -83,10 +83,10 @@ export function ClientsList({
             <li key={c.id}>
               <button
                 type="button"
-                className="group flex w-full items-center gap-3 px-4 py-3 text-left transition-all duration-200 hover:bg-flamme-50 hover:pl-5"
+                className="group flex w-full items-center gap-3 px-4 py-3 text-left transition-all duration-200 hover:bg-azur-50 hover:pl-5"
                 onClick={() => onSelect(c)}
               >
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-sunset-gradient text-chocolat-950 shadow-soft transition-transform duration-300 group-hover:scale-110">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-azur-gradient text-white shadow-soft transition-transform duration-300 group-hover:scale-110">
                   <UserRound className="size-5" aria-hidden="true" />
                 </span>
                 <span className="min-w-0 flex-1">

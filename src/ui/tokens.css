@@ -1,12 +1,13 @@
 /* =====================================================================
-   ATELIER — DESIGN TOKENS v4 « vif »
-   Fonds blanc lavande et QUATRE couleurs vives, chacune avec un rôle :
-     VIOLET  (chocolat, azur, violet)  structure : navigation, titres, fonds sombres ;
-     CORAIL → ROSE (flamme, champagne) marque et actions, en dégradé ;
-     VERT    (menthe)                   argent encaissé, succès, WhatsApp ;
-     ROUGE   (wax)                      retards, annulations, erreurs.
-   Les anciens noms restent (aucun composant à réécrire) mais pointent vers
-   ces familles. Animations inchangées.
+   ATELIER — DESIGN TOKENS v5 « une couleur = une fonctionnalité »
+   Neutres crème + MARRON (structure : menu, fonds sombres, titres) et
+   QUATRE couleurs franches, sans teintes voisines :
+     ORANGE (flamme, champagne)  COMMANDES et boutons d'action ;
+     BLEU   (azur)               CLIENTS et RENDEZ-VOUS (WhatsApp compris) ;
+     VERT   (menthe)             ARGENT : paiements, reçus, abonnement ;
+     ROUGE  (wax, danger)        ALERTES : retards, annulations, erreurs.
+   Stock, Équipe, Tableau de bord : marron. « violet » pointe vers le marron.
+   Animations inchangées.
    Typo Bricolage Grotesque / Manrope / DM Mono.
    Toutes les valeurs passent par des tokens CSS — jamais de hex en dur
    dans les composants. Le branding reste configurable ici.
@@ -19,113 +20,118 @@
     Roboto, Arial, sans-serif;
   --font-mono: var(--font-dm-mono), "DM Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* ---------- Nuit violette (ex-chocolat) : structure, fonds sombres, titres ---------- */
-  --color-chocolat-50: #f5f3ff;
-  --color-chocolat-100: #ede9fe;
-  --color-chocolat-200: #ddd6fe;
-  --color-chocolat-300: #c4b5fd;
-  --color-chocolat-400: #a78bfa;
-  --color-chocolat-500: #7c5cf0;
-  --color-chocolat-600: #6236d9;
-  --color-chocolat-700: #4c1fb8;
-  --color-chocolat-800: #33157f;
-  --color-chocolat-900: #24105c;
-  --color-chocolat-950: #170a3d;
+  /* ---------- Espresso (marron) : structure — menu, fonds sombres, titres ---------- */
+  --color-chocolat-50: #f6f1ea;
+  --color-chocolat-100: #ece3d6;
+  --color-chocolat-200: #d8c8b3;
+  --color-chocolat-300: #b9a58c;
+  --color-chocolat-400: #8f7b64;
+  --color-chocolat-500: #6b5a47;
+  --color-chocolat-600: #4d4033;
+  --color-chocolat-700: #3a3027;
+  --color-chocolat-800: #2a231c;
+  --color-chocolat-900: #1f1a15;
+  --color-chocolat-950: #141110;
 
-  /* ---------- Lavande (ex-beige) : surfaces enfoncées ---------- */
-  --color-beige-50: #faf8ff;
-  --color-beige-100: #f3f0fb;
-  --color-beige-200: #ebe6f7;
-  --color-beige-300: #dcd5ee;
-  --color-beige-400: #c6bce0;
-  --color-beige-500: #ab9fcc;
+  /* ---------- Sable (ex-beige) : surfaces enfoncées ---------- */
+  --color-beige-50: #fbf8f2;
+  --color-beige-100: #f4eee3;
+  --color-beige-200: #ece5d8;
+  --color-beige-300: #ddd3c1;
+  --color-beige-400: #c9bca5;
+  --color-beige-500: #b3a58c;
 
-  /* ---------- Blanc lavande (ex-ivoire) : fonds ---------- */
-  --color-ivoire-50: #fefdff;
-  --color-ivoire-100: #faf8ff;
-  --color-ivoire-200: #f4f0fd;
-  --color-ivoire-300: #ebe6f7;
+  /* ---------- Crème (ex-ivoire) : fonds ---------- */
+  --color-ivoire-50: #fffdf8;
+  --color-ivoire-100: #fbf8f2;
+  --color-ivoire-200: #f6f0e4;
+  --color-ivoire-300: #ece5d8;
 
-  /* ---------- « champagne » → rose vif : fin du dégradé d'action ----------
-     Même famille que le corail (dégradé corail → rose). Noms conservés. */
-  --color-champagne-100: #ffe0ef;
-  --color-champagne-200: #ffc1df;
-  --color-champagne-300: #ff8fc4;
-  --color-champagne-400: #ff4fa3;
-  --color-champagne-500: #e8238a;
-  --color-champagne-600: #b8146b;
+  /* ---------- ORANGE — COMMANDES et boutons d'action ----------
+     « champagne » = nuances claires du même orange (noms conservés). */
+  --color-champagne-100: #ffe8cc;
+  --color-champagne-200: #ffd4a3;
+  --color-champagne-300: #ffb86b;
+  --color-champagne-400: #ff9a33;
+  --color-champagne-500: #ea6a0c;
+  --color-champagne-600: #b9530a;
 
-  /* ---------- Flamme : corail vif, couleur d'action ---------- */
-  --color-flamme-50: #fff3ef;
-  --color-flamme-100: #ffe1d6;
-  --color-flamme-200: #ffbfa8;
-  --color-flamme-300: #ff9470;
-  --color-flamme-400: #ff6a45;
-  --color-flamme-500: #ff4d2e;
-  --color-flamme-600: #e6331a;
-  --color-flamme-700: #c0240f;
+  --color-flamme-50: #fff6ec;
+  --color-flamme-100: #ffe8cc;
+  --color-flamme-200: #ffd0a0;
+  --color-flamme-300: #ffad5c;
+  --color-flamme-400: #ff8c2a;
+  --color-flamme-500: #e8610f;
+  --color-flamme-600: #d4540a;
+  --color-flamme-700: #b04408;
 
-  /* ---------- « azur » → violet (STRUCTURE) ---------- */
-  --color-azur-50: #f5f3ff;
-  --color-azur-100: #ede9fe;
-  --color-azur-300: #c4b5fd;
-  --color-azur-500: #7c5cf0;
-  --color-azur-600: #6236d9;
-  --color-azur-700: #4c1fb8;
+  /* ---------- BLEU — CLIENTS et RENDEZ-VOUS (WhatsApp compris) ---------- */
+  --color-azur-50: #eff6ff;
+  --color-azur-100: #dbeafe;
+  --color-azur-200: #bfdbfe;
+  --color-azur-300: #93c5fd;
+  --color-azur-400: #5b9cf5;
+  --color-azur-500: #2f72e8;
+  --color-azur-600: #1d5bd0;
+  --color-azur-700: #1a46a8;
 
-  /* ---------- « wax » → ROUGE d'alerte : retards, annulations, erreurs ---------- */
-  --color-wax-50: #fef2f2;
-  --color-wax-100: #fee2e2;
-  --color-wax-300: #fca5a5;
+  /* ---------- VERT — ARGENT : paiements, reçus, abonnement ---------- */
+  --color-menthe-50: #ecfdf5;
+  --color-menthe-100: #d1fae5;
+  --color-menthe-200: #a7f3d0;
+  --color-menthe-300: #6ee7b7;
+  --color-menthe-400: #34d399;
+  --color-menthe-500: #10b981;
+  --color-menthe-600: #047857;
+
+  /* ---------- ROUGE — ALERTES uniquement : retards, annulations, erreurs ----------
+     Rouge cramoisi, nettement distinct de l'orange. */
+  --color-wax-50: #fff1f2;
+  --color-wax-100: #ffe4e6;
+  --color-wax-200: #fecdd3;
+  --color-wax-300: #fda4af;
   --color-wax-500: #e11d48;
   --color-wax-600: #be123c;
 
-  /* ---------- Menthe : émeraude vive, argent encaissé ---------- */
-  --color-menthe-50: #ecfdf5;
-  --color-menthe-100: #d1fae5;
-  --color-menthe-300: #6ee7b7;
-  --color-menthe-500: #12c98a;
-  --color-menthe-600: #047857;
+  /* ---------- « violet » → marron (aucune 5e couleur) ---------- */
+  --color-violet-50: #f6f1ea;
+  --color-violet-100: #ece3d6;
+  --color-violet-500: #6b5a47;
+  --color-violet-600: #4d4033;
 
-  /* ---------- « violet » → violet (STRUCTURE) ---------- */
-  --color-violet-50: #f5f3ff;
-  --color-violet-100: #ede9fe;
-  --color-violet-500: #7c5cf0;
-  --color-violet-600: #6236d9;
+  /* ---------- Neutres chauds (ex-anthracite) ---------- */
+  --color-anthracite-50: #f7f3ec;
+  --color-anthracite-100: #ede6da;
+  --color-anthracite-200: #ddd3c1;
+  --color-anthracite-300: #bdb1a0;
+  --color-anthracite-400: #948b7b;
+  --color-anthracite-500: #7a7163;
+  --color-anthracite-600: #5c5448;
+  --color-anthracite-700: #4a4339;
+  --color-anthracite-800: #332d25;
+  --color-anthracite-900: #211d16;
+  --color-anthracite-950: #15120e;
 
-  /* ---------- Neutres teintés de violet (ex-anthracite) ---------- */
-  --color-anthracite-50: #f8f7fc;
-  --color-anthracite-100: #efedf6;
-  --color-anthracite-200: #e0dcec;
-  --color-anthracite-300: #c3bdd4;
-  --color-anthracite-400: #9890ad;
-  --color-anthracite-500: #78718f;
-  --color-anthracite-600: #5d5675;
-  --color-anthracite-700: #48425e;
-  --color-anthracite-800: #312c44;
-  --color-anthracite-900: #1e1a2e;
-  --color-anthracite-950: #120f1e;
-
-  /* ---------- Sémantiques ---------- */
+  /* ---------- Sémantiques : une alerte est toujours ROUGE ---------- */
   --color-success: #047857;
   --color-success-soft: #ecfdf5;
-  --color-warning: #c2410c;
-  --color-warning-soft: #fff3ef;
+  --color-warning: #be123c;
+  --color-warning-soft: #fff1f2;
   --color-danger: #be123c;
-  --color-danger-soft: #fff1f3;
-  --color-info: #6236d9;
-  --color-info-soft: #f5f3ff;
+  --color-danger-soft: #fff1f2;
+  --color-info: #4d4033;
+  --color-info-soft: #f6f1ea;
 
   /* ---------- Rôles ---------- */
-  --color-bg: #f8f5ff;
+  --color-bg: #fbf8f2;
   --color-surface: #ffffff;
-  --color-surface-2: #f3f0fb;
-  --color-ink: #1e1a2e;
-  --color-ink-soft: #5d5675;
-  --color-ink-faint: #6b6482;
-  --color-primary: #ff4d2e;
-  --color-accent: #ff4fa3;
-  --color-outline: #e0dcec;
+  --color-surface-2: #f4eee3;
+  --color-ink: #211d16;
+  --color-ink-soft: #6a6153;
+  --color-ink-faint: #756c5e;
+  --color-primary: #e8610f;
+  --color-accent: #ff9a33;
+  --color-outline: #e2d8c6;
 
   /* ---------- Radius ---------- */
   --radius-sm: 8px;
@@ -135,10 +141,10 @@
   --radius-full: 9999px;
 
   /* ---------- Ombres ---------- */
-  --shadow-soft: 0 1px 2px rgb(30 26 46 / 0.05), 0 6px 18px -6px rgb(76 31 184 / 0.14);
-  --shadow-lift: 0 4px 10px -2px rgb(30 26 46 / 0.08), 0 22px 40px -18px rgb(76 31 184 / 0.32);
-  --shadow-modal: 0 12px 30px rgb(23 10 61 / 0.2), 0 40px 90px -20px rgb(23 10 61 / 0.4);
-  --shadow-glow: 0 10px 30px -8px rgb(255 77 46 / 0.55), 0 4px 12px -4px rgb(255 79 163 / 0.45);
+  --shadow-soft: 0 1px 2px rgb(33 29 22 / 0.05), 0 6px 18px -6px rgb(33 29 22 / 0.12);
+  --shadow-lift: 0 4px 10px -2px rgb(33 29 22 / 0.08), 0 22px 40px -18px rgb(33 29 22 / 0.28);
+  --shadow-modal: 0 12px 30px rgb(20 17 16 / 0.18), 0 40px 90px -20px rgb(20 17 16 / 0.35);
+  --shadow-glow: 0 10px 30px -8px rgb(232 97 15 / 0.45), 0 4px 12px -4px rgb(255 154 51 / 0.4);
   --shadow-neo: 4px 4px 0 var(--color-ink);
   --shadow-neo-lg: 7px 7px 0 var(--color-ink);
 
@@ -214,8 +220,8 @@
     75% { transform: rotate(10deg); }
   }
   @keyframes pulse-ring {
-    0% { box-shadow: 0 0 0 0 rgb(255 77 46 / 0.55); }
-    80%, 100% { box-shadow: 0 0 0 12px rgb(255 77 46 / 0); }
+    0% { box-shadow: 0 0 0 0 rgb(245 116 9 / 0.55); }
+    80%, 100% { box-shadow: 0 0 0 12px rgb(245 116 9 / 0); }
   }
   @keyframes grow-up {
     from { transform: scaleY(0); }
@@ -233,10 +239,14 @@
 }
 
 :root {
-  --gradient-flamme: linear-gradient(120deg, #ff8a3d 0%, #ff4d2e 45%, #ff2e7e 100%);
-  --gradient-sunset: linear-gradient(120deg, #ff4d2e 0%, #ff2e7e 50%, #a855f7 100%);
-  --gradient-ocean: linear-gradient(120deg, #7c5cf0 0%, #4c1fb8 55%, #24105c 100%);
-  --gradient-aurora: linear-gradient(120deg, #7c5cf0, #ff2e7e, #ff4d2e, #ffb020, #12c98a, #7c5cf0);
+  /* Un dégradé par couleur de fonctionnalité, jamais deux teintes mélangées. */
+  --gradient-flamme: linear-gradient(120deg, #ee6c14 0%, #d4540a 55%, #b04408 100%);
+  --gradient-sunset: linear-gradient(120deg, #b04408 0%, #d4540a 50%, #ee6c14 100%);
+  --gradient-azur: linear-gradient(120deg, #2f72e8 0%, #1d5bd0 55%, #1a46a8 100%);
+  --gradient-menthe: linear-gradient(120deg, #0b8f63 0%, #047857 55%, #065f46 100%);
+  --gradient-wax: linear-gradient(120deg, #e11d48 0%, #be123c 55%, #9f1239 100%);
+  --gradient-ocean: linear-gradient(120deg, #6b5a47 0%, #2a231c 100%);
+  --gradient-aurora: linear-gradient(120deg, #ee6c14, #ffad5c, #ee6c14, #b04408, #ee6c14);
 }
 
 @layer base {
@@ -302,6 +312,18 @@
   .bg-sunset-gradient {
     background-image: var(--gradient-sunset);
     background-size: 200% 200%;
+  }
+
+  .bg-azur-gradient {
+    background-image: var(--gradient-azur);
+  }
+
+  .bg-menthe-gradient {
+    background-image: var(--gradient-menthe);
+  }
+
+  .bg-wax-gradient {
+    background-image: var(--gradient-wax);
   }
 
   .bg-ocean-gradient {

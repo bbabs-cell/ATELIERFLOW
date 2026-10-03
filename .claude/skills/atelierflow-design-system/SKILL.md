@@ -1,6 +1,6 @@
 ---
 name: atelierflow-design-system
-description: Use when building, styling, or auditing UI screens, components, tokens, or the theme of the atelierflow SaaS. Covers the vivid animated design system (lavender-white neutrals and four role colors: violet structure, coral→pink action gradient, emerald green, red alert; MagyaPro family), typography, spacing, radius, shadows, breakpoints 320-1920, mobile-first, accessibility, touch-friendly, states (loading/empty/error/success/offline/sync). Trigger keywords: design system, theme, tokens, palette, composant, component, responsive, breakpoint, layout, style, UI, CSS.
+description: Use when building, styling, or auditing UI screens, components, tokens, or the theme of the atelierflow SaaS. Covers the vivid animated design system (crème + brown/espresso neutrals and four feature colors: orange orders/actions, blue clients & appointments, green money, red alerts; MagyaPro family), typography, spacing, radius, shadows, breakpoints 320-1920, mobile-first, accessibility, touch-friendly, states (loading/empty/error/success/offline/sync). Trigger keywords: design system, theme, tokens, palette, composant, component, responsive, breakpoint, layout, style, UI, CSS.
 ---
 
 # atelierflow-design-system
@@ -9,7 +9,7 @@ Direction (v2, demandée par le client, 2026-09) : **vivante, colorée, animée*
 
 ## Tokens (source : `src/ui/tokens.css`)
 
-- **couleur** : palette v4 « vive » (demande du client, 2026-10-03) — fond blanc lavande `#f8f5ff`, texte `#1e1a2e`, et **quatre couleurs à rôle fixe** : VIOLET `#24105c`→`#7c5cf0` (`chocolat-*`, `azur-*`, `violet-*`) = structure (menu, bandeaux sombres, titres) ; CORAIL→ROSE `#ff4d2e`→`#ff2e7e` (`flamme-*`, `champagne-*`, dégradé `flamme`) = marque et actions ; VERT `#12c98a` (`menthe-*`) = argent encaissé, succès, WhatsApp ; ROUGE `#be123c`/`#e11d48` (`wax-*`, `danger`) = retards, annulations, erreurs, jamais décoratif. Pas de bleu ni d'or. Les animations ne changent pas. Contrastes vérifiés (texte secondaire ≥ 4,5:1).
+- **couleur** : v5 « une couleur = une fonctionnalité » (demande du client, 2026-10-03). Neutres crème `#fbf8f2` + MARRON espresso (`chocolat-*`, `violet-*` → marron) pour la structure (menu, bandeaux, titres, Stock, Équipe, Tableau de bord). Quatre couleurs franches, jamais deux teintes voisines : ORANGE `#e8610f` (`flamme-*`, `champagne-*`) = COMMANDES et boutons d'action ; BLEU `#2f72e8` (`azur-*`, badge `blue`) = CLIENTS et RENDEZ-VOUS (WhatsApp compris) ; VERT `#047857`/`#10b981` (`menthe-*`, badge `success`) = ARGENT (paiements, reçus, abonnement) ; ROUGE `#be123c` (`wax-*`, `warning`, `danger`) = ALERTES uniquement. Badge `info` = marron. Menu : `NavItem.tone` (orange/blue/green/brown). Dégradés `bg-flamme|azur|menthe|wax|ocean-gradient`, une seule teinte chacun, assez foncés pour du texte blanc. Animations inchangées.
 - **dégradés** : `bg-flamme-gradient`, `bg-sunset-gradient`, `bg-ocean-gradient`, `bg-aurora-gradient`, `text-gradient`.
 - **typographie** : Bricolage Grotesque (titres, `font-display`), Manrope (interface), DM Mono (étiquettes, chiffres, `font-mono`). Titres de page : classe `page-title`.
 - **ombres** : `shadow-soft`, `shadow-lift`, `shadow-glow` (halo flamme), `shadow-neo` (décalée, boutons outline).

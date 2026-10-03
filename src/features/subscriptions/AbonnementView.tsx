@@ -160,7 +160,7 @@ export function AbonnementView(): React.ReactElement {
       <section className="rounded-xl border border-outline bg-surface/90 p-4 shadow-soft backdrop-blur animate-fade-up sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex min-w-0 items-start gap-3">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-sunset-gradient text-chocolat-950 shadow-soft">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-menthe-gradient text-white shadow-soft">
               <CreditCard className="size-5" aria-hidden="true" />
             </span>
             <div className="min-w-0">
@@ -182,7 +182,7 @@ export function AbonnementView(): React.ReactElement {
         {requested ? (
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-outline bg-surface-2 px-3 py-2.5 text-sm">
             <span className="flex min-w-0 items-center gap-2 text-ink">
-              <Hourglass className="size-4 shrink-0 text-flamme-600" aria-hidden="true" />
+              <Hourglass className="size-4 shrink-0 text-menthe-600" aria-hidden="true" />
               <span className="min-w-0">
                 Passage au plan <strong>{requested.name}</strong> demandé le {formatDate(e.requestedAt)} :
                 activé dès réception du paiement.
@@ -216,7 +216,7 @@ export function AbonnementView(): React.ReactElement {
                 <div
                   className={cx(
                     "h-full rounded-full transition-[width] duration-700",
-                    m.level === "full" ? "bg-danger" : m.level === "near" ? "bg-warning" : "bg-flamme-gradient",
+                    m.level === "full" ? "bg-danger" : m.level === "near" ? "bg-warning" : "bg-menthe-gradient",
                   )}
                   style={{ width: `${m.percent}%` }}
                 />
@@ -261,7 +261,7 @@ export function AbonnementView(): React.ReactElement {
                 key={plan.code}
                 className={cx(
                   "flex flex-col rounded-lg border bg-surface p-4 transition-shadow duration-300 hover:shadow-lift",
-                  action === "current" ? "border-flamme-500 ring-1 ring-flamme-500" : "border-outline",
+                  action === "current" ? "border-menthe-500 ring-1 ring-menthe-500" : "border-outline",
                 )}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -275,7 +275,7 @@ export function AbonnementView(): React.ReactElement {
                   {plan.priceMonthly > 0 ? <span className="text-sm font-normal text-ink-faint"> / mois</span> : null}
                 </p>
                 {plan.trialDays > 0 ? (
-                  <p className="mt-0.5 text-xs text-flamme-700">Essai gratuit de {plan.trialDays} jours à la création de l&apos;atelier</p>
+                  <p className="mt-0.5 text-xs text-menthe-600">Essai gratuit de {plan.trialDays} jours à la création de l&apos;atelier</p>
                 ) : null}
                 <dl className="mt-3 grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-sm">
                   <dt className="text-ink-soft">Clients</dt>
@@ -311,7 +311,7 @@ export function AbonnementView(): React.ReactElement {
                   ) : action === "requested" ? (
                     <p className="rounded-md bg-warning-soft px-2 py-1.5 text-center text-sm text-warning">En attente de paiement</p>
                   ) : action === "current" ? (
-                    <p className="rounded-md bg-flamme-50 px-2 py-1.5 text-center text-sm font-medium text-flamme-700">Plan actuel</p>
+                    <p className="rounded-md bg-menthe-50 px-2 py-1.5 text-center text-sm font-medium text-menthe-600">Plan actuel</p>
                   ) : null}
                 </div>
               </article>

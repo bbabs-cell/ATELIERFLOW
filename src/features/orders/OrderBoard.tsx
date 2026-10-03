@@ -19,18 +19,22 @@ import type { OrderWithCustomer } from "@/application/orders/orderService";
 import { ORDER_PRIORITY_META, ORDER_STATUS_LABELS } from "./constants";
 import { assigneeName, type Assignee } from "./useAssignees";
 
-/** Couleur d'en-tête par étape : le tableau se lit d'un coup d'œil. */
+/**
+ * En-tête par étape (texte blanc lisible) : marron à l'arrivée, ORANGE de
+ * plus en plus soutenu pendant le travail, marron une fois livrée, ROUGE
+ * si annulée.
+ */
 const COLUMN_TONES: Record<OrderStatus, string> = {
-  REGISTERED: "from-anthracite-300 to-anthracite-500",
-  FABRIC_RECEIVED: "from-champagne-300 to-champagne-500",
-  PREPARATION: "from-azur-300 to-azur-500",
-  SEWING: "from-flamme-300 to-flamme-500",
-  FITTING: "from-violet-100 to-violet-500",
-  ALTERATION: "from-flamme-400 to-flamme-700",
-  COMPLETED: "from-menthe-300 to-menthe-500",
-  READY_FOR_PICKUP: "from-champagne-400 to-flamme-500",
-  DELIVERED: "from-menthe-500 to-menthe-600",
-  CANCELLED: "from-anthracite-300 to-anthracite-500",
+  REGISTERED: "from-chocolat-400 to-chocolat-500",
+  FABRIC_RECEIVED: "from-flamme-500 to-flamme-600",
+  PREPARATION: "from-flamme-500 to-flamme-600",
+  SEWING: "from-flamme-600 to-flamme-700",
+  FITTING: "from-flamme-600 to-flamme-700",
+  ALTERATION: "from-flamme-600 to-flamme-700",
+  COMPLETED: "from-flamme-700 to-flamme-700",
+  READY_FOR_PICKUP: "from-flamme-700 to-chocolat-600",
+  DELIVERED: "from-chocolat-500 to-chocolat-700",
+  CANCELLED: "from-wax-500 to-wax-600",
 };
 
 const DND_TYPE = "application/x-atelier-order";

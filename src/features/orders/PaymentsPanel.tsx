@@ -159,7 +159,7 @@ export function PaymentsPanel({
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className="flex size-9 items-center justify-center rounded-full bg-sunset-gradient text-chocolat-950 shadow-soft transition-transform duration-300 group-hover:scale-110">
+          <span className="flex size-9 items-center justify-center rounded-full bg-menthe-gradient text-white shadow-soft transition-transform duration-300 group-hover:scale-110">
             <Wallet className="size-4" aria-hidden="true" />
           </span>
           <h3 className="font-display text-xl text-ink">Paiements</h3>
@@ -179,15 +179,15 @@ export function PaymentsPanel({
       ) : null}
 
       <dl className="stagger grid grid-cols-2 gap-3">
-        <MoneyTile label="Total" value={orderTotal} className="bg-chocolat-900 text-ivoire-50" labelClass="text-champagne-300" />
-        <MoneyTile label="Payé" value={balance?.totalPaid ?? 0} className="bg-[linear-gradient(120deg,#10b981,#047857)] text-white" labelClass="text-menthe-100" />
+        <MoneyTile label="Total" value={orderTotal} className="bg-chocolat-900 text-ivoire-50" labelClass="text-menthe-300" />
+        <MoneyTile label="Payé" value={balance?.totalPaid ?? 0} className="bg-menthe-gradient text-white" labelClass="text-menthe-100" />
         <MoneyTile
           label={balance && balance.surplus > 0 ? "Restant" : "Reste à payer"}
           value={balance?.remaining ?? orderTotal}
-          className="bg-flamme-gradient text-white animate-gradient"
-          labelClass="text-flamme-50"
+          className="bg-menthe-50 text-menthe-600 ring-1 ring-inset ring-menthe-300 animate-gradient"
+          labelClass="text-menthe-600"
         />
-        <MoneyTile label="Surplus" value={balance?.surplus ?? 0} className="bg-ocean-gradient text-white" labelClass="text-azur-100" />
+        <MoneyTile label="Surplus" value={balance?.surplus ?? 0} className="bg-ocean-gradient text-white" labelClass="text-menthe-100" />
       </dl>
 
       {balance && balance.surplus > 0 ? (

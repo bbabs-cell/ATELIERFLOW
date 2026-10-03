@@ -78,7 +78,7 @@ export function SyncStatusChip({ engine, className }: SyncStatusChipProps): Reac
     label = pending > 0 ? `Hors ligne · ${pending} en attente` : "Hors ligne";
     icon = <WifiOff className="size-3.5 shrink-0" aria-hidden="true" />;
   } else if (connected && pending > 0) {
-    tone = "bg-warning-soft text-warning";
+    tone = "bg-info-soft text-info";
     label = `${pending} en attente`;
     icon = <RefreshCw className={cx("size-3.5 shrink-0", busy && "animate-spin")} aria-hidden="true" />;
   } else if (connected && (age === null || age > STALE_AFTER_MS)) {

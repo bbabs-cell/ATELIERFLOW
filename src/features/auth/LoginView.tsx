@@ -121,7 +121,7 @@ export function LoginView() {
               }}
               className={
                 "relative z-10 h-11 rounded-full text-sm font-bold transition-colors duration-300 " +
-                (mode === m ? "text-chocolat-950" : "text-chocolat-200 hover:text-white")
+                (mode === m ? "text-white" : "text-chocolat-200 hover:text-white")
               }
             >
               {m === "signin" ? "Connexion" : "Créer un compte"}

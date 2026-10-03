@@ -217,8 +217,8 @@ export function AppointmentsView(): React.ReactElement {
       </header>
 
       {flash ? (
-        <div role="status" className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-menthe-300 bg-menthe-50 px-4 py-3 animate-fade-up">
-          <p className="text-sm font-semibold text-menthe-600">
+        <div role="status" className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-azur-300 bg-azur-50 px-4 py-3 animate-fade-up">
+          <p className="text-sm font-semibold text-azur-600">
             {flash.text} Prévenir {flash.item.customer?.full_name ?? "le client"} ?
           </p>
           <div className="flex gap-2">
@@ -228,7 +228,7 @@ export function AppointmentsView(): React.ReactElement {
             <button
               type="button"
               onClick={() => plan.guardFeature("whatsapp", () => setComposer({ item: flash.item, kind: flash.kind }))}
-              className="inline-flex h-9 pointer-coarse:h-11 items-center gap-1.5 rounded-full bg-menthe-600 px-4 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5"
+              className="inline-flex h-9 pointer-coarse:h-11 items-center gap-1.5 rounded-full bg-azur-600 px-4 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5"
             >
               <MessageCircle className="size-4" aria-hidden="true" />
               Message WhatsApp
@@ -252,11 +252,11 @@ export function AppointmentsView(): React.ReactElement {
             <section aria-labelledby="reminders-title" className="gradient-border @container relative overflow-hidden rounded-2xl border border-outline bg-surface p-4 sm:p-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h2 id="reminders-title" className="flex items-center gap-2 font-display text-xl text-ink">
-                  <span className={cx("grid size-9 place-items-center rounded-full text-white shadow-soft", due.length > 0 ? "bg-flamme-gradient animate-pulse-ring" : "bg-menthe-500")}>
+                  <span className={cx("grid size-9 place-items-center rounded-full text-white shadow-soft", due.length > 0 ? "bg-azur-gradient animate-pulse-ring" : "bg-azur-500")}>
                     {due.length > 0 ? <BellRing className="size-4" aria-hidden="true" /> : <CheckCheck className="size-4" aria-hidden="true" />}
                   </span>
                   Rappels à envoyer
-                  <span key={due.length} className="grid min-w-7 place-items-center rounded-full bg-flamme-100 px-2 text-sm font-bold text-flamme-700 animate-pop">
+                  <span key={due.length} className="grid min-w-7 place-items-center rounded-full bg-azur-100 px-2 text-sm font-bold text-azur-700 animate-pop">
                     {due.length}
                   </span>
                 </h2>
@@ -269,7 +269,7 @@ export function AppointmentsView(): React.ReactElement {
                   {due.map((item) => {
                     const typeMeta = APPOINTMENT_TYPE_META[item.appointment.type];
                     return (
-                      <li key={item.appointment.id} className="flex flex-col gap-2 rounded-xl border border-flamme-200 bg-flamme-50/70 p-3 animate-fade-up">
+                      <li key={item.appointment.id} className="flex flex-col gap-2 rounded-xl border border-azur-200 bg-azur-50/70 p-3 animate-fade-up">
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <p className="truncate font-bold text-ink">{item.customer?.full_name ?? "Client"}</p>
@@ -282,7 +282,7 @@ export function AppointmentsView(): React.ReactElement {
                         <button
                           type="button"
                           onClick={() => plan.guardFeature("whatsapp", () => setComposer({ item, kind: "REMINDER" }))}
-                          className="inline-flex h-9 pointer-coarse:h-11 items-center justify-center gap-1.5 rounded-full bg-menthe-600 px-4 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-lift"
+                          className="inline-flex h-9 pointer-coarse:h-11 items-center justify-center gap-1.5 rounded-full bg-azur-600 px-4 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-lift"
                         >
                           <MessageCircle className="size-4" aria-hidden="true" />
                           Préparer le rappel
@@ -342,7 +342,7 @@ export function AppointmentsView(): React.ReactElement {
                                     </span>
                                   ) : null}
                                   {appointment.reminder_sent_at ? (
-                                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-menthe-600">
+                                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-azur-600">
                                       <CheckCheck className="size-3.5" aria-hidden="true" />
                                       Rappel envoyé le {sentLabel(appointment.reminder_sent_at)}
                                     </span>
@@ -355,7 +355,7 @@ export function AppointmentsView(): React.ReactElement {
                                 type="button"
                                 onClick={() => plan.guardFeature("whatsapp", () => setComposer({ item, kind: defaultMessageKind(appointment) }))}
                                 aria-label={`Message WhatsApp à ${item.customer?.full_name ?? "client"}`}
-                                className="inline-flex h-9 pointer-coarse:h-11 items-center gap-1.5 rounded-full bg-menthe-600 px-3 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5"
+                                className="inline-flex h-9 pointer-coarse:h-11 items-center gap-1.5 rounded-full bg-azur-600 px-3 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5"
                               >
                                 <MessageCircle className="size-4" aria-hidden="true" />
                                 WhatsApp
