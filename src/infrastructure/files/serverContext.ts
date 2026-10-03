@@ -58,7 +58,14 @@ function supabaseFilesDb(client: SupabaseClient): FilesDb {
   };
 }
 
-export async function resolveFilesContext(authorization: string | null): Promise<FilesContext> {
+/** Session vérifiée : atelier du JWT et client Supabase agissant au nom de l'utilisateur. */
+export interface UserSessionContext {
+  tenantId: string;
+  client: SupabaseClient;
+  storage: R2Storage;
+}
+
+export async function resolveUserSession(authorization: string | null): Promise<UserSessionContext> {
   const env = getSupabaseServerEnv();
   const r2 = getR2Env();
   if (!env.provisioned || r2 === null) throw new FileServiceError("FILES_NOT_PROVISIONED", 501);
@@ -74,5 +81,10 @@ export async function resolveFilesContext(authorization: string | null): Promise
   const claims = decodeSessionClaims(token);
   if (!claims?.tenantId || claims.sub !== data.user.id) throw new FileServiceError("FORBIDDEN:tenant", 403);
 
-  return { tenantId: claims.tenantId, storage: createR2Storage(r2), db: supabaseFilesDb(client) };
+  return { tenantId: claims.tenantId, client, storage: createR2Storage(r2) };
+}
+
+export async function resolveFilesContext(authorization: string | null): Promise<FilesContext> {
+  const { tenantId, client, storage } = await resolveUserSession(authorization);
+  return { tenantId, storage, db: supabaseFilesDb(client) };
 }

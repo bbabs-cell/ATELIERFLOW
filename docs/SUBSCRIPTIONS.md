@@ -128,3 +128,24 @@ déclencheurs) sont fermées à l'API.
 - Vérifié avec son compte : `my_entitlements` renvoie PRO / ACTIVE avec l'usage
   réel, `admin_list_tenants` répond, la synchronisation renvoie les codes
   `PLAN_*`. Supabase ne signale aucune nouvelle alerte de sécurité.
+
+## Paiement par transfert avec preuve (`0024`)
+
+1. **Plateforme → Moyens de paiement** : un numéro par pays et par moyen
+   (Wave, Orange Money, MTN, virement…), titulaire et instructions. Seuls
+   les moyens « proposés » sont visibles des ateliers.
+2. **Atelier → Abonnement → « Passer à … » / « Prolonger »** : durée
+   (1, 3, 6 ou 12 mois), pays, moyen (numéro copiable), nom de
+   l'expéditeur, numéro et référence facultatifs, **preuve** (capture,
+   photo ou PDF, 4 Mo). Le montant est calculé par la base
+   (prix mensuel × mois), jamais lu depuis le formulaire. Une seule demande
+   en attente par atelier ; annulable tant qu'elle n'est pas traitée.
+3. **Plateforme → Paiements à vérifier** : « Voir la preuve » (lien signé
+   10 min), puis **Valider** (active le plan ; si le même plan court
+   encore, la durée s'ajoute à l'échéance) ou **Refuser** (motif
+   obligatoire, affiché à l'atelier).
+
+Preuves rangées dans R2 sous `tenants/{atelier}/plan-payments/{demande}.{ext}` ;
+la base vérifie l'emplacement. Lecture : l'atelier concerné
+(`tenant.settings`) ou la plateforme. Tests : `plan_payments_local.sql`
+(37 vérifications), `tests/unit/subscriptions/planPayments.test.ts`.

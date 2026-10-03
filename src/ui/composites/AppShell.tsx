@@ -25,6 +25,8 @@ export interface AppShellProps {
   onNavigate?: (item: NavItem) => void;
   /** Contenu en pied de menu (compte, déconnexion…). */
   footer?: ReactNode;
+  /** Photo de couverture de l'atelier : fond flouté de la navigation. */
+  cover?: string | null;
 }
 
 /**
@@ -64,12 +66,28 @@ export function AmbientBlobs({ dark = false, className }: { dark?: boolean; clas
   );
 }
 
+/**
+ * Photo de couverture en fond, floutée et voilée pour que le menu reste
+ * lisible (texte clair sur fond sombre en bureau, texte foncé sur fond
+ * clair sur mobile).
+ */
+function CoverBackdrop({ src, dark = false }: { src: string; dark?: boolean }) {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+      {/* eslint-disable-next-line @next/next/no-img-element -- lien signé R2, hors optimiseur d'images */}
+      <img src={src} alt="" className="absolute inset-0 size-full scale-110 object-cover blur-[6px]" />
+      <div className={cx("absolute inset-0", dark ? "bg-chocolat-950/55" : "bg-surface/60")} />
+    </div>
+  );
+}
+
 export function AppShell({
   brand,
   navItems,
   children,
   onNavigate,
   footer,
+  cover,
 }: AppShellProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -130,14 +148,20 @@ export function AppShell({
 
       {/* Navigation latérale desktop */}
       <aside className="dot-grid sticky top-0 hidden h-dvh w-72 shrink-0 flex-col gap-8 overflow-hidden bg-chocolat-900 p-5 text-ivoire-50 lg:flex">
-        <AmbientBlobs dark />
+        {cover ? <CoverBackdrop src={cover} dark /> : <AmbientBlobs dark />}
         <div className="relative px-2 pt-2 animate-fade-in">{brand}</div>
         <div className="relative flex-1">{nav(true)}</div>
         {footer ? <div className="relative">{footer}</div> : null}
       </aside>
 
       {/* Navigation mobile (drawer) */}
-      <Drawer open={menuOpen} onClose={() => setMenuOpen(false)} side="left" title="Menu">
+      <Drawer
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        side="left"
+        title="Menu"
+        backdrop={cover ? <CoverBackdrop src={cover} /> : undefined}
+      >
         <div className="flex flex-col gap-6">
           {nav(false)}
           {footer}

@@ -22,10 +22,11 @@ import {
   type PlatformRemote,
   type PlatformTenant,
 } from "@/infrastructure/subscriptions/subscriptionRemote";
+import { PlatformPayments } from "./PlatformPayments";
 
 /**
  * Administration de la plateforme (SAAS_ADMIN) : abonnements des ateliers
- * et catalogue des plans. Ne montre jamais de données métier : seulement
+ * et catalogue des plans, paiements à vérifier et moyens de paiement. Ne montre jamais de données métier : seulement
  * des compteurs. Toutes les actions sont revérifiées par la base (0022).
  */
 const STATUS_TONES: Record<EntitlementStatus, BadgeTone> = {
@@ -123,7 +124,9 @@ export function PlatformView(): React.ReactElement {
         <StateView variant="loading" title="Chargement des ateliers…" />
       ) : (
         <>
-          <section className="animate-fade-up">
+          <PlatformPayments onApproved={() => void load()} />
+
+          <section className="mt-10 animate-fade-up">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <h2 className="font-display text-xl text-ink">
                 Ateliers <span className="text-ink-faint">({tenants.length})</span>

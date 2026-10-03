@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Check, CreditCard, Hourglass, X } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Check, CreditCard, Eye, Hourglass, X } from "lucide-react";
 import { Badge, Button, Dialog, StateView, type BadgeTone } from "@/ui";
 import { cx } from "@/lib/cx";
 import { peekActiveSession } from "@/application/auth/session";
@@ -23,6 +23,16 @@ import {
 } from "@/domain/subscriptions/entitlements";
 import { getSupabaseBrowserClient } from "@/infrastructure/supabase/browserClient";
 import { createSubscriptionRemote } from "@/infrastructure/subscriptions/subscriptionRemote";
+import {
+  monthsLabel,
+  PAYMENT_STATUS_LABELS,
+  planPaymentErrorMessage,
+  type PlanPaymentRequest,
+  type PlanPaymentStatus,
+} from "@/domain/subscriptions/planPayments";
+import { createPlanPaymentsClient, PlanPaymentError } from "@/infrastructure/subscriptions/planPaymentsClient";
+import { openProof } from "./openProof";
+import { PlanPaymentDialog } from "./PlanPaymentDialog";
 import { setEntitlements, useEntitlements } from "./useEntitlements";
 
 const STATUS_TONES: Record<EntitlementStatus, BadgeTone> = {
@@ -34,6 +44,31 @@ const STATUS_TONES: Record<EntitlementStatus, BadgeTone> = {
 };
 
 const FEATURES: FeatureFlag[] = ["whatsapp", "stock", "audit"];
+
+const PAYMENT_TONES: Record<PlanPaymentStatus, BadgeTone> = {
+  PENDING: "warning",
+  APPROVED: "success",
+  REJECTED: "danger",
+  CANCELLED: "neutral",
+};
+
+/** Paiements de plan de l'atelier (propriétaire uniquement). */
+function useMyPlanPayments(enabled: boolean) {
+  const [payments, setPayments] = useState<PlanPaymentRequest[]>([]);
+  const reload = useCallback(async () => {
+    const client = getSupabaseBrowserClient();
+    if (!enabled || !client) return;
+    try {
+      setPayments(await createPlanPaymentsClient(client).myPayments());
+    } catch {
+      // hors ligne : la liste reste celle déjà affichée
+    }
+  }, [enabled]);
+  useEffect(() => {
+    void Promise.resolve().then(reload);
+  }, [reload]);
+  return { payments, reload };
+}
 
 function formatDate(iso: string | null): string {
   return iso ? new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "—";
@@ -80,6 +115,9 @@ export function AbonnementView(): React.ReactElement {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [paying, setPaying] = useState<PlanInfo | null>(null);
+  const { payments, reload: reloadPayments } = useMyPlanPayments(canManage);
+  const pendingPayment = payments.find((p) => p.status === "PENDING") ?? null;
 
   if (session?.mode === "DEMO") {
     return (
@@ -196,6 +234,17 @@ export function AbonnementView(): React.ReactElement {
           </div>
         ) : null}
 
+        {pendingPayment ? (
+          <div className="mt-4 flex items-start gap-2 rounded-md border border-warning bg-warning-soft px-3 py-2.5 text-sm text-ink">
+            <Hourglass className="mt-0.5 size-4 shrink-0 text-warning" aria-hidden="true" />
+            <span className="min-w-0">
+              Paiement du plan <strong>{pendingPayment.planName ?? pendingPayment.planCode}</strong> ({monthsLabel(pendingPayment.months)},{" "}
+              {formatPrice(pendingPayment.amount, pendingPayment.currency)}) envoyé le {formatDate(pendingPayment.createdAt)} :
+              en cours de vérification. Le plan sera activé dès validation.
+            </span>
+          </div>
+        ) : null}
+
         <div className="mt-6 grid grid-cols-1 gap-3 @lg:grid-cols-2 @4xl:grid-cols-4">
           {meters(e).map((m) => (
             <div
@@ -250,7 +299,7 @@ export function AbonnementView(): React.ReactElement {
         <h2 className="font-display text-xl text-ink">Plans</h2>
         <p className="mt-1 text-sm text-ink-soft">
           {canManage
-            ? "Un plan gratuit s'applique tout de suite. Un plan payant est d'abord demandé : il est activé après paiement (Wave, Orange Money ou espèces), sans perte de données."
+            ? "Un plan gratuit s'applique tout de suite. Pour un plan payant, envoyez le montant par transfert puis joignez la preuve : le plan est activé après vérification, sans perte de données."
             : "Seul le propriétaire de l'atelier peut changer de plan."}
         </p>
         <div className="mt-4 grid grid-cols-1 gap-3 @2xl:grid-cols-3">
@@ -304,14 +353,21 @@ export function AbonnementView(): React.ReactElement {
                     <Button variant="outline" size="sm" className="w-full" onClick={() => { setError(null); setPending({ plan, mode: "switch" }); }}>
                       Passer à ce plan
                     </Button>
-                  ) : canManage && action === "request" ? (
-                    <Button size="sm" className="w-full" onClick={() => { setError(null); setPending({ plan, mode: "request" }); }}>
-                      Demander ce plan
+                  ) : canManage && pendingPayment?.planCode === plan.code ? (
+                    <p className="rounded-md bg-warning-soft px-2 py-1.5 text-center text-sm text-warning">Paiement en vérification</p>
+                  ) : canManage && (action === "request" || action === "requested") ? (
+                    <Button size="sm" className="w-full" disabled={pendingPayment !== null} onClick={() => setPaying(plan)}>
+                      Passer à {plan.name}
                     </Button>
-                  ) : action === "requested" ? (
-                    <p className="rounded-md bg-warning-soft px-2 py-1.5 text-center text-sm text-warning">En attente de paiement</p>
                   ) : action === "current" ? (
-                    <p className="rounded-md bg-menthe-50 px-2 py-1.5 text-center text-sm font-medium text-menthe-600">Plan actuel</p>
+                    <div className="flex flex-col gap-2">
+                      <p className="rounded-md bg-menthe-50 px-2 py-1.5 text-center text-sm font-medium text-menthe-600">Plan actuel</p>
+                      {canManage && plan.priceMonthly > 0 && e.periodEnd ? (
+                        <Button size="sm" variant="outline" className="w-full" disabled={pendingPayment !== null} onClick={() => setPaying(plan)}>
+                          Prolonger
+                        </Button>
+                      ) : null}
+                    </div>
                   ) : null}
                 </div>
               </article>
@@ -319,6 +375,20 @@ export function AbonnementView(): React.ReactElement {
           })}
         </div>
       </section>
+
+      {canManage && payments.length > 0 ? (
+        <PaymentHistory payments={payments} onChanged={() => void reloadPayments()} />
+      ) : null}
+
+      <PlanPaymentDialog
+        plan={paying}
+        onClose={() => setPaying(null)}
+        onSubmitted={() => {
+          setPaying(null);
+          setNotice("Preuve envoyée : votre paiement est en cours de vérification. Le plan sera activé dès validation.");
+          void reloadPayments();
+        }}
+      />
 
       <Dialog
         open={pending !== null}
@@ -367,6 +437,75 @@ export function AbonnementView(): React.ReactElement {
         </div>
       </Dialog>
     </Page>
+  );
+}
+
+function PaymentHistory({ payments, onChanged }: { payments: PlanPaymentRequest[]; onChanged: () => void }) {
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function run(id: string, action: (client: ReturnType<typeof createPlanPaymentsClient>) => Promise<void>) {
+    const client = getSupabaseBrowserClient();
+    if (!client) return;
+    setBusyId(id);
+    setError(null);
+    try {
+      await action(createPlanPaymentsClient(client));
+    } catch (e) {
+      setError(planPaymentErrorMessage(e instanceof PlanPaymentError ? e.code : null));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  return (
+    <section className="mt-8">
+      <h2 className="font-display text-xl text-ink">Mes paiements</h2>
+      {error ? (
+        <p role="alert" className="mt-2 rounded-md bg-danger-soft px-3 py-2 text-sm text-danger">{error}</p>
+      ) : null}
+      <ul className="mt-3 flex flex-col gap-2">
+        {payments.map((p) => (
+          <li key={p.id} className="rounded-lg border border-outline bg-surface p-3 text-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="min-w-0 text-ink">
+                <strong>{p.planName ?? p.planCode}</strong> · {monthsLabel(p.months)} · {formatPrice(p.amount, p.currency)}
+              </p>
+              <Badge tone={PAYMENT_TONES[p.status]} dot>
+                {PAYMENT_STATUS_LABELS[p.status]}
+              </Badge>
+            </div>
+            <p className="mt-1 text-ink-soft">
+              {p.methodLabel} ({p.countryName}) · envoyé le {formatDate(p.createdAt)}
+              {p.transferReference ? ` · réf. ${p.transferReference}` : ""}
+            </p>
+            {p.status === "REJECTED" && p.reviewNote ? (
+              <p className="mt-1 text-danger">Motif du refus : {p.reviewNote}</p>
+            ) : p.reviewNote ? (
+              <p className="mt-1 text-ink-soft">Note : {p.reviewNote}</p>
+            ) : null}
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Button
+                size="sm"
+                variant="ghost"
+                loading={busyId === p.id}
+                onClick={() =>
+                  void run(p.id, (c) => openProof(() => c.proofUrl(p.id)))
+                }
+              >
+                <Eye className="size-4" aria-hidden="true" />
+                Voir la preuve
+              </Button>
+              {p.status === "PENDING" ? (
+                <Button size="sm" variant="ghost" disabled={busyId === p.id} onClick={() => void run(p.id, async (c) => { await c.cancel(p.id); onChanged(); })}>
+                  Annuler ce paiement
+                </Button>
+              ) : null}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
