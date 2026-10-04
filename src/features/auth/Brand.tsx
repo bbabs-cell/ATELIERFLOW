@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Scissors } from "lucide-react";
 import { BRAND_NAME } from "@/config/brand";
 import { cx } from "@/lib/cx";
@@ -23,13 +26,15 @@ export function BrandMark({ className }: { className?: string }) {
 }
 
 export function Brand({ tone = "light", subtitle, logo }: { tone?: "light" | "dark"; subtitle?: string; logo?: string | null }) {
+  // Lien expiré ou image illisible : on revient à la marque par défaut.
+  const [failed, setFailed] = useState<string | null>(null);
   return (
     <span className="group flex items-center gap-3">
-      {logo ? (
-        <span className="grid size-11 shrink-0 place-items-center">
+      {logo && failed !== logo ? (
+        <span className="grid size-11 shrink-0 place-items-center overflow-hidden">
           {/* Logo tel qu'il est : ni fond, ni cadre, ni marge (fond transparent conservé). */}
           {/* eslint-disable-next-line @next/next/no-img-element -- lien signé R2, hors optimiseur d'images */}
-          <img src={logo} alt="Logo de l'atelier" className="max-h-full max-w-full rounded-[10px] object-contain" />
+          <img src={logo} alt="Logo de l'atelier" onError={() => setFailed(logo)} className="max-h-full max-w-full rounded-[10px] object-contain" />
         </span>
       ) : (
         <BrandMark />

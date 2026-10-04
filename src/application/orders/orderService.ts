@@ -102,7 +102,9 @@ export function createOrderService(deps: OrderServiceDeps): OrderService {
   }
 
   async function nameOf(customerId: string): Promise<string | null> {
-    if (customerNames.size === 0) await refreshCustomerNames();
+    // Client créé depuis le dernier chargement (saisi avec la commande,
+    // autre écran) : la liste en mémoire est relue avant de conclure.
+    if (!customerNames.has(customerId)) await refreshCustomerNames();
     return customerNames.get(customerId) ?? null;
   }
 

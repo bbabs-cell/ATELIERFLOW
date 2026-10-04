@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { CalendarPlus, Camera, ClipboardList, Plus, Trash2, X } from "lucide-react";
 import { Button, Field, Input, Select, Textarea } from "@/ui";
+import { cx } from "@/lib/cx";
 import type { Customer } from "@/domain/clients/customer";
 import { parseFcfa, lineTotal, sumAmounts, formatFcfa } from "@/domain/money";
 import { ORDER_PRIORITIES, type OrderItemDraft, type OrderPriority } from "@/domain/orders/order";
@@ -27,7 +28,11 @@ export interface OrderFormValues {
   appointment: OrderAppointmentChoice;
   /** Photos du tissu apporté par le client, envoyées après la création. */
   fabricPhotos: File[];
+  /** Client non enregistré : créé avec la commande (nom + téléphone). */
+  newCustomer: { fullName: string; phone: string } | null;
 }
+
+type CustomerMode = "existing" | "new";
 
 export interface OrderFormProps {
   customers: Customer[];
@@ -65,6 +70,11 @@ export function OrderForm({
   onCancel,
 }: OrderFormProps) {
   const [customerId, setCustomerId] = useState("");
+  // Sans choix explicite : « nouveau client » tant qu'aucun client n'est enregistré.
+  const [chosenMode, setChosenMode] = useState<CustomerMode | null>(null);
+  const customerMode: CustomerMode = chosenMode ?? (customers.length > 0 ? "existing" : "new");
+  const [newName, setNewName] = useState("");
+  const [newPhone, setNewPhone] = useState("");
   const [priority, setPriority] = useState<OrderPriority>("NORMAL");
   const [expectedAt, setExpectedAt] = useState("");
   const allowAppointment = canWriteAppointments();
@@ -121,7 +131,8 @@ export function OrderForm({
 
   function submit() {
     const errs: Record<string, string> = {};
-    if (!customerId) errs.customerId = "Sélectionnez un client.";
+    if (customerMode === "existing" && !customerId) errs.customerId = "Sélectionnez un client, ou choisissez « Nouveau client ».";
+    if (customerMode === "new" && newName.trim().length < 2) errs.newName = "Indiquez le nom du client.";
 
     if (rows.length === 0) {
       errs.generic = "Ajoutez au moins un article.";
@@ -143,7 +154,8 @@ export function OrderForm({
     if (Object.keys(errs).length > 0) return;
 
     void onSubmit({
-      customerId,
+      customerId: customerMode === "existing" ? customerId : "",
+      newCustomer: customerMode === "new" ? { fullName: newName.trim(), phone: newPhone.trim() } : null,
       priority,
       expectedAt: expectedAt || "",
       notes,
@@ -170,9 +182,9 @@ export function OrderForm({
         <h2 className="font-display text-2xl text-ink">Nouvelle commande</h2>
       </div>
 
-      {(localErrors.generic ?? errors?.generic ?? errors?.customerId ?? errors?.total) ? (
+      {(localErrors.generic ?? errors?.generic ?? errors?.total) ? (
         <p className="rounded-md bg-danger-soft px-3 py-2 text-sm text-danger" role="alert">
-          {localErrors.generic ?? errors?.generic ?? errors?.customerId ?? errors?.total}
+          {localErrors.generic ?? errors?.generic ?? errors?.total}
         </p>
       ) : null}
 
@@ -184,22 +196,62 @@ export function OrderForm({
         }}
         noValidate
       >
+        <fieldset className="flex flex-col gap-3">
+          <legend className="mb-2 text-sm font-medium text-ink">
+            Client <span className="text-danger">*</span>
+          </legend>
+          <div role="radiogroup" aria-label="Type de client" className="grid grid-cols-2 gap-1 rounded-full bg-surface-2 p-1">
+            {(
+              [
+                ["new", "Nouveau client"],
+                ["existing", "Client enregistré"],
+              ] as const
+            ).map(([mode, label]) => (
+              <button
+                key={mode}
+                type="button"
+                role="radio"
+                aria-checked={customerMode === mode}
+                onClick={() => setChosenMode(mode)}
+                className={cx(
+                  "h-10 rounded-full px-3 text-sm font-semibold transition-all duration-200 pointer-coarse:h-11",
+                  customerMode === mode ? "bg-surface text-ink shadow-soft" : "text-ink-soft hover:text-ink",
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          {customerMode === "existing" ? (
+            <Field label="Client enregistré" htmlFor="order-customer" error={localErrors.customerId ?? errors?.customerId}>
+              <Select
+                id="order-customer"
+                value={customerId}
+                onChange={(e) => setCustomerId(e.target.value)}
+                invalid={Boolean(localErrors.customerId ?? errors?.customerId)}
+              >
+                <option value="">{customers.length ? "Choisir un client…" : "Aucun client enregistré"}</option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.full_name}
+                    {c.phone ? ` · ${c.phone}` : ""}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+          ) : (
+            <div className="grid gap-3 min-[480px]:grid-cols-2">
+              <Field label="Nom du client" htmlFor="order-new-name" error={localErrors.newName ?? errors?.newName}>
+                <Input id="order-new-name" autoComplete="off" value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Ex. Awa Diop" />
+              </Field>
+              <Field label="Téléphone" htmlFor="order-new-phone" hint="Recommandé (rappels WhatsApp)" error={errors?.newPhone}>
+                <Input id="order-new-phone" type="tel" inputMode="tel" autoComplete="off" value={newPhone} onChange={(e) => setNewPhone(e.target.value)} placeholder="+221 77 000 00 00" />
+              </Field>
+            </div>
+          )}
+        </fieldset>
+
         <div className="grid gap-4 min-[480px]:grid-cols-2">
-          <Field label="Client" required htmlFor="order-customer" error={errors?.customerId}>
-            <Select
-              id="order-customer"
-              value={customerId}
-              onChange={(e) => setCustomerId(e.target.value)}
-              invalid={Boolean(errors?.customerId)}
-            >
-              <option value="">Choisir un client…</option>
-              {customers.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.full_name}
-                </option>
-              ))}
-            </Select>
-          </Field>
           <Field label="Priorité" htmlFor="order-priority">
             <Select
               id="order-priority"
@@ -213,16 +265,15 @@ export function OrderForm({
               ))}
             </Select>
           </Field>
+          <Field label="Livraison prévue" htmlFor="order-expected">
+            <Input
+              id="order-expected"
+              type="date"
+              value={expectedAt}
+              onChange={(e) => setExpectedAt(e.target.value)}
+            />
+          </Field>
         </div>
-
-        <Field label="Livraison prévue" htmlFor="order-expected">
-          <Input
-            id="order-expected"
-            type="date"
-            value={expectedAt}
-            onChange={(e) => setExpectedAt(e.target.value)}
-          />
-        </Field>
 
         {expectedAt && allowAppointment ? (
           <div className="flex flex-col gap-3 rounded-lg border border-azur-200 bg-azur-50/70 p-3 animate-fade-up">
