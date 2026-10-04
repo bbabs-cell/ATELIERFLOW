@@ -9,7 +9,9 @@ import {
   Palette,
   CalendarDays,
   ClipboardList,
+  ChartColumn,
   CreditCard,
+  Images,
   LayoutDashboard,
   LogOut,
   Shirt,
@@ -34,6 +36,7 @@ import {
 import { useSyncRunner } from "@/features/sync/useSyncRunner";
 import { SyncStatusChip } from "@/features/sync/SyncStatusChip";
 import { PlanBanner } from "@/features/subscriptions/PlanBanner";
+import { AssistantWidget } from "@/features/assistant/AssistantWidget";
 import { usePlatformAdmin } from "@/features/platform/usePlatformAdmin";
 import { useBranding } from "@/features/branding/useBranding";
 import { readCachedLocale, useTenantLocale } from "@/features/locale/tenantLocale";
@@ -47,7 +50,9 @@ const NAV: Omit<NavItem, "active">[] = [
   { label: "Clients", href: "/clients", icon: Users, tone: "blue" },
   { label: "Commandes", href: "/commandes", icon: ClipboardList, tone: "orange" },
   { label: "Rendez-vous", href: "/rdv", icon: CalendarDays, tone: "blue" },
+  { label: "Mes modèles", href: "/modeles", icon: Images, tone: "orange" },
   { label: "Stock", href: "/stock", icon: Shirt, tone: "brown" },
+  { label: "Rapports", href: "/rapports", icon: ChartColumn, tone: "green" },
   { label: "Équipe", href: "/equipe", icon: UsersRound, tone: "brown" },
   { label: "Abonnement", href: "/abonnement", icon: CreditCard, tone: "green" },
   { label: "Personnalisation", href: "/parametres", icon: Palette, tone: "brown" },
@@ -212,6 +217,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
           {children}
         </div>
       </AppShell>
+      <AssistantWidget />
     </>
   );
 }

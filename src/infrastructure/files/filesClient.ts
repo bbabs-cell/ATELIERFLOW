@@ -76,3 +76,10 @@ export async function compressPhoto(file: File, maxEdge = 1600, quality = 0.82):
     return file;
   }
 }
+
+/** Octets d'une photo (même origine), pour la partager depuis le téléphone. */
+export async function fetchPhotoBlob(id: string): Promise<Blob> {
+  const response = await fetch(`/api/files/${id}`, { headers: await authHeaders(), cache: "no-store" });
+  if (!response.ok) throw await readError(response);
+  return response.blob();
+}

@@ -1,13 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { ClipboardList, Plus, Trash2 } from "lucide-react";
+import { CalendarPlus, ClipboardList, Plus, Trash2 } from "lucide-react";
 import { Button, Field, Input, Select, Textarea } from "@/ui";
 import type { Customer } from "@/domain/clients/customer";
 import { parseFcfa, lineTotal, sumAmounts, formatFcfa } from "@/domain/money";
 import { ORDER_PRIORITIES, type OrderItemDraft, type OrderPriority } from "@/domain/orders/order";
 import { GARMENT_TYPES, ORDER_PRIORITY_LABELS } from "./constants";
 import { currencySymbol } from "@/domain/money";
+import { APPOINTMENT_TYPE_LABELS } from "@/domain/appointments/appointments";
+import {
+  DEFAULT_ORDER_APPOINTMENT_TIME,
+  ORDER_APPOINTMENT_TYPES,
+  type OrderAppointmentType,
+} from "@/domain/appointments/fromOrder";
+import { canWriteAppointments, type OrderAppointmentChoice } from "./orderAppointments";
 
 export interface OrderFormValues {
   customerId: string;
@@ -15,6 +22,8 @@ export interface OrderFormValues {
   expectedAt: string;
   notes: string;
   items: OrderItemDraft[];
+  /** Rendez-vous à noter dans le calendrier à la date de livraison. */
+  appointment: OrderAppointmentChoice;
 }
 
 export interface OrderFormProps {
@@ -55,6 +64,10 @@ export function OrderForm({
   const [customerId, setCustomerId] = useState("");
   const [priority, setPriority] = useState<OrderPriority>("NORMAL");
   const [expectedAt, setExpectedAt] = useState("");
+  const allowAppointment = canWriteAppointments();
+  const [addAppointment, setAddAppointment] = useState(true);
+  const [appointmentTime, setAppointmentTime] = useState(DEFAULT_ORDER_APPOINTMENT_TIME);
+  const [appointmentType, setAppointmentType] = useState<OrderAppointmentType>("DELIVERY");
   const [notes, setNotes] = useState("");
   const [rows, setRows] = useState<ItemRow[]>(() => [blankRow()]);
   const [localErrors, setLocalErrors] = useState<Record<string, string>>({});
@@ -110,6 +123,7 @@ export function OrderForm({
       priority,
       expectedAt: expectedAt || "",
       notes,
+      appointment: { enabled: allowAppointment && addAppointment && expectedAt !== "", time: appointmentTime || DEFAULT_ORDER_APPOINTMENT_TIME, type: appointmentType },
       items: rows.map((row, index) => ({
         description: row.description.trim(),
         garment_type: row.garmentType || null,
@@ -184,6 +198,48 @@ export function OrderForm({
             onChange={(e) => setExpectedAt(e.target.value)}
           />
         </Field>
+
+        {expectedAt && allowAppointment ? (
+          <div className="flex flex-col gap-3 rounded-lg border border-azur-200 bg-azur-50/70 p-3 animate-fade-up">
+            <label className="flex cursor-pointer items-start gap-3 text-sm font-medium text-ink">
+              <input
+                type="checkbox"
+                checked={addAppointment}
+                onChange={(e) => setAddAppointment(e.target.checked)}
+                className="mt-0.5 size-5 shrink-0 accent-azur-600"
+              />
+              <span className="flex items-center gap-1.5">
+                <CalendarPlus className="size-4 text-azur-600" aria-hidden="true" />
+                Noter ce rendez-vous dans le calendrier
+              </span>
+            </label>
+            {addAppointment ? (
+              <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2">
+                <Field label="Rendez-vous" htmlFor="order-appointment-type">
+                  <Select
+                    id="order-appointment-type"
+                    value={appointmentType}
+                    onChange={(e) => setAppointmentType(e.target.value as OrderAppointmentType)}
+                  >
+                    {ORDER_APPOINTMENT_TYPES.map((t) => (
+                      <option key={t} value={t}>
+                        {APPOINTMENT_TYPE_LABELS[t]}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
+                <Field label="Heure" htmlFor="order-appointment-time">
+                  <Input
+                    id="order-appointment-time"
+                    type="time"
+                    value={appointmentTime}
+                    onChange={(e) => setAppointmentTime(e.target.value)}
+                  />
+                </Field>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
 
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">

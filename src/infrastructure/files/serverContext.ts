@@ -22,6 +22,7 @@ const ENTITY_TYPES: Record<FileCategory, string> = {
   ORDER: "orders",
   FABRIC: "fabrics",
   RECEIPT: "receipts",
+  MODEL: "design_models",
 };
 
 function supabaseFilesDb(client: SupabaseClient): FilesDb {
@@ -49,6 +50,22 @@ function supabaseFilesDb(client: SupabaseClient): FilesDb {
         .order("created_at", { ascending: true });
       if (error) throw new Error(error.message);
       return (data ?? []) as FileRecord[];
+    },
+    async listCategory(category, limit) {
+      const { data, error } = await client
+        .from("files")
+        .select("*")
+        .eq("entity_type", ENTITY_TYPES[category])
+        .is("deleted_at", null)
+        .order("created_at", { ascending: true })
+        .limit(limit);
+      if (error) throw new Error(error.message);
+      return (data ?? []) as FileRecord[];
+    },
+    async get(id) {
+      const { data, error } = await client.from("files").select("*").eq("id", id).maybeSingle();
+      if (error) throw new Error(error.message);
+      return (data ?? null) as FileRecord | null;
     },
     async remove(id) {
       const { data, error } = await client.rpc("delete_file", { p_id: id });
