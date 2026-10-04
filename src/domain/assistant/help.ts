@@ -81,7 +81,8 @@ export const HELP_TOPICS: readonly HelpTopic[] = [
       "Ouvrez « Commandes », puis « Nouvelle commande ».",
       "Choisissez le client (créez-le d'abord s'il n'existe pas).",
       "Ajoutez les articles : type, quantité et prix. Le total se calcule seul.",
-      "Indiquez la livraison prévue et la priorité, puis enregistrez.",
+      "Indiquez la livraison prévue et la priorité. Si le client apporte son tissu, appuyez sur « Photographier le tissu ».",
+      "Enregistrez.",
     ],
     note: "La commande reçoit un numéro ORD-… et apparaît dans la colonne « Enregistrée ». Avec une date de livraison, le rendez-vous est noté tout seul dans le calendrier (heure modifiable dans le formulaire).",
     link: { label: "Ouvrir Commandes", href: "/commandes" },
@@ -161,12 +162,12 @@ export const HELP_TOPICS: readonly HelpTopic[] = [
   {
     id: "photos",
     title: "Ajouter une photo (tissu, client, commande)",
-    keywords: ["photo", "image", "capture", "photo de la commande", "photo du tissu"],
+    keywords: ["photo", "image", "capture", "photo de la commande", "photo du tissu", "tissu du client", "tissu apporte"],
     steps: [
       "Ouvrez la fiche concernée : une commande, un client ou un tissu.",
       "Dans « Photos », appuyez sur « Ajouter », puis « Prendre ou choisir une photo ».",
     ],
-    note: "Pour le modèle à coudre d'une commande, mettez sa photo sur la commande : toute l'équipe la voit. Jusqu'à 12 photos par fiche.",
+    note: "Le tissu apporté par le client se photographie dès la prise de commande (« Photographier le tissu » dans le formulaire). Toute l'équipe voit les photos de la commande. Jusqu'à 12 photos par fiche.",
     link: { label: "Ouvrir Commandes", href: "/commandes" },
   },
   {

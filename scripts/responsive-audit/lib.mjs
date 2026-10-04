@@ -17,7 +17,13 @@ export async function context(browser, viewport, opts = {}) {
     { id: 'm2', profile_id: 'eeeeeeee-0000-4000-8000-000000000002', full_name: 'Mame Diarra Bousso Ndiaye-Sarr', email: 'mame.diarra@exemple-couture.sn', role: 'EMPLOYEE', status: 'ACTIVE', joined_at: null, is_self: false } ] };
   await ctx.route('**/rest/v1/rpc/list_team**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(team) }));
   await ctx.route('**/rest/v1/tenants**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([{ name: 'Top Couture chez Abdou — Haute couture africaine', settings: { receipt: { phone: '+221 33 820 00 00', address: 'Médina, rue 6 angle rue 11 — Dakar, Sénégal', footer: null } } }]) }));
+  const models = [
+    { id: '9a000000-0000-4000-8000-000000000001', tenant_id: 'bbbbbbbb-0000-4000-8000-000000000099', title: 'Grand boubou bazin riche brodé main trois pièces avec pantalon assorti', category: 'Grand boubou traditionnel de cérémonie', description: 'Bazin getzner, broderie fil doré.', price: 185000, created_by: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString(), deleted_at: null },
+    { id: '9a000000-0000-4000-8000-000000000002', tenant_id: 'bbbbbbbb-0000-4000-8000-000000000099', title: 'Robe wax', category: 'Robe', description: null, price: null, created_by: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString(), deleted_at: null },
+  ];
   await ctx.route('**/rest/v1/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
+  // Après la route générique : Playwright essaie d'abord la dernière route déclarée.
+  await ctx.route('**/rest/v1/design_models**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(models) }));
   await ctx.route('**/api/sync', (r) => r.fulfill({ status: 503, contentType: 'application/json', body: '{"error":{"code":"OFFLINE_TEST"}}' }));
   await ctx.route('**/api/files**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"files":[]}' }));
   return ctx;

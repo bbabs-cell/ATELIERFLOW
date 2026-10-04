@@ -19,4 +19,4 @@ l640 640 360
 l844 844 390
 l932 932 430
 l1180 1180 820"
-echo "$V" | xargs -P 5 -L 1 bash -c 'mkdir -p audit-output/out audit-output/shots; timeout 400 node run.mjs "$0" "$1" "$2" > /dev/null 2>&1 || echo "FAIL $0"'
+echo "$V" | xargs -P 4 -L 1 bash -c 'mkdir -p audit-output/out audit-output/shots; timeout 900 node run.mjs "$0" "$1" "$2" > /dev/null 2>&1 || echo "FAIL $0"'

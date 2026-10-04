@@ -211,6 +211,7 @@ describe("aide sur l'application", () => {
     expect(topic("où je mets les mensurations ?")).toBe("Enregistrer les mesures (mensurations)");
     expect(topic("comment mettre un modèle")).toBe("Ranger vos modèles (galerie « Mes modèles »)");
     expect(topic("comment ajouter une photo sur la commande")).toBe("Ajouter une photo (tissu, client, commande)");
+    expect(topic("comment prendre en photo le tissu du client")).toBe("Ajouter une photo (tissu, client, commande)");
     expect(topic("comment payer l'abonnement ?")).toBe("Changer d'abonnement (payer le plan)");
     expect(topic("comment ajouter un client")).toBe("Ajouter un client");
     expect(topic("comment inviter un employé")).toBe("Ajouter un employé ou un apprenti");

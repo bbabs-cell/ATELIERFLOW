@@ -140,10 +140,10 @@ export function AssistantWidget(): React.ReactElement {
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Ouvrir l'assistant"
-          className="fixed bottom-5 right-5 z-40 inline-flex h-14 items-center gap-2 rounded-full bg-flamme-gradient pl-4 pr-5 font-semibold text-white shadow-glow transition-all duration-300 hover:-translate-y-1 hover:shadow-lift print:hidden"
+          className="fixed bottom-5 right-5 z-40 inline-flex h-14 min-w-14 items-center justify-center gap-2 rounded-full bg-flamme-gradient px-4 font-semibold xl:pr-5 text-white shadow-glow transition-all duration-300 hover:-translate-y-1 hover:shadow-lift print:hidden"
         >
           <Sparkles className="size-5 animate-float" aria-hidden="true" />
-          <span className="hidden sm:inline">Assistant</span>
+          <span className="hidden xl:inline">Assistant</span>
         </button>
       ) : null}
 
@@ -210,7 +210,7 @@ export function AssistantWidget(): React.ReactElement {
                             key={s}
                             type="button"
                             onClick={() => void send(s)}
-                            className="rounded-full border border-flamme-200 bg-flamme-50 px-3 py-1.5 text-left text-xs font-semibold text-flamme-700 transition-all hover:-translate-y-0.5 hover:border-flamme-400 pointer-coarse:py-2.5"
+                            className="min-h-9 rounded-full border border-flamme-200 bg-flamme-50 px-3 py-1.5 text-left text-xs font-semibold text-flamme-700 transition-all hover:-translate-y-0.5 hover:border-flamme-400 pointer-coarse:min-h-11"
                           >
                             {s}
                           </button>

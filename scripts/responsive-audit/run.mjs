@@ -24,6 +24,13 @@ const scenarios = [
   ['fiche-tissu', async (p) => { await go('/stock')(p); await p.getByText('Bazin riche').first().click(); await p.waitForTimeout(1200); }],
   ['equipe', go('/equipe', 1500)],
   ['abonnement', go('/abonnement', 1500)],
+  ['rapports', go('/rapports', 1500)],
+  ['modeles', go('/modeles', 1500)],
+  ['fiche-modele', async (p) => { await go('/modeles', 1500)(p); await p.getByText('Robe wax').first().click(); await p.waitForTimeout(1000); }],
+  ['form-modele', async (p) => { await go('/modeles', 1500)(p); await open(/Nouveau modèle/)(p); }],
+  ['personnalisation', go('/parametres', 1500)],
+  ['form-commande-rdv', async (p) => { await go('/commandes')(p); await open(/Nouvelle commande/)(p); await p.fill('#order-expected', '2026-12-24'); await p.waitForTimeout(400); }],
+  ['assistant', async (p) => { await go('/dashboard', 1500)(p); await p.getByRole('button', { name: /Ouvrir l'assistant/ }).click(); await p.waitForTimeout(400); await p.getByLabel('Votre question').fill("J'ai combien de commandes et quels sont les plus urgents ?"); await p.getByRole('button', { name: 'Envoyer' }).click(); await p.waitForTimeout(900); }],
   ...(viewport.width >= 820 ? [] : [['menu-mobile', async (p) => { await go('/dashboard', 1500)(p); await p.getByRole('button', { name: /menu/i }).first().click(); await p.waitForTimeout(800); }]]),
 ];
 const browser = await launch();

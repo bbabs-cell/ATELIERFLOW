@@ -56,8 +56,11 @@ export async function deleteFile(id: string): Promise<void> {
  * Convertit aussi les formats que le serveur refuse (HEIC des iPhone) quand
  * le navigateur sait les lire. En cas d'échec, le fichier d'origine part tel
  * quel et le serveur tranche.
+ *
+ * `keepTransparency` (logo) : une image PNG, WebP ou GIF reste en PNG pour
+ * garder son fond transparent (le JPEG le remplacerait par du noir).
  */
-export async function compressPhoto(file: File, maxEdge = 1600, quality = 0.82): Promise<Blob> {
+export async function compressPhoto(file: File, maxEdge = 1600, quality = 0.82, keepTransparency = false): Promise<Blob> {
   try {
     const bitmap = await createImageBitmap(file);
     const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
@@ -70,8 +73,10 @@ export async function compressPhoto(file: File, maxEdge = 1600, quality = 0.82):
     if (!ctx) return file;
     ctx.drawImage(bitmap, 0, 0, width, height);
     bitmap.close();
-    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
-    return blob && (blob.size < file.size || file.type !== "image/jpeg") ? blob : file;
+    const transparent = keepTransparency && /^image\/(png|webp|gif)$/.test(file.type);
+    const type = transparent ? "image/png" : "image/jpeg";
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, type, quality));
+    return blob && (blob.size < file.size || file.type !== type) ? blob : file;
   } catch {
     return file;
   }

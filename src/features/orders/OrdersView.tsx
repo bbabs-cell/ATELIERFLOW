@@ -20,6 +20,7 @@ import { ORDER_PRIORITY_META } from "./constants";
 import { useAssignees } from "./useAssignees";
 import { useDataChanged } from "@/features/sync/useDataChanged";
 import { followOrderStatus, scheduleOrderAppointment } from "./orderAppointments";
+import { uploadOrderPhotos } from "./orderPhotos";
 
 type OrdersMode = "list" | "board";
 const MODE_KEY = "atelier.orders.view";
@@ -180,10 +181,24 @@ export function OrdersView(): React.ReactElement {
       const scheduled = await scheduleOrderAppointment(result.order, values.appointment);
       setFormOpen(false);
       await load(search);
-      if (scheduled) {
-        const message = "Commande enregistrée et rendez-vous noté dans le calendrier.";
+      const show = (message: string, ms = 5000) => {
         setNotice(message);
-        window.setTimeout(() => setNotice((m) => (m === message ? null : m)), 5000);
+        window.setTimeout(() => setNotice((m) => (m === message ? null : m)), ms);
+      };
+      if (values.fabricPhotos.length > 0) {
+        show(`Commande enregistrée${scheduled ? ", rendez-vous noté" : ""}. Envoi de la photo du tissu…`, 60_000);
+        const createdId = result.order.id;
+        void uploadOrderPhotos(createdId, values.fabricPhotos).then(({ sent, failed }) => {
+          show(
+            failed === 0
+              ? `Photo${sent > 1 ? "s" : ""} du tissu ajoutée${sent > 1 ? "s" : ""} à la commande.`
+              : "La photo du tissu n'a pas pu être envoyée : ajoutez-la depuis la commande (partie Photos).",
+            7000,
+          );
+          if (selectedIdRef.current === createdId) void selectOrder(createdId).catch(() => undefined);
+        });
+      } else if (scheduled) {
+        show("Commande enregistrée et rendez-vous noté dans le calendrier.");
       }
       void selectOrder(result.order.id).catch(() => undefined);
     } finally {
