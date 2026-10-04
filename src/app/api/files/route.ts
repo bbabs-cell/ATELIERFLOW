@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isFileCategory, isUuid, MAX_UPLOAD_BYTES } from "@/domain/files/files";
-import { createFileService, FileServiceError } from "@/infrastructure/files/fileService";
+import { createFileService, FileServiceError, WHOLE_CATEGORY_LISTS } from "@/infrastructure/files/fileService";
 import { resolveFilesContext } from "@/infrastructure/files/serverContext";
 
 /**
  * Fichiers privés (prompt 05).
  * POST  multipart { category, entityId, file } → envoi dans R2 + enregistrement.
  * GET   ?category=&entityId=                   → fichiers de la fiche, liens signés (10 min).
+ * GET   ?category=MODEL&entityId=all           → toutes les photos des modèles (galerie).
  * Aucune clé R2 ne quitte le serveur ; l'accès est contrôlé par la session
  * de l'utilisateur (atelier, permissions files.read / files.write).
  */
@@ -45,8 +46,12 @@ export async function GET(request: NextRequest) {
     const context = await resolveFilesContext(request.headers.get("authorization"));
     const category = request.nextUrl.searchParams.get("category");
     const entityId = request.nextUrl.searchParams.get("entityId");
-    if (!isFileCategory(category) || !isUuid(entityId)) throw new FileServiceError("VALIDATION:body", 400);
-    const files = await createFileService(context).list(category, entityId);
+    if (!isFileCategory(category)) throw new FileServiceError("VALIDATION:body", 400);
+    const service = createFileService(context);
+    let files;
+    if (entityId === "all" && WHOLE_CATEGORY_LISTS.includes(category)) files = await service.listCategory(category);
+    else if (isUuid(entityId)) files = await service.list(category, entityId);
+    else throw new FileServiceError("VALIDATION:body", 400);
     return NextResponse.json({ files }, { headers: { "cache-control": "no-store" } });
   } catch (error) {
     return fail(error);

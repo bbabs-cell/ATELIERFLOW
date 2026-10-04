@@ -3,6 +3,7 @@ import {
   keyBelongsToTenant,
   objectKey,
   SIGNED_URL_TTL_SECONDS,
+  sniffMime,
   type FileCategory,
   type FileRecord,
   type FileView,
@@ -27,6 +28,10 @@ export interface FilesDb {
     size: number;
   }): Promise<FileRecord>;
   list(category: FileCategory, entityId: string): Promise<FileRecord[]>;
+  /** Toutes les photos d'une catégorie (galerie des modèles), plafonnées. */
+  listCategory(category: FileCategory, limit: number): Promise<FileRecord[]>;
+  /** Une ligne visible par l'utilisateur (RLS), ou null. */
+  get(id: string): Promise<FileRecord | null>;
   remove(id: string): Promise<FileRecord>;
 }
 
@@ -54,6 +59,12 @@ export function statusForCode(code: string): number {
   if (code === "ALREADY_ARCHIVED" || code === "RECEIPT_IMMUTABLE") return 409;
   return 500;
 }
+
+/** Plafond d'une liste « toute la catégorie ». */
+export const MAX_CATEGORY_LIST = 600;
+
+/** Catégories listables en entier (une galerie, pas des fiches). */
+export const WHOLE_CATEGORY_LISTS: readonly FileCategory[] = ["MODEL"];
 
 export interface FileServiceDeps {
   tenantId: string;
@@ -109,6 +120,31 @@ export function createFileService(deps: FileServiceDeps) {
       const records = await deps.db.list(category, entityId);
       const views = await Promise.all(records.map(sign));
       return views.filter((v): v is FileView => v !== null);
+    },
+
+    /** Photos de toute une catégorie (vignettes de la galerie des modèles). */
+    async listCategory(category: FileCategory): Promise<FileView[]> {
+      const records = await deps.db.listCategory(category, MAX_CATEGORY_LIST);
+      const views = await Promise.all(records.map(sign));
+      return views.filter((v): v is FileView => v !== null);
+    },
+
+    /**
+     * Octets d'une photo, servis depuis notre domaine pour que le navigateur
+     * puisse les partager (le stockage privé ne se lit pas par script).
+     */
+    async content(id: string, fetcher: typeof fetch = fetch): Promise<{ bytes: Uint8Array; mime: string }> {
+      const record = await deps.db.get(id);
+      if (!record || record.deleted_at) throw new FileServiceError("NOT_FOUND:files", 404);
+      if (record.purpose !== "PHOTO") throw new FileServiceError("VALIDATION:category", 422);
+      const view = await sign(record);
+      if (!view) throw new FileServiceError("FORBIDDEN:tenant", 403);
+      const response = await fetcher(view.url);
+      if (!response.ok) throw new FileServiceError("NOT_FOUND:object", 404);
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      const mime = sniffMime(bytes);
+      if (!mime || mime === "application/pdf") throw new FileServiceError("VALIDATION:mime", 422);
+      return { bytes, mime };
     },
 
     async remove(id: string): Promise<void> {

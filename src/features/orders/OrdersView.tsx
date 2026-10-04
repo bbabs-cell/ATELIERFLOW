@@ -19,6 +19,7 @@ import { OrderBoard } from "./OrderBoard";
 import { ORDER_PRIORITY_META } from "./constants";
 import { useAssignees } from "./useAssignees";
 import { useDataChanged } from "@/features/sync/useDataChanged";
+import { followOrderStatus, scheduleOrderAppointment } from "./orderAppointments";
 
 type OrdersMode = "list" | "board";
 const MODE_KEY = "atelier.orders.view";
@@ -51,6 +52,7 @@ export function OrdersView(): React.ReactElement {
   const [filters, setFilters] = useState<BoardFilters>(DEFAULT_BOARD_FILTERS);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [boardMessage, setBoardMessage] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const assignees = useAssignees();
   const plan = usePlanGate();
 
@@ -76,6 +78,7 @@ export function OrdersView(): React.ReactElement {
         flash(result.reason);
         return;
       }
+      await followOrderStatus(result.order);
       await load(search);
       if (selectedIdRef.current === id) void selectOrder(id).catch(() => undefined);
     } finally {
@@ -174,8 +177,14 @@ export function OrdersView(): React.ReactElement {
         setFormErrors(result.errors);
         return;
       }
+      const scheduled = await scheduleOrderAppointment(result.order, values.appointment);
       setFormOpen(false);
       await load(search);
+      if (scheduled) {
+        const message = "Commande enregistrée et rendez-vous noté dans le calendrier.";
+        setNotice(message);
+        window.setTimeout(() => setNotice((m) => (m === message ? null : m)), 5000);
+      }
       void selectOrder(result.order.id).catch(() => undefined);
     } finally {
       setSaving(false);
@@ -192,6 +201,7 @@ export function OrdersView(): React.ReactElement {
         setActionError(result.reason);
         return;
       }
+      await followOrderStatus(result.order);
       await load(search);
       void selectOrder(result.order.id).catch(() => undefined);
     } finally {
@@ -214,6 +224,7 @@ export function OrdersView(): React.ReactElement {
         setCancelOpen(false);
         return;
       }
+      await followOrderStatus(result.order);
       setCancelOpen(false);
       setCancelReason("");
       await load(search);
@@ -329,6 +340,12 @@ export function OrdersView(): React.ReactElement {
           </button>
         ) : null}
       </div>
+
+      {notice ? (
+        <p role="status" className="mt-4 rounded-lg border-2 border-menthe-300 bg-menthe-50 px-3 py-2 text-sm font-semibold text-menthe-700 animate-fade-up">
+          {notice}
+        </p>
+      ) : null}
 
       {boardMessage ? (
         <p role="alert" className="mt-4 rounded-lg border-2 border-wax-300 bg-wax-50 px-3 py-2 text-sm font-semibold text-wax-600 animate-wiggle">

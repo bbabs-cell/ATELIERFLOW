@@ -105,6 +105,8 @@ describe("service /api/files", () => {
     const db: FilesDb = {
       register: vi.fn(async (input) => record({ id: input.id, key: input.key, mime: input.mime, size_bytes: input.size })),
       list: vi.fn(),
+      listCategory: vi.fn(),
+      get: vi.fn(),
       remove: vi.fn(),
     };
     const view = await createFileService({ tenantId: T, storage, db, uuid: () => F }).upload("CUSTOMER", E, JPEG);
@@ -115,7 +117,8 @@ describe("service /api/files", () => {
 
   it("type refusé avant tout envoi", async () => {
     const { storage, objects } = fakeStorage();
-    const db: FilesDb = { register: vi.fn(), list: vi.fn(), remove: vi.fn() };
+    const db: FilesDb = { register: vi.fn(), list: vi.fn(), listCategory: vi.fn(),
+      get: vi.fn(), remove: vi.fn() };
     await expect(createFileService({ tenantId: T, storage, db }).upload("ORDER", E, EXE)).rejects.toMatchObject({ code: "VALIDATION:mime", status: 422 });
     expect(objects.size).toBe(0);
     expect(db.register).not.toHaveBeenCalled();
@@ -128,6 +131,8 @@ describe("service /api/files", () => {
         throw new Error('NOT_FOUND:customers');
       }),
       list: vi.fn(),
+      listCategory: vi.fn(),
+      get: vi.fn(),
       remove: vi.fn(),
     };
     await expect(createFileService({ tenantId: T, storage, db, uuid: () => F }).upload("CUSTOMER", E, PNG)).rejects.toMatchObject({
@@ -146,10 +151,50 @@ describe("service /api/files", () => {
         record({ id: "x1", tenant_id: OTHER, key: `tenants/${OTHER}/customers/${E}/a.jpg` }),
         record({ id: "x2", key: `tenants/${OTHER}/customers/${E}/b.jpg` }),
       ]),
+      listCategory: vi.fn(),
+      get: vi.fn(),
       remove: vi.fn(),
     };
     const views = await createFileService({ tenantId: T, storage, db }).list("CUSTOMER", E);
     expect(views.map((v) => v.id)).toEqual([F]);
+  });
+
+  it("galerie des modèles : toute la catégorie, plafonnée, jamais hors de l'atelier", async () => {
+    const { storage } = fakeStorage();
+    const db: FilesDb = {
+      register: vi.fn(),
+      list: vi.fn(),
+      listCategory: vi.fn(async () => [
+        record({ category: "MODEL", key: `tenants/${T}/models/${E}/${F}.jpg` }),
+        record({ id: "x3", category: "MODEL", tenant_id: OTHER, key: `tenants/${OTHER}/models/${E}/c.jpg` }),
+      ]),
+      get: vi.fn(),
+      remove: vi.fn(),
+    };
+    const views = await createFileService({ tenantId: T, storage, db }).listCategory("MODEL");
+    expect(views.map((v) => v.id)).toEqual([F]);
+    expect(db.listCategory).toHaveBeenCalledWith("MODEL", 600);
+    expect(objectKey(T, "MODEL", E, F, "image/webp")).toBe(`tenants/${T}/models/${E}/${F}.webp`);
+  });
+
+  it("octets d'une photo : seulement une photo de l'atelier, type vérifié", async () => {
+    const { storage } = fakeStorage();
+    const own = record({ purpose: "PHOTO" });
+    const db: FilesDb = {
+      register: vi.fn(),
+      list: vi.fn(),
+      listCategory: vi.fn(),
+      get: vi.fn(async (id: string) => (id === F ? own : id === "pdf" ? record({ purpose: "PDF" }) : id === "other" ? record({ tenant_id: OTHER }) : null)),
+      remove: vi.fn(),
+    };
+    const service = createFileService({ tenantId: T, storage, db });
+    const fetcher = vi.fn(async () => new Response(JPEG as BodyInit)) as unknown as typeof fetch;
+    await expect(service.content(F, fetcher)).resolves.toMatchObject({ mime: "image/jpeg" });
+    await expect(service.content("absent", fetcher)).rejects.toMatchObject({ code: "NOT_FOUND:files" });
+    await expect(service.content("pdf", fetcher)).rejects.toMatchObject({ code: "VALIDATION:category" });
+    await expect(service.content("other", fetcher)).rejects.toMatchObject({ code: "FORBIDDEN:tenant" });
+    const bad = vi.fn(async () => new Response(EXE as BodyInit)) as unknown as typeof fetch;
+    await expect(service.content(F, bad)).rejects.toMatchObject({ code: "VALIDATION:mime" });
   });
 
   it("suppression d'un reçu refusée par la base", async () => {
@@ -157,6 +202,8 @@ describe("service /api/files", () => {
     const db: FilesDb = {
       register: vi.fn(),
       list: vi.fn(),
+      listCategory: vi.fn(),
+      get: vi.fn(),
       remove: vi.fn(async () => {
         throw new Error("RECEIPT_IMMUTABLE");
       }),

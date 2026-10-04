@@ -5,6 +5,11 @@ import type { FabricsRepository, StockMovementsRepository } from "@/repository/p
 import type { OrdersRepository } from "@/repository/ports/orders";
 import type { PaymentsRepository } from "@/repository/ports/payments";
 import type { CustomersRepository } from "@/repository/ports/clients";
+import type { Customer } from "@/domain/clients/customer";
+import type { OrderRecord } from "@/domain/orders/order";
+import type { PaymentRecord } from "@/domain/orders/payments";
+import type { AppointmentRecord } from "@/domain/appointments/appointments";
+import type { FabricRecord } from "@/domain/inventory/fabrics";
 import type { TeamMembersRepository } from "@/repository/ports/team";
 import { can, permissionsFor } from "@/domain/team/roles";
 import type { PermissionCode, TenantRoleCode } from "@/domain/team/roles";
@@ -46,8 +51,25 @@ export type DashboardResult =
   | { ok: true; kpis: DashboardKpis; range: DateRange }
   | { ok: false; reason: string };
 
+/** Données brutes du rapport mensuel (calculé sur l'appareil). */
+export type ReportSourcesResult =
+  | { ok: true; orders: OrderRecord[]; payments: PaymentRecord[]; customers: Customer[] }
+  | { ok: false; reason: string };
+
+/** Données lisibles par l'assistant, limitées aux droits du rôle. */
+export interface AssistantSources {
+  permissions: PermissionCode[];
+  orders: OrderRecord[];
+  payments: PaymentRecord[];
+  customers: Customer[];
+  appointments: AppointmentRecord[];
+  fabrics: FabricRecord[];
+}
+
 export interface DashboardService {
   getAccess(): Promise<DashboardAccess>;
+  getAssistantSources(): Promise<AssistantSources>;
+  getReportSources(): Promise<ReportSourcesResult>;
   getKpis(range?: DateRange): Promise<DashboardResult>;
   search(term: string): Promise<SearchHit[]>;
 }
@@ -95,6 +117,28 @@ export function createDashboardService(deps: DashboardServiceDeps): DashboardSer
   return {
     async getAccess() {
       return getAccess();
+    },
+    async getAssistantSources() {
+      const access = await getAccess();
+      const read = access.canRead;
+      const [orders, payments, customers, appointments, fabrics] = await Promise.all([
+        read("orders.read") ? deps.orders.listOrders({ includeArchive: true }) : [],
+        read("payments.read") ? deps.payments.listAll() : [],
+        read("customers.read") ? deps.customers.list("", true) : [],
+        read("appointments.read") ? deps.appointments.listAll() : [],
+        read("stock.read") || read("fabrics.read") ? deps.fabrics.listAll() : [],
+      ]);
+      return { permissions: access.permissions, orders, payments, customers, appointments, fabrics };
+    },
+    async getReportSources() {
+      const access = await getAccess();
+      if (!access.canRead("reports.read")) return { ok: false, reason: "FORBIDDEN" };
+      const [orders, payments, customers] = await Promise.all([
+        deps.orders.listOrders({ includeArchive: true }),
+        deps.payments.listAll(),
+        deps.customers.list("", true),
+      ]);
+      return { ok: true, orders, payments, customers };
     },
     async getKpis(range) {
       const access = await getAccess();

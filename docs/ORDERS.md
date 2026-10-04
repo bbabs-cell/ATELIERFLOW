@@ -93,3 +93,12 @@ COMPLETED → READY_FOR_PICKUP → DELIVERED
 - **Tri dans une colonne** : retard, priorité (Urgente → Basse), échéance la plus proche, ancienneté.
 - **Filtres** (Liste et Atelier) : priorité, personne affectée / non affectées, « En retard » (avec compteur).
 - **Affectation** : sélecteur « Affectée à » dans le détail (membres ACTIVE de l'équipe ; « Moi » seul sans droit `team.read`) ; `orderService.assign(id, profil | null)`. Seule cette opération envoie `employee_id` : les autres modifications l'omettent pour ne jamais écraser une affectation faite depuis un autre appareil. Côté serveur (`0018`), la clé présente fait foi (null = retrait) et la personne doit être membre ACTIVE de l'atelier.
+
+## Commande → rendez-vous (2026-10-04)
+
+À la création d'une commande avec une date de livraison, un rendez-vous lié à la
+commande est noté dans le calendrier (case cochée par défaut, type Livraison / Retrait /
+Essayage, heure 10 h modifiable). Le rendez-vous suit ensuite la commande : livrée →
+terminé, annulée → annulé (`src/domain/appointments/fromOrder.ts`,
+`src/features/orders/orderAppointments.ts`). Réservé aux rôles qui peuvent gérer les
+rendez-vous.

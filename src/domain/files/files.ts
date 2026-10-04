@@ -4,11 +4,11 @@
  * référence dans public.files (0004, 0020).
  *
  * Disposition des objets, indépendante du nom commercial :
- *   tenants/{tenantId}/{customers|orders|fabrics|receipts}/{entityId}/{fileId}.{ext}
+ *   tenants/{tenantId}/{customers|orders|fabrics|receipts|models}/{entityId}/{fileId}.{ext}
  */
 import { planErrorMessage } from "@/domain/subscriptions/entitlements";
 
-export const FILE_CATEGORIES = ["CUSTOMER", "ORDER", "FABRIC", "RECEIPT"] as const;
+export const FILE_CATEGORIES = ["CUSTOMER", "ORDER", "FABRIC", "RECEIPT", "MODEL"] as const;
 export type FileCategory = (typeof FILE_CATEGORIES)[number];
 
 export const PHOTO_MIMES = ["image/jpeg", "image/png", "image/webp"] as const;
@@ -29,6 +29,7 @@ const DIRS: Record<FileCategory, string> = {
   ORDER: "orders",
   FABRIC: "fabrics",
   RECEIPT: "receipts",
+  MODEL: "models",
 };
 
 const EXT: Record<AllowedMime, string> = {
