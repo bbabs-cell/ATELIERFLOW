@@ -11,6 +11,7 @@ import type { Customer } from "@/domain/clients/customer";
 import type { OrderStatus } from "@/domain/orders/order";
 import type { OrderWithCustomer } from "@/application/orders/orderService";
 import { getClientsFacade } from "@/features/clients/facade";
+import { normalizePhone } from "@/domain/clients/customer";
 import { getOrdersFacade } from "./facade";
 import { OrderForm, type OrderFormValues } from "./OrderForm";
 import { OrdersList } from "./OrdersList";
@@ -163,12 +164,46 @@ export function OrdersView(): React.ReactElement {
     }
   }
 
+  /**
+   * Client saisi directement dans la commande : réutilise le client actif
+   * qui a déjà ce numéro, sinon le crée (nom + téléphone, aussi WhatsApp).
+   */
+  async function resolveNewCustomer(input: { fullName: string; phone: string }): Promise<{ ok: true; customerId: string } | { ok: false; errors: Record<string, string> }> {
+    const clients = getClientsFacade().clients;
+    const phone = normalizePhone(input.phone);
+    if (phone) {
+      const all = await clients.listCustomers({ search: "", includeArchive: false });
+      const same = all.find((c) => c.phone && normalizePhone(c.phone) === phone);
+      if (same) return { ok: true, customerId: same.id };
+    }
+    const created = await clients.createCustomer({ full_name: input.fullName, phone: phone || null, whatsapp: phone || null });
+    if (!created.ok) {
+      const errors: Record<string, string> = {};
+      if (created.errors.full_name) errors.newName = created.errors.full_name;
+      if (created.errors.phone) errors.newPhone = created.errors.phone;
+      if (created.errors.generic) errors.generic = created.errors.generic;
+      if (Object.keys(errors).length === 0) errors.generic = "Le client n'a pas pu être enregistré.";
+      return { ok: false, errors };
+    }
+    setCustomers((list) => [...list, created.customer]);
+    return { ok: true, customerId: created.customer.id };
+  }
+
   async function submitOrder(values: OrderFormValues) {
     setSaving(true);
     setFormErrors(null);
     try {
+      let customerId = values.customerId;
+      if (values.newCustomer) {
+        const resolved = await resolveNewCustomer(values.newCustomer);
+        if (!resolved.ok) {
+          setFormErrors(resolved.errors);
+          return;
+        }
+        customerId = resolved.customerId;
+      }
       const result = await getOrdersFacade().orders.createOrder({
-        customerId: values.customerId,
+        customerId,
         priority: values.priority,
         expectedAt: values.expectedAt || null,
         notes: values.notes || null,

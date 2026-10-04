@@ -109,6 +109,22 @@ describe("createOrderService", () => {
     expect((cached as { reference: string }).reference).toBe(res.order.reference);
   });
 
+  it("accepte un client créé après une première commande (client saisi avec la commande)", async () => {
+    const h = makeHarness(uniqueTenant());
+    const first = await h.clients.createCustomer({ full_name: "Awa Diop" });
+    if (!first.ok) return;
+    expect((await h.orders.createOrder({ customerId: first.customer.id, priority: "NORMAL", items: [ITEM_ROBE] })).ok).toBe(true);
+    // Nouveau client saisi dans le formulaire de commande, après le premier chargement.
+    const walkIn = await h.clients.createCustomer({ full_name: "Khady Sow", phone: "789998877", whatsapp: "789998877" });
+    if (!walkIn.ok) return;
+    const res = await h.orders.createOrder({ customerId: walkIn.customer.id, priority: "NORMAL", items: [ITEM_VOILE] });
+    expect(res.ok).toBe(true);
+    if (res.ok) expect(res.order.customer_id).toBe(walkIn.customer.id);
+    // Un identifiant vraiment inconnu reste refusé.
+    const unknown = await h.orders.createOrder({ customerId: "99999999-0000-4000-8000-000000000000", priority: "NORMAL", items: [ITEM_ROBE] });
+    expect(unknown.ok).toBe(false);
+  });
+
   it("incrémente la séquence de référence par tenant", async () => {
     const h = makeHarness(uniqueTenant());
     const customer = await h.clients.createCustomer({ full_name: "Awa Diop" });

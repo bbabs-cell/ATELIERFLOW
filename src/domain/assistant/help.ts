@@ -79,7 +79,7 @@ export const HELP_TOPICS: readonly HelpTopic[] = [
     keywords: ["nouvelle commande", "creer une commande", "ajouter une commande", "enregistrer une commande", "prendre une commande", "faire une commande"],
     steps: [
       "Ouvrez « Commandes », puis « Nouvelle commande ».",
-      "Choisissez le client (créez-le d'abord s'il n'existe pas).",
+      "Client déjà enregistré : « Client enregistré » puis choisissez-le. Sinon « Nouveau client » : tapez seulement son nom et son téléphone, il est créé avec la commande.",
       "Ajoutez les articles : type, quantité et prix. Le total se calcule seul.",
       "Indiquez la livraison prévue et la priorité. Si le client apporte son tissu, appuyez sur « Photographier le tissu ».",
       "Enregistrez.",

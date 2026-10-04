@@ -147,10 +147,13 @@ export function AppShell({
       </header>
 
       {/* Navigation latérale desktop */}
-      <aside className="dot-grid sticky top-0 hidden h-dvh w-72 shrink-0 flex-col gap-8 overflow-hidden bg-chocolat-900 p-5 text-ivoire-50 lg:flex">
+      <aside className="dot-grid sticky top-0 hidden h-dvh w-72 shrink-0 flex-col gap-6 overflow-hidden bg-chocolat-900 p-5 text-ivoire-50 lg:flex">
         {cover ? <CoverBackdrop src={cover} dark /> : <AmbientBlobs dark />}
         <div className="relative px-2 pt-2 animate-fade-in">{brand}</div>
-        <div className="relative flex-1">{nav(true)}</div>
+        {/* Le menu défile seul quand l'écran est bas ; logo et compte restent visibles. */}
+        <div className="relative -mx-2 min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 py-1 [scrollbar-color:rgb(255_255_255/0.25)_transparent] [scrollbar-width:thin]">
+          {nav(true)}
+        </div>
         {footer ? <div className="relative">{footer}</div> : null}
       </aside>
 
