@@ -13,7 +13,7 @@ Direction (v2, demandée par le client, 2026-09) : **vivante, colorée, animée*
 - **dégradés** : `bg-flamme-gradient`, `bg-sunset-gradient`, `bg-ocean-gradient`, `bg-aurora-gradient`, `text-gradient`.
 - **typographie** : Bricolage Grotesque (titres, `font-display`), Manrope (interface), DM Mono (étiquettes, chiffres, `font-mono`). Titres de page : classe `page-title`.
 - **ombres** : `shadow-soft`, `shadow-lift`, `shadow-glow` (halo flamme), `shadow-neo` (décalée, boutons outline).
-- **animations** : `animate-fade-up`, `pop`, `scale-in`, `blob`, `float`, `shimmer`, `gradient`, `marquee`, `grow-up`, `pulse-ring` ; utilitaires `stagger`, `shine`, `gradient-border` (contour arc-en-ciel au survol), `dot-grid`, `skeleton-shimmer` ; chiffres animés via `useCountUp`. Les mouvements continus sont coupés sous `prefers-reduced-motion`.
+- **animations** : `animate-fade-up`, `pop`, `scale-in`, `blob`, `float`, `shimmer`, `gradient`, `marquee`, `grow-up`, `pulse-ring` ; utilitaires `stagger`, `shine`, `gradient-border` (contour arc-en-ciel au survol), `dot-grid`, `skeleton-shimmer` ; chiffres animés via `useCountUp`. Les mouvements continus sont coupés sous `prefers-reduced-motion`. Méthode complète et réutilisable (règles, recettes, fichiers à copier) : skill `animations-vivantes`.
 - **radius** : 8/12/20/28 px ; boutons et onglets en pilule.
 - **breakpoints** : 320, 360, 375, 390, 414, 480, 640, 768, 820, 912, 1024, 1280, 1366, 1440, 1536, 1920.
 

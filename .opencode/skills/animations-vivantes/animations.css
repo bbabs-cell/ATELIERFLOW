@@ -1,0 +1,252 @@
+/* =====================================================================
+   animations.css — style « animations vivantes » (MagyaPro / atelierflow)
+   Tailwind CSS v4. À importer après tailwindcss :
+     @import "tailwindcss";
+     @import "./animations.css";
+   Seules les 7 couleurs ci-dessous sont à adapter à la marque.
+   ===================================================================== */
+
+:root {
+  /* ---------- Couleurs de marque (à adapter) ---------- */
+  --anim-brand-300: #ffad5c; /* clair : reflets, aurora */
+  --anim-brand-500: #ee6c14; /* principal */
+  --anim-brand-600: #d4540a;
+  --anim-brand-700: #b04408; /* foncé : texte blanc lisible dessus */
+  --anim-brand-rgb: 232 97 15; /* même teinte en « r g b » pour les halos */
+  --anim-dark: #211d16; /* encre / fonds sombres */
+  --anim-light: #fbf8f2; /* fond clair */
+  --anim-skeleton: #ede6da; /* fond des squelettes de chargement */
+
+  /* ---------- Dégradés (dérivés) ---------- */
+  --gradient-brand: linear-gradient(120deg, var(--anim-brand-500) 0%, var(--anim-brand-600) 55%, var(--anim-brand-700) 100%);
+  --gradient-brand-reverse: linear-gradient(120deg, var(--anim-brand-700) 0%, var(--anim-brand-600) 50%, var(--anim-brand-500) 100%);
+  --gradient-aurora: linear-gradient(120deg, var(--anim-brand-500), var(--anim-brand-300), var(--anim-brand-500), var(--anim-brand-700), var(--anim-brand-500));
+}
+
+@theme {
+  /* ---------- Ombres ---------- */
+  --shadow-soft: 0 1px 2px rgb(33 29 22 / 0.05), 0 6px 18px -6px rgb(33 29 22 / 0.12);
+  --shadow-lift: 0 4px 10px -2px rgb(33 29 22 / 0.08), 0 22px 40px -18px rgb(33 29 22 / 0.28);
+  --shadow-modal: 0 12px 30px rgb(20 17 16 / 0.18), 0 40px 90px -20px rgb(20 17 16 / 0.35);
+  --shadow-glow: 0 10px 30px -8px rgb(var(--anim-brand-rgb) / 0.45), 0 4px 12px -4px rgb(var(--anim-brand-rgb) / 0.4);
+  --shadow-neo: 4px 4px 0 var(--anim-dark);
+  --shadow-neo-lg: 7px 7px 0 var(--anim-dark);
+
+  /* ---------- Animations (classes animate-*) ---------- */
+  --animate-fade-up: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-pop: pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-scale-in: scale-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-slide-in-left: slide-in-left 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-slide-in-right: slide-in-right 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-blob: blob 14s ease-in-out infinite;
+  --animate-float: float 5s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-gradient: gradient-pan 6s ease infinite;
+  --animate-marquee: marquee 28s linear infinite;
+  --animate-spin-slow: spin 12s linear infinite;
+  --animate-wiggle: wiggle 0.6s ease-in-out;
+  --animate-pulse-ring: pulse-ring 2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  --animate-grow-up: grow-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes pop {
+    0% { opacity: 0; transform: scale(0.85); }
+    60% { opacity: 1; transform: scale(1.06); }
+    100% { transform: scale(1); }
+  }
+  @keyframes scale-in {
+    from { opacity: 0; transform: translateY(10px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes slide-in-left {
+    from { opacity: 0; transform: translateX(-100%); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slide-in-right {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes blob {
+    0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    33% { transform: translate(40px, -30px) scale(1.12) rotate(20deg); }
+    66% { transform: translate(-30px, 25px) scale(0.92) rotate(-15deg); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(-2deg); }
+  }
+  @keyframes shimmer {
+    from { background-position: -200% 0; }
+    to { background-position: 200% 0; }
+  }
+  @keyframes gradient-pan {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-10deg); }
+    75% { transform: rotate(10deg); }
+  }
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgb(var(--anim-brand-rgb) / 0.55); }
+    80%, 100% { box-shadow: 0 0 0 12px rgb(var(--anim-brand-rgb) / 0); }
+  }
+  @keyframes grow-up {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+  }
+}
+
+@layer utilities {
+  /* Fonds en dégradé (taille 200 % pour pouvoir les faire glisser). */
+  .bg-brand-gradient {
+    background-image: var(--gradient-brand);
+    background-size: 200% 200%;
+  }
+  .bg-brand-gradient-reverse {
+    background-image: var(--gradient-brand-reverse);
+    background-size: 200% 200%;
+  }
+  .bg-aurora-gradient {
+    background-image: var(--gradient-aurora);
+    background-size: 300% 300%;
+  }
+
+  /* Mot ou chiffre en dégradé animé. */
+  .text-gradient {
+    background-image: var(--gradient-brand-reverse);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: var(--animate-gradient);
+  }
+
+  /* Trame de points : sur fond sombre / sur fond clair. */
+  .dot-grid {
+    background-image: radial-gradient(rgb(255 255 255 / 0.07) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+  .dot-grid-ink {
+    background-image: radial-gradient(rgb(33 29 22 / 0.07) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Reflet qui balaie un bouton au survol. */
+  .shine {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .shine::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(110deg, transparent 20%, rgb(255 255 255 / 0.45) 50%, transparent 80%);
+    transform: translateX(-120%);
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .shine:hover::after {
+    transform: translateX(120%);
+  }
+
+  /* Contour en dégradé animé, visible au survol / focus (cartes cliquables). */
+  .gradient-border {
+    position: relative;
+    isolation: isolate;
+  }
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    padding: 2px;
+    border-radius: inherit;
+    background: var(--gradient-aurora);
+    background-size: 300% 300%;
+    animation: var(--animate-gradient);
+    /* Seul le contour est peint : le contenu reste lisible. */
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .gradient-border:hover::before,
+  .gradient-border:focus-within::before {
+    opacity: 1;
+  }
+
+  /* Enfants qui apparaissent en cascade (plafonné pour les longues listes). */
+  .stagger > * {
+    animation: var(--animate-fade-up);
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0.02s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.07s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.12s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.17s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.22s; }
+  .stagger > *:nth-child(6) { animation-delay: 0.27s; }
+  .stagger > *:nth-child(7) { animation-delay: 0.32s; }
+  .stagger > *:nth-child(8) { animation-delay: 0.37s; }
+  .stagger > *:nth-child(n + 9) { animation-delay: 0.42s; }
+
+  /* Squelette de chargement scintillant. */
+  .skeleton-shimmer {
+    background: linear-gradient(90deg, var(--anim-skeleton) 25%, var(--anim-light) 50%, var(--anim-skeleton) 75%);
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+
+  /* Titre de page : entrée douce + point final en dégradé animé. */
+  .page-title {
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    animation: var(--animate-fade-up);
+  }
+  .page-title::after {
+    content: ".";
+    background-image: var(--gradient-brand-reverse);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: var(--animate-gradient);
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Accessibilité : qui a demandé moins d'animations n'a plus aucun mouvement
+   continu, et les transitions deviennent instantanées. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-iteration-count: 1 !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

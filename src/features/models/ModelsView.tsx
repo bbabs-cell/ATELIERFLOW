@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ImagePlus, Pencil, Plus, Search, Share2, Shirt, Trash2 } from "lucide-react";
-import { Badge, Button, Dialog, Field, Input, StateView, Textarea } from "@/ui";
+import { Button, Dialog, Field, Input, StateView, Textarea } from "@/ui";
 import { cx } from "@/lib/cx";
 import { peekActiveSession } from "@/application/auth/session";
 import { currencySymbol, formatMoney } from "@/domain/money";
@@ -168,8 +168,8 @@ export function ModelsView(): React.ReactElement {
                             <Shirt className="size-10 text-ink-faint" aria-hidden="true" />
                           )}
                           {m.category ? (
-                            <span className="absolute left-2 top-2">
-                              <Badge tone="primary">{m.category}</Badge>
+                            <span className="absolute left-2 right-2 top-2 flex">
+                              <span className="truncate rounded-full bg-flamme-600 px-2.5 py-0.5 text-xs font-semibold text-white shadow-soft">{m.category}</span>
                             </span>
                           ) : null}
                         </span>
@@ -434,7 +434,9 @@ function ModelDialog({
           </p>
         ) : null}
         <div className="flex flex-wrap items-center gap-2">
-          {model.category ? <Badge tone="primary">{model.category}</Badge> : null}
+          {model.category ? (
+            <span className="max-w-full rounded-full bg-flamme-100 px-2.5 py-0.5 text-xs font-semibold text-flamme-700 [overflow-wrap:anywhere]">{model.category}</span>
+          ) : null}
           {model.price !== null ? <span className="font-bold tabular text-menthe-700">À partir de {formatMoney(model.price)}</span> : null}
         </div>
         {model.description ? <p className="whitespace-pre-line text-sm text-ink">{model.description}</p> : null}
