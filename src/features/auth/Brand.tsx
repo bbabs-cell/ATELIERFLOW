@@ -26,9 +26,10 @@ export function Brand({ tone = "light", subtitle, logo }: { tone?: "light" | "da
   return (
     <span className="group flex items-center gap-3">
       {logo ? (
-        <span className="grid size-11 shrink-0 place-items-center overflow-hidden rounded-[14px] bg-white shadow-soft">
+        <span className="grid size-11 shrink-0 place-items-center">
+          {/* Logo tel qu'il est : ni fond, ni cadre, ni marge (fond transparent conservé). */}
           {/* eslint-disable-next-line @next/next/no-img-element -- lien signé R2, hors optimiseur d'images */}
-          <img src={logo} alt="Logo de l'atelier" className="size-full object-contain p-1" />
+          <img src={logo} alt="Logo de l'atelier" className="max-h-full max-w-full rounded-[10px] object-contain" />
         </span>
       ) : (
         <BrandMark />

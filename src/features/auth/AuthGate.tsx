@@ -213,7 +213,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
             </Badge>
           </div>
         ) : null}
-        <div key={`${pathname}:${locale.currency}`} className="animate-fade-up">
+        {/* Marge basse : la bulle de l'assistant ne cache jamais la fin de la page. */}
+        <div key={`${pathname}:${locale.currency}`} className="animate-fade-up pb-24">
           {children}
         </div>
       </AppShell>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { CalendarPlus, ClipboardList, Plus, Trash2 } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
+import { CalendarPlus, Camera, ClipboardList, Plus, Trash2, X } from "lucide-react";
 import { Button, Field, Input, Select, Textarea } from "@/ui";
 import type { Customer } from "@/domain/clients/customer";
 import { parseFcfa, lineTotal, sumAmounts, formatFcfa } from "@/domain/money";
@@ -15,6 +15,7 @@ import {
   type OrderAppointmentType,
 } from "@/domain/appointments/fromOrder";
 import { canWriteAppointments, type OrderAppointmentChoice } from "./orderAppointments";
+import { canAttachOrderPhotos, MAX_ORDER_FORM_PHOTOS } from "./orderPhotos";
 
 export interface OrderFormValues {
   customerId: string;
@@ -24,6 +25,8 @@ export interface OrderFormValues {
   items: OrderItemDraft[];
   /** Rendez-vous à noter dans le calendrier à la date de livraison. */
   appointment: OrderAppointmentChoice;
+  /** Photos du tissu apporté par le client, envoyées après la création. */
+  fabricPhotos: File[];
 }
 
 export interface OrderFormProps {
@@ -69,6 +72,27 @@ export function OrderForm({
   const [appointmentTime, setAppointmentTime] = useState(DEFAULT_ORDER_APPOINTMENT_TIME);
   const [appointmentType, setAppointmentType] = useState<OrderAppointmentType>("DELIVERY");
   const [notes, setNotes] = useState("");
+  const allowPhotos = canAttachOrderPhotos();
+  const photoInputId = useId();
+  const [photos, setPhotos] = useState<{ file: File; url: string }[]>([]);
+  const photosRef = useRef(photos);
+  useEffect(() => {
+    photosRef.current = photos;
+  }, [photos]);
+  // Aperçus libérés à la fermeture du formulaire.
+  useEffect(() => () => photosRef.current.forEach((p) => URL.revokeObjectURL(p.url)), []);
+
+  function addPhotos(list: FileList | null) {
+    if (!list) return;
+    const room = MAX_ORDER_FORM_PHOTOS - photos.length;
+    const added = [...list].filter((f) => f.type.startsWith("image/") || f.type === "").slice(0, Math.max(0, room));
+    setPhotos((ps) => [...ps, ...added.map((file) => ({ file, url: URL.createObjectURL(file) }))]);
+  }
+
+  function removePhoto(url: string) {
+    URL.revokeObjectURL(url);
+    setPhotos((ps) => ps.filter((p) => p.url !== url));
+  }
   const [rows, setRows] = useState<ItemRow[]>(() => [blankRow()]);
   const [localErrors, setLocalErrors] = useState<Record<string, string>>({});
 
@@ -123,6 +147,7 @@ export function OrderForm({
       priority,
       expectedAt: expectedAt || "",
       notes,
+      fabricPhotos: photos.map((p) => p.file),
       appointment: { enabled: allowAppointment && addAppointment && expectedAt !== "", time: appointmentTime || DEFAULT_ORDER_APPOINTMENT_TIME, type: appointmentType },
       items: rows.map((row, index) => ({
         description: row.description.trim(),
@@ -201,12 +226,12 @@ export function OrderForm({
 
         {expectedAt && allowAppointment ? (
           <div className="flex flex-col gap-3 rounded-lg border border-azur-200 bg-azur-50/70 p-3 animate-fade-up">
-            <label className="flex cursor-pointer items-start gap-3 text-sm font-medium text-ink">
+            <label className="flex min-h-10 cursor-pointer items-center gap-3 text-sm font-medium text-ink pointer-coarse:min-h-11">
               <input
                 type="checkbox"
                 checked={addAppointment}
                 onChange={(e) => setAddAppointment(e.target.checked)}
-                className="mt-0.5 size-5 shrink-0 accent-azur-600"
+                className="size-5 shrink-0 accent-azur-600"
               />
               <span className="flex items-center gap-1.5">
                 <CalendarPlus className="size-4 text-azur-600" aria-hidden="true" />
@@ -327,6 +352,56 @@ export function OrderForm({
             <span className="font-display text-xl text-ink">{formatFcfa(grandTotal ?? 0)}</span>
           </div>
         </div>
+
+        {allowPhotos ? (
+          <div className="flex flex-col gap-2 rounded-lg border border-outline bg-surface-2 p-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <p className="text-sm font-medium text-ink">Tissu apporté par le client</p>
+                <p className="text-xs text-ink-soft">Prenez-le en photo : elle sera rangée dans les photos de la commande.</p>
+              </div>
+              {photos.length < MAX_ORDER_FORM_PHOTOS ? (
+                <label
+                  htmlFor={photoInputId}
+                  className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-full bg-chocolat-900 px-4 text-sm font-semibold text-ivoire-50 shadow-soft transition-all hover:-translate-y-0.5 pointer-coarse:h-11"
+                >
+                  <Camera className="size-4" aria-hidden="true" />
+                  {photos.length === 0 ? "Photographier le tissu" : "Autre photo"}
+                </label>
+              ) : null}
+              <input
+                id={photoInputId}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                multiple
+                className="sr-only"
+                onChange={(e) => {
+                  addPhotos(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+            {photos.length > 0 ? (
+              <ul className="flex flex-wrap gap-2">
+                {photos.map((p, i) => (
+                  <li key={p.url} className="relative">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- aperçu local (objet du navigateur) */}
+                    <img src={p.url} alt={`Tissu ${i + 1}`} className="size-20 rounded-lg object-cover shadow-soft" />
+                    <button
+                      type="button"
+                      onClick={() => removePhoto(p.url)}
+                      aria-label={`Retirer la photo ${i + 1}`}
+                      className="absolute -right-2 -top-2 grid size-7 place-items-center rounded-full bg-chocolat-900 text-white shadow-soft pointer-coarse:size-9"
+                    >
+                      <X className="size-4" aria-hidden="true" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ) : null}
 
         <Field label="Notes" htmlFor="order-notes">
           <Textarea

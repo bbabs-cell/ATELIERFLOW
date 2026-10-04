@@ -67,7 +67,7 @@ function ImageCard({ kind, url, editable, className }: { kind: BrandingKind; url
     setBusy(true);
     setError(null);
     try {
-      const body = await compressPhoto(file, BRANDING_MAX_EDGE[kind], 0.86);
+      const body = await compressPhoto(file, BRANDING_MAX_EDGE[kind], 0.86, kind === "LOGO");
       if (body.size > MAX_BRANDING_BYTES) throw new BrandingError("VALIDATION:size");
       const next = await uploadBranding(kind, body, file.name || "image.jpg");
       setBrandingUrls({ [FIELD[kind]]: next });
@@ -106,7 +106,7 @@ function ImageCard({ kind, url, editable, className }: { kind: BrandingKind; url
       >
         {url ? (
           // eslint-disable-next-line @next/next/no-img-element -- lien signé privé, pas d'optimisation Next
-          <img src={url} alt={BRANDING_LABELS[kind]} className={cx("size-full", kind === "LOGO" ? "object-contain p-2" : "object-cover")} />
+          <img src={url} alt={BRANDING_LABELS[kind]} className={cx("size-full", kind === "LOGO" ? "object-contain" : "object-cover")} />
         ) : kind === "AVATAR" ? (
           <UserRound className="size-10 text-ink-faint" aria-hidden="true" />
         ) : (
