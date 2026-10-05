@@ -58,8 +58,13 @@ export function Dialog({
       <div
         ref={panelRef}
         tabIndex={-1}
+        // Le cadre ne défile jamais (seul le corps défile) : s'il a été décalé
+        // malgré tout (anciens navigateurs sans « overflow: clip »), on le remet.
+        onScroll={(e) => {
+          if (e.currentTarget.scrollTop !== 0) e.currentTarget.scrollTop = 0;
+        }}
         className={cx(
-          "relative flex max-h-[92dvh] w-full animate-scale-in flex-col overflow-hidden rounded-t-xl bg-surface shadow-modal outline-none before:absolute before:inset-x-0 before:top-0 before:h-1.5 before:bg-flamme-gradient sm:max-h-[calc(100dvh-3rem)] sm:rounded-xl",
+          "relative flex max-h-[92dvh] w-full animate-scale-in flex-col overflow-clip rounded-t-xl bg-surface shadow-modal outline-none before:absolute before:inset-x-0 before:top-0 before:h-1.5 before:bg-flamme-gradient sm:max-h-[calc(100dvh-3rem)] sm:rounded-xl",
           sizes[size],
         )}
       >

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Camera, ImagePlus, Trash2 } from "lucide-react";
-import { Button, Dialog } from "@/ui";
+import { Button, Dialog, HIDDEN_FILE_INPUT } from "@/ui";
 import { cx } from "@/lib/cx";
 import { fileErrorMessage, MAX_FILES_PER_ENTITY, type FileCategory, type FileView } from "@/domain/files/files";
 import { can, TENANT_ROLE_CODES, type TenantRoleCode } from "@/domain/team/roles";
@@ -123,7 +123,7 @@ export function PhotoGallery({ category, entityId, title = "Photos", className }
               type="file"
               accept="image/*"
               multiple
-              className="sr-only"
+              className={HIDDEN_FILE_INPUT}
               id={`photo-input-${entityId}`}
               onChange={(e) => void onPick(e.target.files)}
             />

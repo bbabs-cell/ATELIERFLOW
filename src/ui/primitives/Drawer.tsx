@@ -47,7 +47,7 @@ export function Drawer({
         ref={panelRef}
         tabIndex={-1}
         className={cx(
-          "absolute top-0 h-full w-full max-w-sm overflow-hidden bg-surface shadow-modal outline-none sm:max-w-md",
+          "absolute top-0 h-full w-full max-w-sm overflow-clip bg-surface shadow-modal outline-none sm:max-w-md",
           position[side],
         )}
         aria-label={typeof title === "string" ? title : undefined}

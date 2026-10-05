@@ -23,3 +23,4 @@ export * from "./composites/Kanban";
 export * from "./composites/MiniChart";
 export * from "./composites/StateView";
 export * from "./composites/Timeline";export * from "./hooks/useCountUp";
+export * from "./hiddenFileInput";

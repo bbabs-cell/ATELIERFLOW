@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useMemo, useState } from "react";
 import { Check, Copy, FileText, ImageUp, Send } from "lucide-react";
-import { Button, Dialog, Field, Input, Select } from "@/ui";
+import { Button, Dialog, Field, Input, Select, HIDDEN_FILE_INPUT } from "@/ui";
 import { cx } from "@/lib/cx";
 import { formatPrice, type PlanInfo } from "@/domain/subscriptions/entitlements";
 import {
@@ -298,7 +298,7 @@ export function PlanPaymentDialog({ plan, onClose, onSubmitted }: PlanPaymentDia
                   id={`${ids}-file`}
                   type="file"
                   accept="image/*,application/pdf"
-                  className="sr-only"
+                  className={HIDDEN_FILE_INPUT}
                   onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                 />
               </Field>

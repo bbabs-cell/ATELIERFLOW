@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { CalendarPlus, Camera, ClipboardList, Plus, Trash2, X } from "lucide-react";
-import { Button, Field, Input, Select, Textarea } from "@/ui";
+import { Button, Field, Input, Select, Textarea, HIDDEN_FILE_INPUT } from "@/ui";
 import { cx } from "@/lib/cx";
 import type { Customer } from "@/domain/clients/customer";
 import { parseFcfa, lineTotal, sumAmounts, formatFcfa } from "@/domain/money";
@@ -426,7 +426,7 @@ export function OrderForm({
                 accept="image/*"
                 capture="environment"
                 multiple
-                className="sr-only"
+                className={HIDDEN_FILE_INPUT}
                 onChange={(e) => {
                   addPhotos(e.target.files);
                   e.target.value = "";
