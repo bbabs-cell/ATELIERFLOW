@@ -37,6 +37,8 @@ import { useSyncRunner } from "@/features/sync/useSyncRunner";
 import { SyncStatusChip } from "@/features/sync/SyncStatusChip";
 import { PlanBanner } from "@/features/subscriptions/PlanBanner";
 import { AssistantWidget } from "@/features/assistant/AssistantWidget";
+import { AlertStack } from "@/features/notifications/AlertStack";
+import { useAlertRunner } from "@/features/notifications/useAlertRunner";
 import { usePlatformAdmin } from "@/features/platform/usePlatformAdmin";
 import { useBranding } from "@/features/branding/useBranding";
 import { readCachedLocale, useTenantLocale } from "@/features/locale/tenantLocale";
@@ -166,6 +168,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
       ? `${state.session.tenantId}:${state.session.profileId}`
       : null,
   );
+  // Alertes sonores : fonctionnent aussi hors ligne (données de l'appareil).
+  const alertRunner = useAlertRunner(state.status === "ready" ? `${state.session.tenantId}:${state.session.profileId}` : null);
   const platformAdmin = usePlatformAdmin(state.status === "ready" && state.session.mode === "SUPABASE");
   const locale = useTenantLocale(
     state.status === "ready" && state.session.mode !== "DEMO" ? state.session.tenantId : null,
@@ -219,6 +223,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
         </div>
       </AppShell>
       <AssistantWidget />
+      <AlertStack alerts={alertRunner.alerts} onDismiss={alertRunner.dismiss} />
     </>
   );
 }

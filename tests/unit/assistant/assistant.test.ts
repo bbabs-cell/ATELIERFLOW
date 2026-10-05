@@ -219,6 +219,7 @@ describe("aide sur l'application", () => {
     expect(topic("comment prendre un rendez-vous")).toBe("Prendre un rendez-vous et envoyer un rappel");
     expect(topic("j'ai oublié mon mot de passe")).toBe("Mot de passe oublié");
     expect(topic("comment changer la monnaie")).toBe("Changer le pays ou la monnaie");
+    expect(topic("comment activer la sonnerie des rendez-vous")).toBe("Activer les alertes et la sonnerie");
     expect(topic("comment exporter pour le comptable")).toBe("Voir le rapport du mois et l'exporter pour Excel");
   });
 

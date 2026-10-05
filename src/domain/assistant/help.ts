@@ -183,6 +183,18 @@ export const HELP_TOPICS: readonly HelpTopic[] = [
     link: { label: "Ouvrir Mes modèles", href: "/modeles" },
   },
   {
+    id: "alerts",
+    title: "Activer les alertes et la sonnerie",
+    keywords: ["notification", "alerte", "sonnerie", "sonner", "son!", "bip", "prevenir", "rappel sonore", "reveil", "vibr"],
+    steps: [
+      "Ouvrez « Personnalisation », carte « Alertes et sonnerie », et activez-les (acceptez les notifications si le téléphone le demande).",
+      "Choisissez quand sonner avant un rendez-vous (10 min à 2 h) et l'heure du résumé du jour.",
+      "Appuyez sur « Tester la sonnerie » pour vérifier le son et la notification.",
+    ],
+    note: "Sonnent : rendez-vous qui approchent, rappels WhatsApp à envoyer, livraisons du jour et retards, stock bas. L'application doit être ouverte ou en arrière-plan ; sur iPhone, installez-la sur l'écran d'accueil.",
+    link: { label: "Ouvrir Personnalisation", href: "/parametres" },
+  },
+  {
     id: "appointment",
     title: "Prendre un rendez-vous et envoyer un rappel",
     keywords: ["rendez vous", "rdv", "essayage", "rappel", "programmer", "planifier"],

@@ -33,6 +33,7 @@ import { AmbientBlobs } from "@/ui/composites/AppShell";
 import { getDashboardFacade } from "./facade";
 import { DASHBOARD_PERIOD_OPTIONS, PAYMENT_METHOD_META, SEARCH_ENTITY_LABELS } from "./constants";
 import { useDataChanged } from "@/features/sync/useDataChanged";
+import { AlertsInvite } from "@/features/notifications/AlertsInvite";
 
 /**
  * Une couleur = une fonctionnalité : VERT argent, ORANGE commandes,
@@ -284,6 +285,8 @@ export function DashboardView(): React.ReactElement {
           </div>
         ) : null}
       </section>
+
+      <AlertsInvite className="mt-6" />
 
       {/* Recherche + période */}
       <div className="relative z-20 mt-6 flex flex-wrap items-center justify-between gap-3 animate-fade-up">
