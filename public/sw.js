@@ -51,6 +51,26 @@ self.addEventListener("message", (event) => {
   }
 });
 
+/*
+ * Notification touchée : on revient sur l'application (onglet existant si
+ * possible) à la page de l'alerte (rendez-vous, commandes, stock).
+ */
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const raw = event.notification.data && event.notification.data.url;
+  const target = new URL(typeof raw === "string" && raw.startsWith("/") ? raw : "/dashboard", self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      for (const client of list) {
+        if (new URL(client.url).origin === self.location.origin && "focus" in client) {
+          return client.focus().then((c) => (c && "navigate" in c ? c.navigate(target) : c));
+        }
+      }
+      return self.clients.openWindow(target);
+    }),
+  );
+});
+
 const PRIVATE_PREFIXES = ["/api/", "/auth/", "/sync", "/invitation", "/reset-password"];
 const ASSET_PATTERN = /\.(?:js|mjs|css|woff2?|ttf|eot|svg|png|jpe?g|webp|avif|gif|ico|json|webmanifest)$/i;
 const NEXT_STATIC_PREFIX = "/_next/static/";

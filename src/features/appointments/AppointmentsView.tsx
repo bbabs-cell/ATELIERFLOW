@@ -32,6 +32,7 @@ import {
   type OrderOption,
 } from "./AppointmentForm";
 import { MessageComposer } from "./MessageComposer";
+import { AlertsInvite } from "@/features/notifications/AlertsInvite";
 import { useDataChanged } from "@/features/sync/useDataChanged";
 
 function todayISO(): string {
@@ -236,6 +237,8 @@ export function AppointmentsView(): React.ReactElement {
           </div>
         </div>
       ) : null}
+
+      <AlertsInvite className="mt-6" />
 
       <main className="mt-6 flex flex-col gap-6">
         {error ? (
