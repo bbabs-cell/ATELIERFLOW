@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import { ImagePlus, Trash2, UserRound } from "lucide-react";
-import { Button, StateView } from "@/ui";
+import { Button, StateView, HIDDEN_FILE_INPUT } from "@/ui";
 import { cx } from "@/lib/cx";
 import { peekActiveSession } from "@/application/auth/session";
 import { can, type TenantRoleCode } from "@/domain/team/roles";
@@ -130,7 +130,7 @@ function ImageCard({ kind, url, editable, className }: { kind: BrandingKind; url
             id={`${id}-file`}
             type="file"
             accept="image/*"
-            className="sr-only"
+            className={HIDDEN_FILE_INPUT}
             disabled={busy}
             onChange={(e) => {
               const file = e.target.files?.[0];
