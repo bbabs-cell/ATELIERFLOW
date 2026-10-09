@@ -78,10 +78,10 @@ describe("alertes de l'atelier", () => {
       appt("maintenant", "2026-10-14T08:57:00.000Z"),
     ];
     const alerts = computeAlerts(data({ appointments: list }), { ...ON, dailyHour: 23 });
-    expect(alerts.map((a) => a.key)).toEqual(["appt:tot:2026-10-14T09:20:00.000Z", "appt:maintenant:2026-10-14T08:57:00.000Z"]);
+    expect(alerts.map((a) => a.key)).toEqual([`appt:tot:${Date.parse("2026-10-14T09:20:00.000Z")}`, `appt:maintenant:${Date.parse("2026-10-14T08:57:00.000Z")}`]);
     expect(alerts[0]).toMatchObject({ title: "Rendez-vous dans 20 min", body: "Awa Diop — Essayage à 09:20", url: "/rdv", urgent: true });
     expect(alerts[1].title).toBe("Rendez-vous maintenant");
-    expect(computeAlerts(data({ appointments: list }), { ...ON, leadMinutes: 60, dailyHour: 23 }).map((a) => a.key)).toContain("appt:loin:2026-10-14T10:00:00.000Z");
+    expect(computeAlerts(data({ appointments: list }), { ...ON, leadMinutes: 60, dailyHour: 23 }).map((a) => a.key)).toContain(`appt:loin:${Date.parse("2026-10-14T10:00:00.000Z")}`);
     expect(computeAlerts(data({ appointments: list }), { ...ON, leadMinutes: 0, dailyHour: 23 })).toEqual([]);
   });
 
