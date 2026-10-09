@@ -6,6 +6,7 @@ import { peekActiveSession } from "@/application/auth/session";
 import { ALERT_PREFS_EVENT, readAlertPrefs, writeAlertPrefs } from "@/infrastructure/notifications/alertStore";
 import { playChime, unlockAudio } from "@/infrastructure/notifications/chime";
 import { notificationPermission, requestNotificationPermission } from "@/infrastructure/notifications/systemNotifications";
+import { subscribePush } from "@/infrastructure/notifications/push";
 
 const DISMISSED = "atelier.alerts.invite.dismissed";
 
@@ -35,8 +36,10 @@ export function AlertsInvite({ className }: { className?: string }) {
   async function enable() {
     unlockAudio();
     if (notificationPermission() === "default") await requestNotificationPermission();
-    writeAlertPrefs(tenantId as string, { ...readAlertPrefs(tenantId as string), enabled: true });
+    const next = { ...readAlertPrefs(tenantId as string), enabled: true };
+    writeAlertPrefs(tenantId as string, next);
     playChime(false);
+    if (peekActiveSession()?.mode === "SUPABASE" && notificationPermission() === "granted") void subscribePush(next);
   }
 
   function dismiss() {

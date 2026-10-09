@@ -8,6 +8,7 @@ import { DATA_CHANGED_EVENT } from "@/features/sync/useSyncRunner";
 import { playChime, unlockAudio, vibrate } from "@/infrastructure/notifications/chime";
 import { showSystemNotification } from "@/infrastructure/notifications/systemNotifications";
 import { ALERT_PREFS_EVENT, readAlertPrefs, readPlayed, writePlayed } from "@/infrastructure/notifications/alertStore";
+import { subscribePush, unsubscribePush } from "@/infrastructure/notifications/push";
 
 /** Vérification régulière : un rendez-vous à 30 min sonne à la minute près. */
 const CHECK_INTERVAL_MS = 30_000;
@@ -74,6 +75,19 @@ export function useAlertRunner(sessionKey: string | null): { alerts: AtelierAler
       }
     };
 
+    // Abonnement push (application fermée) aligné sur les réglages : mis à
+    // jour au démarrage et à chaque changement, seulement si le téléphone a
+    // déjà autorisé les notifications (la demande se fait sur un geste).
+    const syncPush = () => {
+      const session = peekActiveSession();
+      if (session?.mode !== "SUPABASE" || typeof Notification === "undefined") return;
+      const prefs = readAlertPrefs(session.tenantId);
+      if (prefs.enabled && Notification.permission === "granted") void subscribePush(prefs);
+      else if (!prefs.enabled) void unsubscribePush();
+    };
+    syncPush();
+    window.addEventListener(ALERT_PREFS_EVENT, syncPush);
+
     const timer = window.setInterval(() => void check(), CHECK_INTERVAL_MS);
     const soon = window.setTimeout(() => void check(), 2_000);
     const onVisible = () => {
@@ -89,6 +103,7 @@ export function useAlertRunner(sessionKey: string | null): { alerts: AtelierAler
       document.removeEventListener("visibilitychange", onVisible);
       window.removeEventListener(DATA_CHANGED_EVENT, onChange);
       window.removeEventListener(ALERT_PREFS_EVENT, onChange);
+      window.removeEventListener(ALERT_PREFS_EVENT, syncPush);
       window.removeEventListener("pointerdown", unlock);
       window.removeEventListener("keydown", unlock);
     };

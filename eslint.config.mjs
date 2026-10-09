@@ -5,5 +5,5 @@ import nextTypeScript from "eslint-config-next/typescript";
 export default defineConfig([
   ...nextCoreWebVitals,
   ...nextTypeScript,
-  globalIgnores([".next/**", "node_modules/**", "next-env.d.ts", "package-lock.json"]),
+  globalIgnores([".next/**", "node_modules/**", "next-env.d.ts", "package-lock.json", "supabase/functions/**"]),
 ]);

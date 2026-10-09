@@ -79,7 +79,8 @@ export function computeAlerts(data: AlertData, prefs: AlertPrefs): AtelierAlert[
         if (start - nowMs > prefs.leadMinutes * 60_000 || nowMs - start > LATE_GRACE_MS) continue;
         const minutes = Math.max(0, Math.round((start - nowMs) / 60_000));
         alerts.push({
-          key: `appt:${a.id}:${a.starts_at}`,
+          // Même clé que le serveur (0028) : la notification push et l'alerte locale se remplacent.
+          key: `appt:${a.id}:${Date.parse(a.starts_at)}`,
           kind: "APPOINTMENT_SOON",
           title: minutes > 0 ? `Rendez-vous dans ${minutes} min` : "Rendez-vous maintenant",
           body: `${nameOf(a.customer_id)} — ${APPOINTMENT_TYPE_LABELS[a.type]} à ${timeLabel(a.starts_at, data.timeZone)}`,

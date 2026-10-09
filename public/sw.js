@@ -52,6 +52,34 @@ self.addEventListener("message", (event) => {
 });
 
 /*
+ * Alerte « push » envoyée par le serveur (fonction push-alerts) : affichée
+ * même application fermée, avec la sonnerie et la vibration du téléphone.
+ * Même étiquette (tag) que l'alerte calculée dans l'application : l'une
+ * remplace l'autre sans sonner deux fois.
+ */
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = { title: "Atelier", body: event.data ? event.data.text() : "" };
+  }
+  const title = typeof data.title === "string" && data.title ? data.title : "Atelier";
+  const urgent = data.urgent === true;
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: typeof data.body === "string" ? data.body : "",
+      tag: typeof data.tag === "string" && data.tag ? data.tag : undefined,
+      icon: "/pwa/icon.svg",
+      badge: "/pwa/icon.svg",
+      data: { url: typeof data.url === "string" ? data.url : "/dashboard" },
+      requireInteraction: urgent,
+      vibrate: urgent ? [400, 150, 400, 150, 400] : [250, 120, 250],
+    }),
+  );
+});
+
+/*
  * Notification touchée : on revient sur l'application (onglet existant si
  * possible) à la page de l'alerte (rendez-vous, commandes, stock).
  */
