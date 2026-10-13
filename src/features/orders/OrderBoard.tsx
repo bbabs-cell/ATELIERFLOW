@@ -202,13 +202,14 @@ export function OrderBoard({ orders, filters, assignees, busyId, onOpen, onMove,
                           )}
                           <span className="truncate text-xs font-semibold tabular text-ink">{formatFcfa(order.total_price)}</span>
                         </span>
+                        {/* Étape suivante en secondaire : la couleur pleine reste au seul bouton principal de l'écran (« Nouvelle commande »). */}
                         {next ? (
                           <button
                             type="button"
                             onClick={() => onMove(order.id, next)}
                             disabled={busyId === order.id}
                             title={`Passer à « ${ORDER_STATUS_LABELS[next]} »`}
-                            className="inline-flex h-8 shrink-0 items-center gap-1 rounded-full pointer-coarse:h-10 bg-flamme-gradient px-3 text-[11px] font-bold text-white shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow disabled:opacity-50"
+                            className="inline-flex h-8 shrink-0 items-center gap-1 rounded-full pointer-coarse:h-10 border-2 border-flamme-200 bg-surface px-3 text-[11px] font-bold text-flamme-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-flamme-400 hover:shadow-soft disabled:opacity-50"
                           >
                             <span className="max-w-24 truncate">{ORDER_STATUS_LABELS[next]}</span>
                             <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />

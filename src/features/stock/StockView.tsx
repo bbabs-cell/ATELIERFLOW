@@ -183,7 +183,7 @@ export function StockView(): React.ReactElement {
             variant="error"
             title="Impossible de charger le stock"
             description={error}
-            action={<Button onClick={() => load().catch(() => undefined)}>Réessayer</Button>}
+            action={<Button variant="outline" onClick={() => load().catch(() => undefined)}>Réessayer</Button>}
           />
         ) : loading ? (
           <StateView variant="loading" title="Chargement du stock…" />
@@ -221,7 +221,7 @@ export function StockView(): React.ReactElement {
                 variant="empty"
                 title="Aucun tissu"
                 description="Ajoutez votre premier tissu pour démarrer le stock."
-                action={<Button onClick={() => plan.guardFeature("stock", () => void openCreate())}>Nouveau tissu</Button>}
+                action={<Button variant="outline" onClick={() => plan.guardFeature("stock", () => void openCreate())}>Nouveau tissu</Button>}
               />
             ) : (
               <ul className="flex flex-col gap-2">
@@ -233,10 +233,12 @@ export function StockView(): React.ReactElement {
                       key={fabric.id}
                       className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up p-3"
                     >
+                      {/* basis-64 : sans largeur de base, la rangée Entrée/Sortie/Ajuster restait sur la
+                          même ligne et écrasait le nom du tissu (cassé mot par mot, à 28 px, sur tablette). */}
                       <button
                         type="button"
                         onClick={() => void openDetail(fabric)}
-                        className="flex min-w-0 flex-1 items-start gap-3 text-left"
+                        className="flex min-w-0 flex-1 basis-64 items-start gap-3 text-left"
                       >
                         <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-beige-100 text-chocolat-800">
                           <Shirt className="size-5" aria-hidden="true" />

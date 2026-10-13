@@ -107,7 +107,7 @@ export function ModelsView(): React.ReactElement {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Rechercher un modèle…"
-                className="h-12 w-full rounded-full border-2 border-outline bg-surface/90 pl-11 pr-4 text-sm font-medium text-ink shadow-soft placeholder:text-ink-faint focus:border-flamme-500 focus:outline-none"
+                className="h-12 w-full rounded-full border-2 border-outline bg-surface/90 pl-11 pr-4 text-base font-medium text-ink shadow-soft placeholder:text-ink-faint focus:border-flamme-500 focus:outline-none"
               />
             </div>
             {categories.length > 0 ? (
@@ -133,7 +133,7 @@ export function ModelsView(): React.ReactElement {
 
           <main className="mt-6">
             {error ? (
-              <StateView variant="error" title="Modèles indisponibles" description={error} action={<Button onClick={() => void load()}>Réessayer</Button>} />
+              <StateView variant="error" title="Modèles indisponibles" description={error} action={<Button variant="outline" onClick={() => void load()}>Réessayer</Button>} />
             ) : models === null ? (
               <ul className="grid grid-cols-2 gap-3 @2xl:grid-cols-3 @4xl:grid-cols-4" aria-label="Chargement">
                 {Array.from({ length: 8 }, (_, i) => (
@@ -145,7 +145,7 @@ export function ModelsView(): React.ReactElement {
                 variant="empty"
                 title="Aucun modèle pour l'instant"
                 description="Ajoutez vos créations (grand boubou, robe, ensemble…) avec leurs photos pour les montrer à vos clients."
-                action={canWrite ? <Button onClick={() => setEditing("new")}>Ajouter un modèle</Button> : undefined}
+                action={canWrite ? <Button variant="outline" onClick={() => setEditing("new")}>Ajouter un modèle</Button> : undefined}
               />
             ) : shown.length === 0 ? (
               <StateView variant="empty" title="Aucun modèle trouvé" description="Essayez une autre catégorie ou un autre mot." />

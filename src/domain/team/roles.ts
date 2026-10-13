@@ -7,6 +7,10 @@ export const TENANT_ROLE_CODES = [
 
 export type TenantRoleCode = (typeof TENANT_ROLE_CODES)[number];
 
+export function isTenantRole(value: string): value is TenantRoleCode {
+  return (TENANT_ROLE_CODES as readonly string[]).includes(value);
+}
+
 export const ROLE_LABELS: Record<TenantRoleCode, string> = {
   OWNER: "Propriétaire",
   MANAGER: "Gestionnaire",

@@ -1,0 +1,72 @@
+/* GABARIT issu de MagyaPro (src/app/globals.css).
+   Tableaux lisibles sur mobile : sous 768 px, chaque ligne devient une fiche,
+   chaque cellule affiche son intitulé (data-label) à gauche et sa valeur à
+   droite. Classes : .table-stack, .table-stack-titled (1re cellule = titre),
+   td[data-label='Actions'] (pleine largeur), data-label='' (sans intitulé). */
+
+@layer components {
+  @media (max-width: 767px) {
+    .table-stack thead {
+      @apply hidden;
+    }
+    .table-stack tbody tr {
+      @apply block rounded-xl border border-surface-border p-4 mb-3;
+    }
+    .table-stack tbody td {
+      @apply flex items-baseline justify-between gap-4 border-0 px-0 py-1.5 text-right;
+    }
+    .table-stack tbody td::before {
+      content: attr(data-label);
+      @apply text-xs font-medium uppercase tracking-wide text-ink-faint text-left;
+    }
+    .table-stack tbody td[data-label='']::before {
+      content: none;
+    }
+    /* Le tableau entier passe en bloc : resté `display: table`, il prenait la
+       largeur de son contenu le plus long et chaque fiche débordait. */
+    .table-stack,
+    .table-stack tbody {
+      display: block;
+      width: 100%;
+    }
+    .table-stack tbody td {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .table-stack tbody td::before {
+      flex-shrink: 0;
+    }
+    .table-stack tbody td > * {
+      min-width: 0;
+      max-width: 100%;
+    }
+    /* Fiche titrée : la première cellule devient le titre, alignée à gauche. */
+    .table-stack-titled tbody td:first-child {
+      display: block;
+      text-align: left;
+      padding-bottom: 0.625rem;
+      margin-bottom: 0.25rem;
+      border-bottom: 1px solid var(--surface-border, rgba(0, 0, 0, 0.08));
+    }
+    .table-stack-titled tbody td:first-child::before {
+      content: none;
+    }
+    /* Actions : pleine largeur, sans intitulé, boutons qui passent à la ligne.
+       Coincés à droite de « ACTIONS », quatre boutons n'avaient plus que
+       quelques pixels chacun et leur texte se cassait lettre par lettre. */
+    .table-stack tbody td[data-label='Actions'] {
+      display: block;
+      padding-top: 0.75rem;
+    }
+    .table-stack tbody td[data-label='Actions']::before {
+      content: none;
+    }
+    .table-stack tbody td[data-label='Actions'] > div {
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+    .table-stack tbody td[data-label='Actions'] :is(a, button) {
+      white-space: nowrap;
+    }
+  }
+}

@@ -309,6 +309,8 @@ export function AbonnementView(): React.ReactElement {
         <div className="mt-4 grid grid-cols-1 gap-3 @2xl:grid-cols-3">
           {e.plans.map((plan) => {
             const action = planAction(e, plan);
+            // Un seul bouton principal : le premier plan payant proposé ; les autres en secondaire.
+            const mainUpgrade = e.plans.find((p) => ["request", "requested"].includes(planAction(e, p)))?.code === plan.code;
             return (
               <article
                 key={plan.code}
@@ -363,7 +365,7 @@ export function AbonnementView(): React.ReactElement {
                   ) : canManage && pendingPayment?.planCode === plan.code ? (
                     <p className="rounded-md bg-warning-soft px-2 py-1.5 text-center text-sm text-warning">Paiement en vérification</p>
                   ) : canManage && (action === "request" || action === "requested") ? (
-                    <Button size="sm" className="w-full" disabled={pendingPayment !== null} onClick={() => setPaying(plan)}>
+                    <Button size="sm" variant={mainUpgrade ? "primary" : "outline"} className="w-full" disabled={pendingPayment !== null} onClick={() => setPaying(plan)}>
                       Passer à {plan.name}
                     </Button>
                   ) : action === "current" ? (

@@ -1,0 +1,108 @@
+/* GABARIT issu de MagyaPro : jetons de couleur en variables CSS.
+   Composants : n'écrire que les classes bg-surface, text-ink, bg-brand-strong…
+   Une seconde identité, le mode sombre ou une palette client ne font que
+   redéfinir ces variables sur un attribut racine. */
+
+@layer base {
+  :root {
+    /* Neutres — déclarés une seule fois ici. Les replis de tailwind.config
+       doivent rester identiques : un repli qui diverge est une seconde vérité. */
+    --surface: #fbf8f2;        /* sable : jamais de blanc pur au travail */
+    --surface-raised: #ffffff; /* carte posée sur le sable */
+    --surface-sunken: #ece5d8;
+    --surface-border: #ddd3c1;
+
+    --ink: #211d16;            /* brun très sombre, pas un noir neutre */
+    --ink-muted: #6a6153;
+    --ink-faint: #756b5c;      /* 4,9:1 sur le sable — lu en plein soleil */
+
+    /* États : un fait vérifiable, jamais une identité. */
+    --state-ok: #047857;
+    --state-ok-soft: #ecfdf5;
+    --state-warn: #b45309;
+    --state-warn-soft: #fffbeb;
+    --state-bad: #b91c1c;
+    --state-bad-soft: #fef2f2;
+
+    /* Marque (identité 1 : braise). */
+    --brand: #ff5e2e;        /* sans texte : graphiques, halos, pastilles */
+    --brand-strong: #c93f1a; /* fond du bouton principal (5,0:1 avec blanc) */
+    --brand-ink: #ffffff;    /* libellé posé sur brand-strong */
+    --brand-text: #c93f1a;   /* la marque écrite en texte sur fond clair */
+    --brand-soft: #fff1e6;
+
+    --nav: #2a2118;          /* navigation : sombre dans les deux thèmes */
+    --nav-raised: #35291d;
+    --nav-ink: #f5efe3;
+    --nav-muted: #b3a894;
+    --nav-border: rgba(245, 239, 227, 0.1);
+
+    --elev-1: 0 1px 2px rgba(33, 29, 22, 0.06), 0 6px 16px -10px rgba(33, 29, 22, 0.18);
+    --elev-2: 0 2px 4px rgba(33, 29, 22, 0.07), 0 16px 32px -18px rgba(33, 29, 22, 0.26);
+  }
+
+  body {
+    @apply bg-surface text-ink antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-offset-2 ring-brand;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Identité 2 (MagyaPro Boutique : or). Le bouton principal est or à libellé
+   encre (9,8:1) ; l'or écrit sur le sable passe à un or brûlé (5,5:1). */
+[data-produit='boutique'] {
+  --brand: #b8891c;
+  --brand-strong: #e0bd52;
+  --brand-ink: #1c1712;
+  --brand-text: #806010;
+  --brand-soft: #f6ecd0;
+}
+
+/* Thème sombre : graphite chaud, jamais un noir neutre ; états remontés en
+   luminosité ; profondeur par un liseré clair plutôt qu'une ombre noire. */
+[data-theme='dark'] {
+  color-scheme: dark;
+  --surface: #1e1a14;
+  --surface-raised: #262118;
+  --surface-sunken: #14120d;
+  --surface-border: #322c22;
+  --ink: #f0e9dc;
+  --ink-muted: #b5ac9c;
+  --ink-faint: #908878;
+  --state-ok: #74c298;
+  --state-ok-soft: #1a2c22;
+  --state-warn: #e0ad55;
+  --state-warn-soft: #302516;
+  --state-bad: #ef7d78;
+  --state-bad-soft: #341d1d;
+  --elev-1: 0 1px 0 rgba(240, 233, 220, 0.04) inset, 0 8px 20px -12px rgba(0, 0, 0, 0.8);
+  --elev-2: 0 1px 0 rgba(240, 233, 220, 0.06) inset, 0 18px 40px -20px rgba(0, 0, 0, 0.9);
+}
+
+/* Barre de navigation basse : sa hauteur est publiée pour que ce qui est fixé
+   en bas (panier, messages) se place au-dessus d'elle. */
+@media (max-width: 1023px) {
+  body:has([data-bottom-nav]) {
+    --bottom-nav: calc(4rem + env(safe-area-inset-bottom));
+  }
+}
+@media print {
+  body:has([data-bottom-nav]) {
+    --bottom-nav: 0px;
+  }
+}
+
+/* Thème appliqué avant le premier rendu (dans <head>, sans flash) :
+   <script>try{var t=localStorage.getItem('atelierflow:theme');
+   document.documentElement.dataset.theme=t==='dark'?'dark':'light'}catch(e){}</script> */

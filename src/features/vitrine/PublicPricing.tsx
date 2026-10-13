@@ -82,7 +82,7 @@ export function PublicPricing(): React.ReactElement {
         id="vitrine-currency"
         value={display}
         onChange={(e) => setDisplay(e.target.value)}
-        className="h-11 rounded-xl border border-white/15 bg-white/5 px-3 text-ivoire-50"
+        className="h-11 rounded-xl border border-white/15 bg-white/5 px-3 text-base text-ivoire-50"
       >
         {CURRENCY_CHOICES.map((c) => (
           <option key={c.code} value={c.code} className="text-chocolat-900">

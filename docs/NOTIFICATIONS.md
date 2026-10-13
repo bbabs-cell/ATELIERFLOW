@@ -29,6 +29,9 @@ sur l'appareil : la notification push et l'alerte locale se remplacent, pas de d
 
 - Clés VAPID et secret du planificateur : créés au premier passage, gardés dans le Vault.
 - Abonnement expiré (404/410) ou plus de 50 échecs : supprimé.
+- Seuls les services push connus (Google, Mozilla, Apple, Microsoft) sont contactés
+  (`supabase/functions/_shared/pushHosts.ts`) : une autre adresse est retirée sans
+  être appelée, notre serveur ne sert pas de relais.
 - « Envoyer une notification de test » (Personnalisation) : test sur ses propres appareils.
 - iPhone : application installée sur l'écran d'accueil (iOS 16.4+) obligatoire.
 

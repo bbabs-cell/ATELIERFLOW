@@ -41,7 +41,7 @@ const results = [];
 for (const [name, setup] of scenarios) {
   let res;
   try { await setup(page); res = await measure(page); } catch (e) { res = { error: e.message.split('\n')[0] }; }
-  const bad = res.error || res.pageOverflow > 0 || res.overflow?.length || res.clipped?.length;
+  const bad = res.error || res.pageOverflow > 0 || res.overflow?.length || res.clipped?.length || res.crushed?.length;
   if (bad || name === 'kanban' || name === 'recu' || name === 'tableau-de-bord') {
     await page.screenshot({ path: `./audit-output/shots/${label}-${name}.png`, fullPage: false }).catch(() => {});
   }

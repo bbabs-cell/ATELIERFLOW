@@ -59,6 +59,13 @@ Résultat : 0 violation CSP, 0 opération refusée.
 | **Rate limiting** | Supabase Auth limite connexions, inscriptions et e-mails. Chaque appel API exige un jeton valide ; lot de sync plafonné ; fichiers plafonnés (S6). Les invitations n'envoient aucun e-mail, donc pas de spam possible. |
 | **Dépendances** | `npm audit --omit=dev` : **0 vulnérabilité** dans ce qui est déployé. En développement, 5 alertes `braces` (déni de service par motif glob) dans la chaîne ESLint, qui ne sont jamais exécutées sur une entrée externe. |
 
+## Compléments — méthode MagyaPro (2026-10-13)
+
+| Constat | Gravité | Correctif |
+|---|---|---|
+| Une adresse d'abonnement push arbitraire (fournie par le téléphone) aurait été contactée chaque minute par la fonction `push-alerts` : relais de requêtes vers n'importe quel serveur. | moyenne | Liste blanche des services push (Google, Mozilla, Apple, Microsoft) dans `supabase/functions/_shared/pushHosts.ts` ; une adresse hors liste n'est jamais contactée et l'abonnement est retiré. 2 tests. |
+| Pas de contrôle d'origine sur les écritures `/api`. Le jeton exigé dans `Authorization` bloquait déjà une page étrangère ; aucun cookie n'est accepté. | basse (défense en profondeur) | `src/proxy.ts` + `src/infrastructure/http/origin.ts` : POST/PUT/PATCH/DELETE venant d'un autre site (ou `Origin: null`) → 403 avant la route. Sans `Origin` (serveur, tâche planifiée) : accepté. 3 tests + sonde HTTP (étranger 403, même site 401 sans session). |
+
 ## Actions à faire de ton côté
 
 1. ~~Appliquer `0021` en production~~ : fait le 2026-10-03. Vérifié : 0 droit d'écriture direct pour `authenticated` (hors réglages de l'atelier), `append_audit` fermé, déclencheur de débit actif, alerte `search_path` levée.

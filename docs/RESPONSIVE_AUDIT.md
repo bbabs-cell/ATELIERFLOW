@@ -16,7 +16,9 @@ design). Banc reproductible : `scripts/responsive-audit/` (voir son README).
 - **Données piégeuses** : noms, descriptions, adresses et montants longs.
 - **Mesures** : défilement horizontal de page ; éléments hors écran ; texte réellement
   coupé par son conteneur (zone du texte comparée à l'ancêtre qui la rogne) ; texte
-  tronqué devenu illisible (< 48 px) ; cibles tactiles < 40 px.
+  tronqué devenu illisible (< 48 px) ; cibles tactiles < 40 px ; boutons écrasés (un
+  libellé court cassé sur plus de deux lignes, ou bouton plus étroit que son mot — méthode
+  MagyaPro).
 
 ## Résultat final
 

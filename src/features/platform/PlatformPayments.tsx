@@ -124,7 +124,7 @@ export function PlatformPayments({ onApproved }: { onApproved: () => void }): Re
                   </Button>
                   {p.status === "PENDING" ? (
                     <>
-                      <Button size="sm" onClick={() => setReview({ payment: p, approve: true })}>
+                      <Button size="sm" variant="outline" onClick={() => setReview({ payment: p, approve: true })}>
                         <Check className="size-4" aria-hidden="true" />
                         Valider
                       </Button>
