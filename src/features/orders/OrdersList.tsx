@@ -96,7 +96,8 @@ export function OrdersList({
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="flex flex-wrap items-center gap-2">
-                      <span className="font-mono text-sm font-semibold text-ink">
+                      {/* Référence d'un seul bloc : coupée en deux, « ORD-2026- / 000004 » ne se lit plus. */}
+                      <span className="whitespace-nowrap font-mono text-sm font-semibold text-ink">
                         {order.reference}
                       </span>
                       <Badge tone={priority.tone} dot>

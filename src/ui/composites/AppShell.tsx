@@ -206,7 +206,7 @@ export function AppShell({
                   onClick={() => onNavigate?.(item)}
                   aria-current={item.active ? "page" : undefined}
                   className={cx(
-                    "flex h-full min-w-0 flex-col items-center justify-center gap-0.5 px-1 text-[11px] font-semibold transition-transform active:scale-95",
+                    "flex h-full min-w-0 flex-col items-center justify-center gap-0.5 px-0.5 text-[10px] font-semibold transition-transform active:scale-95 min-[360px]:px-1 min-[360px]:text-[11px]",
                     item.active ? BOTTOM_ACTIVE[item.tone ?? "brown"] : "text-ink-soft",
                   )}
                 >
@@ -227,7 +227,7 @@ export function AppShell({
                 type="button"
                 onClick={() => setMenuOpen(true)}
                 aria-label="Plus : ouvrir le menu complet"
-                className="flex h-full w-full flex-col items-center justify-center gap-0.5 px-1 text-[11px] font-semibold text-ink-soft transition-transform active:scale-95"
+                className="flex h-full w-full flex-col items-center justify-center gap-0.5 px-0.5 text-[10px] font-semibold text-ink-soft transition-transform active:scale-95 min-[360px]:px-1 min-[360px]:text-[11px]"
               >
                 <span className="grid h-7 w-12 place-items-center rounded-full">
                   <MoreHorizontal aria-hidden="true" className="size-5" />
