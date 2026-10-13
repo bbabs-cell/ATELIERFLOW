@@ -164,7 +164,7 @@ export function RemoteTeamView(): React.ReactElement {
             variant={error.includes("Internet") ? "offline" : "error"}
             title={error.includes("réservée") ? "Accès à l'équipe non autorisé" : "Impossible de charger l'équipe"}
             description={error}
-            action={error.includes("réservée") ? undefined : <Button onClick={() => void load()}>Réessayer</Button>}
+            action={error.includes("réservée") ? undefined : <Button variant="outline" onClick={() => void load()}>Réessayer</Button>}
           />
         ) : team === null ? (
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">

@@ -191,7 +191,7 @@ export function TeamView(): React.ReactElement {
             variant="error"
             title="Impossible de charger l'équipe"
             description={error}
-            action={<Button onClick={() => load().catch(() => undefined)}>Réessayer</Button>}
+            action={<Button variant="outline" onClick={() => load().catch(() => undefined)}>Réessayer</Button>}
           />
         ) : loading ? (
           <StateView variant="loading" title="Chargement de l'équipe…" />
@@ -200,7 +200,7 @@ export function TeamView(): React.ReactElement {
             <div className="mb-4 flex flex-wrap items-center gap-3">
               <input
                 aria-label="Rechercher un membre"
-                className="h-12 w-full max-w-xs rounded-full border-2 border-outline bg-surface/90 px-4 text-sm font-medium text-ink shadow-soft transition-all duration-300 placeholder:text-ink-faint hover:border-flamme-300 focus:border-flamme-500 focus:shadow-[0_0_0_4px_rgb(255_94_46/0.18)] focus:outline-none"
+                className="h-12 w-full max-w-xs rounded-full border-2 border-outline bg-surface/90 px-4 text-base font-medium text-ink shadow-soft transition-all duration-300 placeholder:text-ink-faint hover:border-flamme-300 focus:border-flamme-500 focus:shadow-[0_0_0_4px_rgb(255_94_46/0.18)] focus:outline-none"
                 placeholder="Rechercher un membre…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}

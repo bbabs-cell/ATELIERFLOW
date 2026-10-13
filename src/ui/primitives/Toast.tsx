@@ -53,7 +53,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        className="pointer-events-none fixed inset-x-4 bottom-4 z-[60] flex flex-col gap-2 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-96"
+        className="pointer-events-none fixed inset-x-4 bottom-[calc(1rem+var(--bottom-nav,0px))] z-[60] flex flex-col gap-2 sm:inset-x-auto sm:right-6 sm:bottom-[calc(1.5rem+var(--bottom-nav,0px))] sm:w-96"
       >
         {toasts.map((t) => {
           const tone = toneStyles[t.tone];

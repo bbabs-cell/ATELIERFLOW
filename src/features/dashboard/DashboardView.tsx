@@ -297,7 +297,7 @@ export function DashboardView(): React.ReactElement {
           />
           <input
             aria-label="Rechercher dans l'atelier"
-            className="h-12 w-full rounded-full border-2 border-outline bg-surface/90 pl-11 pr-4 text-sm font-medium text-ink shadow-soft backdrop-blur transition-all duration-300 placeholder:text-ink-faint hover:border-flamme-300 focus:border-flamme-500 focus:shadow-[0_0_0_4px_rgb(245_116_9/0.18)] focus:outline-none"
+            className="h-12 w-full rounded-full border-2 border-outline bg-surface/90 pl-11 pr-4 text-base font-medium text-ink shadow-soft backdrop-blur transition-all duration-300 placeholder:text-ink-faint hover:border-flamme-300 focus:border-flamme-500 focus:shadow-[0_0_0_4px_rgb(245_116_9/0.18)] focus:outline-none"
             placeholder="Rechercher… (clients, commandes, tissus)"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

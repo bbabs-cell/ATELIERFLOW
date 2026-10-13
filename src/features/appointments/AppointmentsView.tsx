@@ -246,7 +246,7 @@ export function AppointmentsView(): React.ReactElement {
             variant="error"
             title="Impossible de charger les rendez-vous"
             description={error}
-            action={<Button onClick={() => load().catch(() => undefined)}>Réessayer</Button>}
+            action={<Button variant="outline" onClick={() => load().catch(() => undefined)}>Réessayer</Button>}
           />
         ) : loading ? (
           <StateView variant="loading" title="Chargement des rendez-vous…" />

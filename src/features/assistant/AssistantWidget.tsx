@@ -140,7 +140,7 @@ export function AssistantWidget(): React.ReactElement {
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Ouvrir l'assistant"
-          className="fixed bottom-5 right-5 z-40 inline-flex h-14 min-w-14 items-center justify-center gap-2 rounded-full bg-flamme-gradient px-4 font-semibold xl:pr-5 text-white shadow-glow transition-all duration-300 hover:-translate-y-1 hover:shadow-lift print:hidden"
+          className="fixed bottom-[calc(1.25rem+var(--bottom-nav,0px))] right-5 z-40 inline-flex h-14 min-w-14 items-center justify-center gap-2 rounded-full bg-flamme-gradient px-4 font-semibold xl:pr-5 text-white shadow-glow transition-all duration-300 hover:-translate-y-1 hover:shadow-lift print:hidden"
         >
           <Sparkles className="size-5 animate-float" aria-hidden="true" />
           <span className="hidden xl:inline">Assistant</span>
@@ -246,7 +246,7 @@ export function AssistantWidget(): React.ReactElement {
               maxLength={500}
               aria-label="Votre question"
               placeholder="Posez votre question…"
-              className="h-12 min-w-0 flex-1 rounded-full border-2 border-outline bg-surface px-4 text-sm text-ink placeholder:text-ink-faint focus:border-flamme-500 focus:outline-none"
+              className="h-12 min-w-0 flex-1 rounded-full border-2 border-outline bg-surface px-4 text-base text-ink placeholder:text-ink-faint focus:border-flamme-500 focus:outline-none"
             />
             <button
               type="submit"

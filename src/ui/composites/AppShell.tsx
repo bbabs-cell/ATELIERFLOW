@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
-import { Menu, type LucideIcon } from "lucide-react";
+import { Menu, MoreHorizontal, type LucideIcon } from "lucide-react";
 import { cx } from "@/lib/cx";
 import { Drawer } from "../primitives/Drawer";
 
@@ -11,6 +11,8 @@ export type FeatureTone = "orange" | "blue" | "green" | "brown";
 
 export interface NavItem {
   label: string;
+  /** Libellé court pour la barre du bas (cinq cases de 75 px à 375 px). */
+  shortLabel?: string;
   href: string;
   icon: LucideIcon;
   active?: boolean;
@@ -21,6 +23,8 @@ export interface NavItem {
 export interface AppShellProps {
   brand: ReactNode;
   navItems: NavItem[];
+  /** Les 4 écrans de la barre du bas (téléphone et tablette, sous 1024 px). */
+  bottomItems?: NavItem[];
   children: ReactNode;
   onNavigate?: (item: NavItem) => void;
   /** Contenu en pied de menu (compte, déconnexion…). */
@@ -40,6 +44,14 @@ const TONES: Record<FeatureTone, { icon: string; active: string }> = {
   blue: { icon: "from-azur-300 to-azur-600", active: "bg-azur-gradient text-white" },
   green: { icon: "from-menthe-300 to-menthe-600", active: "bg-menthe-gradient text-white" },
   brown: { icon: "from-chocolat-300 to-chocolat-600", active: "bg-chocolat-200 text-chocolat-950" },
+};
+
+/** Couleur de l'entrée active dans la barre du bas (texte, contraste ≥ 4,5:1 sur le fond clair). */
+const BOTTOM_ACTIVE: Record<FeatureTone, string> = {
+  orange: "text-flamme-700",
+  blue: "text-azur-700",
+  green: "text-menthe-600",
+  brown: "text-chocolat-900",
 };
 
 /** Formes lumineuses qui dérivent lentement (fond vivant). */
@@ -84,6 +96,7 @@ function CoverBackdrop({ src, dark = false }: { src: string; dark?: boolean }) {
 export function AppShell({
   brand,
   navItems,
+  bottomItems = [],
   children,
   onNavigate,
   footer,
@@ -170,6 +183,61 @@ export function AppShell({
           {footer}
         </div>
       </Drawer>
+
+      {/*
+        Barre du bas sous 1024 px : les 4 écrans les plus ouverts + « Plus ».
+        Pourquoi : tout passait par ☰, deux gestes par changement d'écran, des
+        dizaines de fois par jour. Placée hors du contenu animé : une
+        transformation d'entrée sur un parent capturerait cette barre fixe.
+        Sa hauteur est publiée dans --bottom-nav (globals.css) pour que la
+        bulle de l'assistant et les messages se posent au-dessus.
+      */}
+      {bottomItems.length > 0 ? (
+        <nav
+          aria-label="Navigation rapide"
+          data-bottom-nav=""
+          className="fixed inset-x-0 bottom-0 z-30 border-t border-outline bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden print:hidden"
+        >
+          <ul className="mx-auto grid h-16 max-w-xl grid-cols-5">
+            {bottomItems.map((item) => (
+              <li key={item.href} className="min-w-0">
+                <Link
+                  href={item.href}
+                  onClick={() => onNavigate?.(item)}
+                  aria-current={item.active ? "page" : undefined}
+                  className={cx(
+                    "flex h-full min-w-0 flex-col items-center justify-center gap-0.5 px-0.5 text-[10px] font-semibold transition-transform active:scale-95 min-[360px]:px-1 min-[360px]:text-[11px]",
+                    item.active ? BOTTOM_ACTIVE[item.tone ?? "brown"] : "text-ink-soft",
+                  )}
+                >
+                  <span
+                    className={cx(
+                      "grid h-7 w-12 place-items-center rounded-full transition-colors",
+                      item.active ? "bg-chocolat-100" : "",
+                    )}
+                  >
+                    <item.icon aria-hidden="true" className="size-5" />
+                  </span>
+                  <span className="max-w-full truncate">{item.shortLabel ?? item.label}</span>
+                </Link>
+              </li>
+            ))}
+            <li className="min-w-0">
+              <button
+                type="button"
+                onClick={() => setMenuOpen(true)}
+                aria-label="Plus : ouvrir le menu complet"
+                className="flex h-full w-full flex-col items-center justify-center gap-0.5 px-0.5 text-[10px] font-semibold text-ink-soft transition-transform active:scale-95 min-[360px]:px-1 min-[360px]:text-[11px]"
+              >
+                <span className="grid h-7 w-12 place-items-center rounded-full">
+                  <MoreHorizontal aria-hidden="true" className="size-5" />
+                </span>
+                <span>Plus</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      ) : null}
 
       <main className="relative min-w-0 flex-1 overflow-x-clip">
         <AmbientBlobs className="fixed lg:left-72" />

@@ -46,7 +46,7 @@ export async function measure(page) {
       }
       return false;
     };
-    const overflow = [], clipped = [], small = [];
+    const overflow = [], clipped = [], small = [], crushed = [];
     const seen = new Set();
     for (const el of document.querySelectorAll('body *')) {
       const s = getComputedStyle(el);
@@ -79,6 +79,29 @@ export async function measure(page) {
       if (hasText && s.textOverflow === 'ellipsis' && el.scrollWidth > el.clientWidth + 2 && r.width < 48) {
         const d = desc(el); if (!seen.has('e' + d)) { seen.add('e' + d); clipped.push('quasi illisible (' + Math.round(r.width) + 'px) ' + d); }
       }
+      // Bouton écrasé (méthode MagyaPro) : sans déborder, un bouton coincé
+      // rétrécit jusqu'à casser son libellé lettre par lettre — un audit de
+      // débordement seul le déclarait conforme.
+      if (el.matches('button, a[class*="rounded"], [role=button]')) {
+        // Mesure ligne par ligne de chaque morceau de texte : une carte ou une
+        // entrée de menu empile volontairement icône, titre et chiffre ; seul
+        // un même libellé court cassé sur plus de deux lignes est un défaut.
+        const label = (el.innerText || '').trim();
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+        let worst = 0;
+        for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+          const t = n.textContent.trim();
+          if (t.length < 2 || t.length > 40) continue;
+          const range = document.createRange(); range.selectNodeContents(n);
+          const tops = new Set([...range.getClientRects()].filter((x) => x.width > 0).map((x) => Math.round(x.top)));
+          // Une phrase qui passe sur 3 lignes est normale ; moins de 8 lettres par ligne, c'est un texte cassé mot par mot.
+          if (tops.size > 2 && t.length / tops.size < 8) worst = Math.max(worst, tops.size);
+        }
+        const longestWord = Math.max(0, ...label.split(/\s+/).map((w) => w.length));
+        if (label && (worst > 2 || (longestWord > 3 && r.width < 28))) {
+          const d = desc(el); if (!seen.has('b' + d)) { seen.add('b' + d); crushed.push(`${d} (${Math.round(r.width)}×${Math.round(r.height)}, ${worst} lignes)`); }
+        }
+      }
       const interactive = el.matches('button, a[href], input:not([type=hidden]), select, textarea, [role=button], [role=tab], summary');
       if (interactive && !el.closest('.sr-only')) {
         const inlineLink = el.tagName === 'A' && s.display === 'inline';
@@ -88,6 +111,6 @@ export async function measure(page) {
         }
       }
     }
-    return { vw, pageOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth, overflow, clipped, small };
+    return { vw, pageOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth, overflow, clipped, small, crushed };
   });
 }

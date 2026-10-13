@@ -13,6 +13,7 @@
  */
 import webpush from "npm:web-push@3.6.7";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
+import { isAllowedPushEndpoint } from "../_shared/pushHosts.ts";
 
 const ALLOWED_ORIGINS = new Set(["https://atelier.magyapro.com", "https://atelierflow-alpha.vercel.app"]);
 
@@ -111,6 +112,12 @@ Deno.serve(async (req) => {
   let failed = 0;
   await Promise.all(
     targets.map(async (t) => {
+      // Adresse hors des services push connus : jamais contactée, abonnement retiré.
+      if (!isAllowedPushEndpoint(t.endpoint)) {
+        gone += 1;
+        await db.rpc("push_mark_result", { p_subscription: t.subscription_id, p_ok: false, p_gone: true });
+        return;
+      }
       const payload = JSON.stringify({ title: t.title, body: t.body, url: t.url, tag: t.alert_key, urgent: t.urgent === true });
       try {
         await webpush.sendNotification({ endpoint: t.endpoint, keys: { p256dh: t.p256dh, auth: t.auth } }, payload, {

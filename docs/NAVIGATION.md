@@ -1,0 +1,39 @@
+# Navigation
+
+## Le problème
+
+Au téléphone, tout passait par le bouton ☰ : deux gestes pour changer d'écran, des dizaines
+de fois par jour (prendre une commande, retrouver un client, voir les rendez-vous). Et le
+menu montrait à un apprenti des écrans qu'il ne pouvait pas ouvrir (Rapports, Équipe,
+Abonnement) : il tombait sur un refus.
+
+## Ce que ça fait
+
+- **Barre du bas** (téléphone et tablette, sous 1024 px) : les 4 écrans les plus ouverts —
+  Tableau de bord, Commandes, Clients, Rendez-vous — et « Plus », qui ouvre le menu complet.
+  Si le rôle n'a pas accès à l'un d'eux, le suivant autorisé prend sa place (Stock, Mes
+  modèles).
+- **Menu selon le rôle** : une entrée que le rôle ne peut pas ouvrir n'est plus affichée
+  (droit requis par entrée dans `AuthGate`). Le serveur refuse de toute façon ; on évite
+  seulement l'impasse. Rôle inconnu (démo, ancien jeton) : tout reste visible.
+- Sur ordinateur (1024 px et plus), rien ne change : barre latérale.
+
+## Règles et pourquoi
+
+- La barre est placée **hors du contenu animé** : une transformation d'entrée sur un parent
+  capturerait l'élément fixé en bas (il disparaîtrait de l'écran).
+- Sa hauteur est publiée dans `--bottom-nav` (`globals.css`, `:has([data-bottom-nav])`) :
+  la bulle de l'assistant, les messages et l'invitation de mise à jour se posent au-dessus,
+  et la fin de chaque page reste visible (`pb-[calc(6rem+var(--bottom-nav))]`).
+- `pb-[env(safe-area-inset-bottom)]` : rien sous la barre d'accueil de l'iPhone.
+- Entrée active : couleur de sa fonctionnalité en texte (contraste ≥ 4,5:1), pas de
+  pastille pleine — la couleur pleine reste au bouton principal de l'écran.
+
+## Code
+
+`src/domain/navigation/nav.ts` (choix des entrées, testé : `tests/unit/navigation`),
+`src/ui/composites/AppShell.tsx` (barre), `src/features/auth/AuthGate.tsx` (droits par entrée).
+
+## À faire côté propriétaire
+
+Rien.

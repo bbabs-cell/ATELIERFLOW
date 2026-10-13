@@ -50,3 +50,15 @@ TypeScript, Next.js, React, Tailwind, Vercel, GitHub, testing, security, perform
 ## Recommandation
 
 Avant chaque étape (07→26), charger le skill projet correspondant pour faire appliquer les invariants (finance, multitenant, offline, files, design system). Rajouter un point de contrôle « skills » dans les audits 23/24/25.
+## Méthode MagyaPro (2026-10-13)
+
+`.claude/skills/methode-magyapro/` (copie dans `.opencode/skills/`) : la méthode de travail
+du propriétaire, éprouvée sur MagyaPro — un seul bouton principal par écran, rien qui
+déborde à 375 px, champs en 16 px, barre du bas sur téléphone, tout identifiant re-filtré
+par l'atelier, éviter une migration quand on peut dériver, tests + doc `docs/X.md` +
+vérification mobile + PR à CI verte. À charger pour toute fonctionnalité, revue ou
+correction. Adaptations à Atelier Flow : pas de Prisma ni de `route()` (accès aux données
+par Supabase/RLS et RPC) ; le contrôle d'origine est fait une fois dans `src/proxy.ts` ;
+l'audit à 375 px est intégré à `scripts/responsive-audit/` (session simulée, la session
+d'Atelier Flow n'est pas un cookie) ; les animations existantes sont conservées
+(décision du propriétaire).

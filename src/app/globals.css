@@ -1,6 +1,20 @@
 @import "tailwindcss";
 @import "../ui/tokens.css";
 
+/*
+ * Hauteur de la barre du bas (téléphone, sous 1024 px), lue par tout ce qui
+ * est fixé en bas (bulle de l'assistant, messages, mise à jour) pour se poser
+ * au-dessus au lieu de passer dessous. 0 quand la barre n'est pas affichée.
+ */
+:root {
+  --bottom-nav: 0px;
+}
+@media (max-width: 1023.98px) {
+  :root:has([data-bottom-nav]) {
+    --bottom-nav: calc(4rem + env(safe-area-inset-bottom));
+  }
+}
+
 @layer base {
   .font-display {
     font-family: var(--font-display);

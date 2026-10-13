@@ -19,6 +19,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { AppShell, Badge, StateView, type NavItem } from "@/ui";
+import { bottomEntries, permissionsOfRole, visibleEntries, type NavEntry } from "@/domain/navigation/nav";
 import { Brand } from "./Brand";
 import {
   clearActiveSession,
@@ -47,16 +48,16 @@ import { setActiveCurrency } from "@/domain/money";
 /** Pages accessibles sans atelier actif. */
 const PUBLIC_PATHS = ["/", "/connexion", "/bienvenue", "/offline", "/design", "/reset-password"];
 
-const NAV: Omit<NavItem, "active">[] = [
-  { label: "Tableau de bord", href: "/dashboard", icon: LayoutDashboard, tone: "brown" },
-  { label: "Clients", href: "/clients", icon: Users, tone: "blue" },
-  { label: "Commandes", href: "/commandes", icon: ClipboardList, tone: "orange" },
-  { label: "Rendez-vous", href: "/rdv", icon: CalendarDays, tone: "blue" },
-  { label: "Mes modèles", href: "/modeles", icon: Images, tone: "orange" },
-  { label: "Stock", href: "/stock", icon: Shirt, tone: "brown" },
-  { label: "Rapports", href: "/rapports", icon: ChartColumn, tone: "green" },
-  { label: "Équipe", href: "/equipe", icon: UsersRound, tone: "brown" },
-  { label: "Abonnement", href: "/abonnement", icon: CreditCard, tone: "green" },
+const NAV: (Omit<NavItem, "active"> & NavEntry)[] = [
+  { label: "Tableau de bord", shortLabel: "Accueil", href: "/dashboard", icon: LayoutDashboard, tone: "brown" },
+  { label: "Clients", href: "/clients", icon: Users, tone: "blue", permission: "customers.read" },
+  { label: "Commandes", href: "/commandes", icon: ClipboardList, tone: "orange", permission: "orders.read" },
+  { label: "Rendez-vous", shortLabel: "Agenda", href: "/rdv", icon: CalendarDays, tone: "blue", permission: "appointments.read" },
+  { label: "Mes modèles", href: "/modeles", icon: Images, tone: "orange", permission: "files.read" },
+  { label: "Stock", href: "/stock", icon: Shirt, tone: "brown", permission: "stock.read" },
+  { label: "Rapports", href: "/rapports", icon: ChartColumn, tone: "green", permission: "reports.read" },
+  { label: "Équipe", href: "/equipe", icon: UsersRound, tone: "brown", permission: "team.read" },
+  { label: "Abonnement", href: "/abonnement", icon: CreditCard, tone: "green", permission: "subscriptions.view" },
   { label: "Personnalisation", href: "/parametres", icon: Palette, tone: "brown" },
 ];
 /** Visible seulement pour l'administration de la plateforme (SAAS_ADMIN). */
@@ -196,16 +197,19 @@ export function AuthGate({ children }: { children: ReactNode }) {
   if (state.session.mode !== "DEMO") {
     setActiveCurrency(readCachedLocale(state.session.tenantId)?.currency ?? locale.currency);
   }
-  const navItems: NavItem[] = (platformAdmin ? [...NAV, PLATFORM_NAV] : NAV).map((item) => ({
+  const allowed = visibleEntries(NAV, permissionsOfRole(state.session.role));
+  const navItems: NavItem[] = (platformAdmin ? [...allowed, PLATFORM_NAV] : allowed).map((item) => ({
     ...item,
     active: pathname === item.href || pathname.startsWith(`${item.href}/`),
   }));
+  const bottomItems = bottomEntries(navItems);
   return (
     <>
       {state.session.mode === "DEMO" ? <DemoBanner /> : null}
       <AppShell
         brand={<Brand subtitle="Gestion d'atelier" logo={branding.logo} />}
         navItems={navItems}
+        bottomItems={bottomItems}
         cover={branding.cover}
         footer={state.session.mode === "DEMO" ? null : <AccountCard session={state.session} avatar={branding.avatar} />}
       >
@@ -217,8 +221,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
             </Badge>
           </div>
         ) : null}
-        {/* Marge basse : la bulle de l'assistant ne cache jamais la fin de la page. */}
-        <div key={`${pathname}:${locale.currency}`} className="animate-fade-up pb-24">
+        {/* Marge basse : ni la bulle de l'assistant ni la barre du bas (téléphone) ne cachent la fin de la page. */}
+        <div key={`${pathname}:${locale.currency}`} className="animate-fade-up pb-[calc(6rem+var(--bottom-nav,0px))]">
           {children}
         </div>
       </AppShell>
