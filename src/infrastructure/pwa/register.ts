@@ -7,6 +7,13 @@ export class ServiceWorkerController {
   private registration: ServiceWorkerRegistration | null = null;
   private disposed = false;
   private reloading = false;
+  /**
+   * Un service worker contrôlait-il déjà la page ? À la toute première
+   * installation, il prend la main (clients.claim) sur une page qui vient
+   * d'être chargée du réseau : rien à recharger. Recharger là donnait un écran
+   * blanc au démarrage, mesuré au téléphone.
+   */
+  private hadController = false;
   private readonly swUrl: string;
   private readonly handlers: ServiceWorkerControllerHandlers;
 
@@ -23,6 +30,7 @@ export class ServiceWorkerController {
     ) {
       return;
     }
+    this.hadController = navigator.serviceWorker.controller !== null;
     navigator.serviceWorker.addEventListener(
       "controllerchange",
       this.handleControllerChange,
@@ -33,7 +41,7 @@ export class ServiceWorkerController {
 
     if (navigator.serviceWorker.controller) {
       if (registration.waiting) {
-        this.promptSkipWaiting(registration.waiting);
+        this.promptUpdate();
       }
       registration.addEventListener("updatefound", () =>
         this.monitorInstalling(registration.installing),
@@ -79,14 +87,19 @@ export class ServiceWorkerController {
     if (!installing) return;
     installing.addEventListener("statechange", () => {
       if (installing.state === "installed" && navigator.serviceWorker.controller) {
-        this.promptSkipWaiting(installing);
+        this.promptUpdate();
       }
     });
   }
 
-  private promptSkipWaiting(worker: ServiceWorker): void {
+  /**
+   * Mise à jour prête : on la propose, sans l'activer d'office. L'activer tout
+   * de suite rechargeait la page en pleine utilisation (écran blanc). Elle
+   * s'applique quand la personne touche « Mettre à jour », ou d'elle-même à la
+   * prochaine ouverture de l'application.
+   */
+  private promptUpdate(): void {
     this.handlers.onUpdateAvailable?.();
-    this.sendSkipWaiting(worker);
   }
 
   private sendSkipWaiting(worker: ServiceWorker): void {
@@ -96,6 +109,10 @@ export class ServiceWorkerController {
   }
 
   private handleControllerChange = (): void => {
+    if (!this.hadController) {
+      this.hadController = true;
+      return;
+    }
     if (this.reloading || this.disposed) return;
     this.reloading = true;
     this.handlers.onControllerChange?.();

@@ -111,7 +111,7 @@ export function OrderBoard({ orders, filters, assignees, busyId, onOpen, onMove,
                     ? "border-outline opacity-50"
                     : "border-outline",
             )}
-            style={{ animationDelay: `${columnIndex * 50}ms` }}
+            style={{ animationDelay: `${Math.min(columnIndex * 30, 150)}ms` }}
           >
             <header className={cx("flex items-center justify-between gap-2 rounded-t-2xl bg-gradient-to-r px-4 py-3 text-white", COLUMN_TONES[status])}>
               <h3 className="truncate font-display text-base font-bold">{ORDER_STATUS_LABELS[status]}</h3>
@@ -151,7 +151,7 @@ export function OrderBoard({ orders, filters, assignees, busyId, onOpen, onMove,
                         refused === order.id && "animate-wiggle",
                         busyId === order.id && "animate-pulse",
                       )}
-                      style={{ animationDelay: `${columnIndex * 50 + index * 40}ms` }}
+                      style={{ animationDelay: `${Math.min(columnIndex * 30 + index * 25, 200)}ms` }}
                     >
                       {deadline === "late" ? (
                         <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1 rounded-l-xl bg-wax-500 animate-pulse" />

@@ -19,10 +19,12 @@ async function fetchDeployedBuild(): Promise<string | null> {
 
 /**
  * Nouvelle version en ligne ? Vérifié au retour sur l'application, au
- * retour du réseau et toutes les 10 minutes. Au retour sur l'application
- * (rien n'est en cours de saisie), on recharge directement : les données
- * locales et la file de synchronisation sont dans IndexedDB, rien n'est
- * perdu. Sinon, on propose la mise à jour.
+ * retour du réseau et toutes les 10 minutes. Le rechargement se fait quand
+ * l'application passe en arrière-plan : invisible pour la personne. Recharger
+ * au retour sur l'application donnait un écran blanc au moment même où on
+ * l'ouvrait. Les données locales et la file de synchronisation sont dans
+ * IndexedDB : rien n'est perdu. En cours d'utilisation, la mise à jour est
+ * proposée (bandeau).
  */
 export function useVersionCheck(): { updateAvailable: boolean; dismiss: () => void } {
   const [updateAvailable, setUpdateAvailable] = useState(false);
@@ -30,25 +32,27 @@ export function useVersionCheck(): { updateAvailable: boolean; dismiss: () => vo
   useEffect(() => {
     if (!CURRENT_BUILD) return;
     let stopped = false;
+    let pending = false;
 
-    const check = async (reloadIfNew: boolean) => {
+    const check = async (fromReturn: boolean) => {
       if (stopped || !navigator.onLine) return;
       const deployed = await fetchDeployedBuild();
       if (stopped || !deployed || deployed === CURRENT_BUILD) return;
-      if (reloadIfNew) window.location.reload();
-      else setUpdateAvailable(true);
+      pending = true;
+      if (!fromReturn) setUpdateAvailable(true);
     };
 
-    const onVisible = () => {
+    const onVisibility = () => {
       if (document.visibilityState === "visible") void check(true);
+      else if (pending) window.location.reload();
     };
     const onOnline = () => void check(false);
-    document.addEventListener("visibilitychange", onVisible);
+    document.addEventListener("visibilitychange", onVisibility);
     window.addEventListener("online", onOnline);
     const interval = setInterval(() => void check(false), CHECK_EVERY_MS);
     return () => {
       stopped = true;
-      document.removeEventListener("visibilitychange", onVisible);
+      document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("online", onOnline);
       clearInterval(interval);
     };

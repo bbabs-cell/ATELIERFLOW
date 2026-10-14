@@ -144,7 +144,6 @@ export function DashboardView(): React.ReactElement {
   const [kpis, setKpis] = useState<DashboardKpis | null>(null);
   const [rangeLabel, setRangeLabel] = useState("");
   const [days, setDays] = useState(30);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [forbidden, setForbidden] = useState(false);
 
@@ -152,8 +151,10 @@ export function DashboardView(): React.ReactElement {
   const [results, setResults] = useState<SearchHit[] | null>(null);
   const [searching, setSearching] = useState(false);
 
+  // Rafraîchissement silencieux : les chiffres déjà affichés restent à l'écran
+  // pendant le recalcul. Repasser par le squelette à chaque synchronisation
+  // (toutes les 30 s, après chaque saisie) faisait clignoter le tableau de bord.
   const load = useCallback(async () => {
-    setLoading(true);
     setError(null);
     setForbidden(false);
     try {
@@ -162,7 +163,6 @@ export function DashboardView(): React.ReactElement {
       const result = await getDashboardFacade().dashboard.getKpis(range);
       if (!result.ok) {
         setForbidden(true);
-        setLoading(false);
         return;
       }
       setKpis(result.kpis);
@@ -173,8 +173,6 @@ export function DashboardView(): React.ReactElement {
       );
     } catch {
       setError("Impossible de charger le tableau de bord.");
-    } finally {
-      setLoading(false);
     }
   }, [days]);
   useDataChanged(load);
@@ -355,7 +353,7 @@ export function DashboardView(): React.ReactElement {
             description={error}
             action={<Button onClick={() => load().catch(() => undefined)}>Réessayer</Button>}
           />
-        ) : loading || kpis === null ? (
+        ) : kpis === null ? (
           <ul className="grid grid-cols-2 gap-3 @4xl:grid-cols-4" aria-label="Chargement">
             {Array.from({ length: 8 }, (_, i) => (
               <li key={i} className="skeleton-shimmer h-36 rounded-xl" />

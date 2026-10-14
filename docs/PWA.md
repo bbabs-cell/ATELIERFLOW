@@ -58,3 +58,17 @@ src/app/offline/page.tsx              page de secours hors ligne (statique, pré
 
 - Tester l'installabilité sur le domaine réel (install prompt Chromium/Edge, manifest validé par Lighthouse — audit performé en phase 25-26).
 - Icônes PNG (192/512 + apple-touch-icon) pour Safari/iOS/Firefox si nécessaire.
+## Pas de rechargement surprise (2026-10-14)
+
+Mesuré au téléphone (processeur ×4, réseau lent) : à la première ouverture, le service
+worker prenait la main (`clients.claim`) et `controllerchange` rechargeait toute la page —
+la page s'affichait, devenait blanche, puis réapparaissait. Désormais :
+
+- **Première installation** : il prend la main sans recharger (la page vient du réseau).
+- **Mise à jour du service worker** : proposée (« Mettre à jour »), jamais activée d'office ;
+  sinon elle s'applique d'elle-même à la prochaine ouverture.
+- **Nouvelle version du site** (`/api/version`) : au retour sur l'application, le
+  rechargement attend que l'application repasse en arrière-plan (invisible) ; en cours
+  d'utilisation, le bandeau propose la mise à jour.
+
+Tests : `tests/unit/pwa/register.test.ts`.
