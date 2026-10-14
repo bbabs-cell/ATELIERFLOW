@@ -39,6 +39,7 @@ import { SyncStatusChip } from "@/features/sync/SyncStatusChip";
 import { PlanBanner } from "@/features/subscriptions/PlanBanner";
 import { AssistantWidget } from "@/features/assistant/AssistantWidget";
 import { AlertStack } from "@/features/notifications/AlertStack";
+import { NavProgress } from "@/features/navigation/NavProgress";
 import { useAlertRunner } from "@/features/notifications/useAlertRunner";
 import { usePlatformAdmin } from "@/features/platform/usePlatformAdmin";
 import { useBranding } from "@/features/branding/useBranding";
@@ -206,6 +207,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
   return (
     <>
       {state.session.mode === "DEMO" ? <DemoBanner /> : null}
+      <NavProgress />
       <AppShell
         brand={<Brand subtitle="Gestion d'atelier" logo={branding.logo} />}
         navItems={navItems}
@@ -222,7 +224,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
           </div>
         ) : null}
         {/* Marge basse : ni la bulle de l'assistant ni la barre du bas (téléphone) ne cachent la fin de la page. */}
-        <div key={`${pathname}:${locale.currency}`} className="animate-fade-up pb-[calc(6rem+var(--bottom-nav,0px))]">
+        <div key={`${pathname}:${locale.currency}`} className="animate-page-in pb-[calc(6rem+var(--bottom-nav,0px))]">
           {children}
         </div>
       </AppShell>

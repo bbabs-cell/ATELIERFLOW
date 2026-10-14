@@ -29,6 +29,16 @@ Abonnement) : il tombait sur un refus.
 - Entrée active : couleur de sa fonctionnalité en texte (contraste ≥ 4,5:1), pas de
   pastille pleine — la couleur pleine reste au bouton principal de l'écran.
 
+## Fluidité (2026-10-14)
+
+Mesuré image par image (téléphone simulé, processeur ×4) : chaque changement d'écran
+donnait 0,15 à 0,5 s d'écran blanc — l'entrée de page partait de l'opacité 0 (0,55 s) et les
+listes attendaient jusqu'à 0,42 s. Désormais : entrée de page `animate-page-in` (0,2 s, part
+de 0,55 d'opacité), cascades plafonnées à 0,2 s, aucun bloc ne part de l'opacité 0, écran de
+chargement visible dès la première image, chiffres du tableau de bord rafraîchis sans
+repasser par le squelette, et une **barre de progression fine** en haut répond dès le
+toucher d'un lien (`src/features/navigation/NavProgress.tsx`).
+
 ## Code
 
 `src/domain/navigation/nav.ts` (choix des entrées, testé : `tests/unit/navigation`),

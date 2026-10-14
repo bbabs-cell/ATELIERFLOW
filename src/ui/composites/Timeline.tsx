@@ -22,7 +22,7 @@ export function Timeline({
   return (
     <ol className={cx("space-y-0", className)}>
       {items.map((item, i) => (
-        <li key={i} className="relative flex gap-4 pb-6 animate-fade-up last:pb-0" style={{ animationDelay: `${i * 70}ms` }}>
+        <li key={i} className="relative flex gap-4 pb-6 animate-fade-up last:pb-0" style={{ animationDelay: `${Math.min(i * 35, 200)}ms` }}>
           {i < items.length - 1 ? (
             <span
               aria-hidden="true"

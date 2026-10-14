@@ -72,7 +72,10 @@ export function StateView({
   return (
     <div
       className={cx(
-        "relative flex min-h-48 flex-col items-center justify-center gap-4 overflow-hidden rounded-xl border-2 border-dashed border-chocolat-200 bg-surface/70 p-8 text-center backdrop-blur animate-scale-in",
+        "relative flex min-h-48 flex-col items-center justify-center gap-4 overflow-hidden rounded-xl border-2 border-dashed border-chocolat-200 bg-surface/70 p-8 text-center backdrop-blur",
+        // Chargement visible dès la première image : une entrée en fondu le
+        // laissait invisible ~0,3 s au démarrage (écran vide sur téléphone).
+        variant === "loading" ? null : "animate-scale-in",
         className,
       )}
     >

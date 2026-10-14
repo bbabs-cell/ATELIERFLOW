@@ -32,7 +32,7 @@ Fichiers prêts à copier dans un autre projet :
 | Effet | Classe | Où l'utiliser |
 |---|---|---|
 | Entrée de bloc | `animate-fade-up` (0,55 s, montée de 16 px) | contenu de page, bandeaux, messages de statut |
-| Entrée en cascade | `stagger` sur le parent | listes, grilles de cartes, menus, KPI (décalage 50 ms, plafonné à 0,42 s) |
+| Entrée en cascade | `stagger` sur le parent | listes, grilles de cartes, menus, KPI (décalage 35 ms, plafonné à 0,2 s) |
 | Fenêtre / carte qui s'ouvre | `animate-scale-in` | modales, toasts, popovers, résultats de recherche |
 | Voile de fond | `animate-fade-in` | arrière-plan de modale / tiroir |
 | Tiroir latéral | `animate-slide-in-left/right` | menu mobile, panneaux |
@@ -77,7 +77,7 @@ survol est visible d'office au doigt (`pointer-coarse:opacity-100`).
 1. **Performance** : n'animer que `transform` et `opacity` (et `background-position` pour
    les dégradés). Jamais `width/height/top/left/margin`. Les fonds animés sont
    `pointer-events-none`, `aria-hidden`, en `fixed` ou `absolute` derrière le contenu.
-2. **Durées** : entrées 0,35–0,55 s ; survol 0,2–0,3 s ; décor continu 5–28 s. Courbe
+2. **Durées** : entrées 0,2–0,4 s (page : `animate-page-in`, 0,2 s) ; survol 0,2–0,3 s ; décor continu 5–28 s. Courbe
    d'entrée `cubic-bezier(0.22, 1, 0.36, 1)` ; rebond `cubic-bezier(0.34, 1.56, 0.64, 1)`
    seulement pour les petites pastilles.
 3. **Sobriété** : une seule chose qui attire l'œil par écran (`pulse-ring`, `wiggle`).
@@ -93,7 +93,13 @@ survol est visible d'office au doigt (`pointer-coarse:opacity-100`).
    mettre la valeur en `key` (`<span key={count} className="animate-pop">`). Pour
    rejouer l'entrée d'une page, clé sur le chemin (`key={pathname}`).
 7. **Impression** : `print:hidden` sur les boutons flottants et décors.
-8. **Ne pas casser l'existant** : quand le client a validé les animations, on n'y touche
+8. **Jamais d'écran blanc** : aucune entrée de page ou de bloc ne part de l'opacité 0
+   (`page-in` part de 0,55, `fade-up` de 0,3), cascades plafonnées à 0,2 s, remplissage
+   `backwards` (jamais `both` : une transformation restée appliquée capture les éléments
+   `fixed` descendants). Mesuré au téléphone (processeur ×4) : l'ancien réglage (opacité 0,
+   0,55 s, cascade jusqu'à 0,42 s) donnait 0,2 à 0,5 s d'écran blanc à chaque écran.
+   Pendant un changement de page, une barre de progression fine en haut répond au toucher.
+9. **Ne pas casser l'existant** : quand le client a validé les animations, on n'y touche
    pas en retouchant les couleurs ou la mise en page.
 
 ## Vérifier
