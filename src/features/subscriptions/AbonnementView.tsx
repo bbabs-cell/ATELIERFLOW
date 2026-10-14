@@ -199,7 +199,7 @@ export function AbonnementView(): React.ReactElement {
         </p>
       ) : null}
 
-      <section className="rounded-xl border border-outline bg-surface/90 p-4 shadow-soft backdrop-blur animate-fade-up sm:p-6">
+      <section className="rounded-xl border border-outline bg-surface p-4 shadow-soft animate-fade-up sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex min-w-0 items-start gap-3">
             <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-menthe-gradient text-white shadow-soft">

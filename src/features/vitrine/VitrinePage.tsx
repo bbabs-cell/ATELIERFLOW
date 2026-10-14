@@ -147,7 +147,7 @@ export function VitrinePage(): React.ReactElement {
   return (
     <div className="min-h-dvh bg-chocolat-900 text-ivoire-50">
       {/* ------------------------------------------------------------ En-tête */}
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-chocolat-900/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-chocolat-900">
         <nav aria-label="Navigation principale" className={`${WRAP} flex h-16 items-center justify-between gap-4`}>
           <Link href="/" aria-label={`${BRAND_NAME}, accueil`}>
             <Brand subtitle="Gestion d'atelier" />

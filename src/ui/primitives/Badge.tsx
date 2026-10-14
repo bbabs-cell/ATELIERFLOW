@@ -49,7 +49,7 @@ export function Badge({
         className,
       )}
     >
-      {dot ? <span className="size-1.5 animate-pulse rounded-full bg-current" /> : null}
+      {dot ? <span className="ambient-motion size-1.5 animate-pulse rounded-full bg-current" /> : null}
       {children}
     </span>
   );

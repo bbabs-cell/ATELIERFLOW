@@ -234,7 +234,7 @@ export function TeamView(): React.ReactElement {
                   return (
                     <li
                       key={member.id}
-                      className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up p-3"
+                      className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-outline bg-surface shadow-soft animate-fade-up p-3"
                     >
                       <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-beige-100 font-medium text-chocolat-800">
                         {initials(member.full_name)}

@@ -173,7 +173,7 @@ export const RECIPES = {
     "hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo-lg active:translate-x-0 active:translate-y-0 active:shadow-none",
   /** Carte cliquable : soulèvement + contour arc-en-ciel + ombre. Ajouter `group`. */
   card:
-    "group gradient-border @container relative block overflow-hidden rounded-xl border bg-white/90 p-4 shadow-soft backdrop-blur " +
+    "group gradient-border @container relative block overflow-hidden rounded-xl border bg-white p-4 shadow-soft " +
     "transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift",
   /** Halo flou dans un coin de carte, qui grossit au survol. */
   cardGlow:

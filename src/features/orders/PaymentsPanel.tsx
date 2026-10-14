@@ -203,7 +203,7 @@ export function PaymentsPanel({
           Aucun paiement enregistré pour {orderReference}.
         </p>
       ) : (
-        <ul className="divide-y divide-anthracite-100 overflow-hidden rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up">
+        <ul className="divide-y divide-anthracite-100 overflow-hidden rounded-xl border border-outline bg-surface shadow-soft animate-fade-up">
           {payments.map((p) => (
             <li key={p.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2">
               <span className="font-display text-lg text-ink">{formatFcfa(p.amount)}</span>
