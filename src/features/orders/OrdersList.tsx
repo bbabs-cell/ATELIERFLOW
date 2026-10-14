@@ -80,7 +80,7 @@ export function OrdersList({
           }
         />
       ) : (
-        <ul className="stagger flex flex-col divide-y divide-anthracite-100 overflow-hidden rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up">
+        <ul className="stagger flex flex-col divide-y divide-anthracite-100 overflow-hidden rounded-xl border border-outline bg-surface shadow-soft animate-fade-up">
           {orders.map(({ order, customerName }) => {
             const meta = ORDER_STATUS_META[order.status];
             const priority = ORDER_PRIORITY_META[order.priority];

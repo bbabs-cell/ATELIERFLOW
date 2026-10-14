@@ -275,7 +275,7 @@ function AccountCard({ session, avatar }: { session: ActiveSession; avatar: stri
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur animate-fade-up max-lg:border-outline max-lg:bg-surface-2">
+    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 animate-fade-up max-lg:border-outline max-lg:bg-surface-2">
       <Link
         href="/parametres"
         aria-label="Changer ma photo de profil"

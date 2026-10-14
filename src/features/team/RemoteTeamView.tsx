@@ -214,7 +214,7 @@ export function RemoteTeamView(): React.ReactElement {
                     {team.invitations.map((invite) => (
                       <li
                         key={invite.id}
-                        className="flex flex-wrap items-center gap-3 rounded-xl border border-outline bg-surface/90 px-4 py-3 shadow-soft backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lift"
+                        className="flex flex-wrap items-center gap-3 rounded-xl border border-outline bg-surface px-4 py-3 shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lift"
                       >
                         <span className="grid size-10 place-items-center rounded-full bg-chocolat-100 text-chocolat-900 animate-float">
                           <Mail className="size-4" aria-hidden="true" />
@@ -393,7 +393,7 @@ function MemberCard({
   return (
     <li
       className={cx(
-        "gradient-border group relative overflow-hidden rounded-xl border border-outline bg-surface/90 p-4 shadow-soft backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:shadow-lift",
+        "gradient-border group relative overflow-hidden rounded-xl border border-outline bg-surface p-4 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift",
         member.status === "DEACTIVATED" && "opacity-70 grayscale-[0.4]",
       )}
     >

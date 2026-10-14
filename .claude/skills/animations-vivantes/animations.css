@@ -261,3 +261,29 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Écrans tactiles : aucune animation continue (voir SKILL.md, règle 9). */
+@media (hover: none) {
+  .animate-blob,
+  .animate-float,
+  .animate-gradient,
+  .animate-marquee,
+  .animate-pulse-ring,
+  .animate-spin-slow,
+  .ambient-motion,
+  .text-gradient,
+  .page-title::after,
+  .gradient-border::before {
+    animation: none !important;
+  }
+}
+.gradient-border::before { animation-play-state: paused; }
+.gradient-border:hover::before,
+.gradient-border:focus-within::before { animation-play-state: running; }
+/* Fond d'ambiance statique (téléphone) : dégradés, aucun filtre de flou. */
+.ambient-static {
+  background:
+    radial-gradient(22rem 18rem at 0% 0%, color-mix(in srgb, var(--color-flamme-400) 22%, transparent), transparent 70%),
+    radial-gradient(26rem 22rem at 100% 40%, color-mix(in srgb, var(--color-chocolat-400) 16%, transparent), transparent 70%),
+    radial-gradient(22rem 18rem at 35% 100%, color-mix(in srgb, var(--color-champagne-400) 18%, transparent), transparent 70%);
+}

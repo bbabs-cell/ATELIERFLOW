@@ -11,7 +11,7 @@ import { ROLE_META } from "./constants";
 /** Matrice lecture seule des permissions par rôle (catalogue 0007). */
 export function PermissionsMatrix() {
   return (
-    <section className="mt-8 rounded-xl border border-outline bg-surface/90 shadow-soft backdrop-blur animate-fade-up p-3 sm:p-5">
+    <section className="mt-8 rounded-xl border border-outline bg-surface shadow-soft animate-fade-up p-3 sm:p-5">
       <h2 className="font-display text-xl text-ink">Permissions par rôle</h2>
       <p className="mt-1 text-sm text-ink-soft">
         Lecture seule pour les apprentis ; les rôles managés (changer un

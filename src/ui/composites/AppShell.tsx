@@ -137,7 +137,7 @@ export function AppShell({
           <span className="flex-1 truncate">{item.label}</span>
           {item.badge ? <span className="shrink-0">{item.badge}</span> : null}
           {item.active ? (
-            <span aria-hidden="true" className="size-2 rounded-full bg-chocolat-950 animate-pulse" />
+            <span aria-hidden="true" className="ambient-motion size-2 rounded-full bg-chocolat-950 animate-pulse" />
           ) : null}
         </Link>
       ))}
@@ -147,7 +147,7 @@ export function AppShell({
   return (
     <div className="relative min-h-dvh lg:flex">
       {/* Barre supérieure mobile */}
-      <header className="dot-grid sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/10 bg-chocolat-900/95 px-4 text-ivoire-50 backdrop-blur lg:hidden">
+      <header className="dot-grid sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/10 bg-chocolat-900 px-4 text-ivoire-50 lg:hidden">
         <button
           type="button"
           onClick={() => setMenuOpen(true)}
@@ -196,7 +196,7 @@ export function AppShell({
         <nav
           aria-label="Navigation rapide"
           data-bottom-nav=""
-          className="fixed inset-x-0 bottom-0 z-30 border-t border-outline bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden print:hidden"
+          className="fixed inset-x-0 bottom-0 z-30 border-t border-outline bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden print:hidden"
         >
           <ul className="mx-auto grid h-16 max-w-xl grid-cols-5">
             {bottomItems.map((item) => (
@@ -240,7 +240,10 @@ export function AppShell({
       ) : null}
 
       <main className="relative min-w-0 flex-1 overflow-x-clip">
-        <AmbientBlobs className="fixed lg:left-72" />
+        {/* Téléphone et tablette : fond en dégradés fixes ; les taches floues animées
+            (filtre de flou recalculé à chaque image) faisaient blanchir l'écran au défilement. */}
+        <div aria-hidden="true" className="ambient-static pointer-events-none fixed inset-0 lg:hidden" />
+        <AmbientBlobs className="fixed max-lg:hidden lg:left-72" />
         <div className="dot-grid-ink pointer-events-none fixed inset-0 lg:left-72" aria-hidden="true" />
         <div className="relative">{children}</div>
       </main>

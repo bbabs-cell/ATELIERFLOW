@@ -99,7 +99,21 @@ survol est visible d'office au doigt (`pointer-coarse:opacity-100`).
    `fixed` descendants). Mesuré au téléphone (processeur ×4) : l'ancien réglage (opacité 0,
    0,55 s, cascade jusqu'à 0,42 s) donnait 0,2 à 0,5 s d'écran blanc à chaque écran.
    Pendant un changement de page, une barre de progression fine en haut répond au toucher.
-9. **Ne pas casser l'existant** : quand le client a validé les animations, on n'y touche
+9. **Défilement fluide au téléphone** (mesuré : écran qui blanchit par zones pendant le
+   défilement, image qui revient au lâcher) :
+   - **pas de `backdrop-blur` sur ce qui défile** (cartes, listes, barres fixes) : le flou
+     d'arrière-plan est recalculé à chaque image du défilement ; fonds opaques
+     (`bg-surface`). Réservé au voile des fenêtres (Dialog, Drawer), qui ne défile pas ;
+   - **aucune animation continue sur écran tactile** (`@media (hover: none)` dans
+     `animations.css`) : taches floues, dégradés animés (`animate-gradient`,
+     `text-gradient`), `float`, `marquee`, `pulse-ring`, pastilles qui pulsent
+     (`ambient-motion`). Au repos, l'écran ne doit plus rien redessiner ;
+   - fond d'ambiance du téléphone en dégradés fixes (`ambient-static`), taches floues
+     animées réservées au bureau (`max-lg:hidden`) ;
+   - bordure animée (`gradient-border`) : le dégradé ne tourne qu'au survol.
+   Mesure : peinture + rastérisation pendant un défilement du tableau de bord
+   1 100 ms → 14 ms ; au repos 60 images/s → 0.
+10. **Ne pas casser l'existant** : quand le client a validé les animations, on n'y touche
    pas en retouchant les couleurs ou la mise en page.
 
 ## Vérifier

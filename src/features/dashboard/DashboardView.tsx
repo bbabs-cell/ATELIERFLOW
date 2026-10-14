@@ -100,7 +100,7 @@ function KpiCard({
     </>
   );
   const className =
-    "group gradient-border @container relative block h-full overflow-hidden rounded-xl border border-outline bg-surface/90 p-4 shadow-soft backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift";
+    "group gradient-border @container relative block h-full overflow-hidden rounded-xl border border-outline bg-surface p-4 shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift";
   return (
     <li className="min-w-0">
       {href ? (
@@ -116,7 +116,7 @@ function KpiCard({
 
 function Panel({ title, subtitle, children, className }: { title: string; subtitle?: string; children: React.ReactNode; className?: string }) {
   return (
-    <section className={cx("gradient-border relative rounded-xl border border-outline bg-surface/90 p-5 shadow-soft backdrop-blur transition-all duration-300 hover:shadow-lift animate-fade-up", className)}>
+    <section className={cx("gradient-border relative rounded-xl border border-outline bg-surface p-5 shadow-soft transition-all duration-300 hover:shadow-lift animate-fade-up", className)}>
       <h2 className="font-display text-xl text-ink">{title}</h2>
       {subtitle ? <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-flamme-600">{subtitle}</p> : null}
       {children}
@@ -263,10 +263,10 @@ export function DashboardView(): React.ReactElement {
           <Link href="/commandes" className="shine inline-flex h-11 items-center gap-2 rounded-full bg-flamme-gradient px-5 text-sm font-semibold text-white shadow-glow transition-all duration-300 hover:-translate-y-0.5">
             <ClipboardPlus className="size-4" aria-hidden="true" /> Nouvelle commande
           </Link>
-          <Link href="/clients" className="inline-flex h-11 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-semibold text-ivoire-50 backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:bg-azur-500">
+          <Link href="/clients" className="inline-flex h-11 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-semibold text-ivoire-50 transition-all duration-300 hover:-translate-y-0.5 hover:bg-azur-500">
             <UserPlus className="size-4" aria-hidden="true" /> Nouveau client
           </Link>
-          <Link href="/rdv" className="inline-flex h-11 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-semibold text-ivoire-50 backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:bg-azur-500">
+          <Link href="/rdv" className="inline-flex h-11 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-semibold text-ivoire-50 transition-all duration-300 hover:-translate-y-0.5 hover:bg-azur-500">
             <CalendarPlus className="size-4" aria-hidden="true" /> Rendez-vous
           </Link>
         </div>
@@ -295,7 +295,7 @@ export function DashboardView(): React.ReactElement {
           />
           <input
             aria-label="Rechercher dans l'atelier"
-            className="h-12 w-full rounded-full border-2 border-outline bg-surface/90 pl-11 pr-4 text-base font-medium text-ink shadow-soft backdrop-blur transition-all duration-300 placeholder:text-ink-faint hover:border-flamme-300 focus:border-flamme-500 focus:shadow-[0_0_0_4px_rgb(245_116_9/0.18)] focus:outline-none"
+            className="h-12 w-full rounded-full border-2 border-outline bg-surface pl-11 pr-4 text-base font-medium text-ink shadow-soft transition-all duration-300 placeholder:text-ink-faint hover:border-flamme-300 focus:border-flamme-500 focus:shadow-[0_0_0_4px_rgb(245_116_9/0.18)] focus:outline-none"
             placeholder="Rechercher… (clients, commandes, tissus)"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

@@ -39,6 +39,19 @@ chargement visible dès la première image, chiffres du tableau de bord rafraîc
 repasser par le squelette, et une **barre de progression fine** en haut répond dès le
 toucher d'un lien (`src/features/navigation/NavProgress.tsx`).
 
+## Défilement sans écran blanc (2026-10-14)
+
+Signalé au téléphone : pendant le défilement, des zones restaient blanches et l'image ne
+revenait qu'au lâcher. Cause mesurée : flou d'arrière-plan (`backdrop-blur`) sur 23 cartes,
+listes et barres — recalculé à chaque image du défilement — par-dessus des taches floues
+animées en continu, plus des dégradés animés qui redessinaient l'écran 60 fois par seconde
+même au repos. Correctifs : fonds opaques sans flou sur tout ce qui défile ; sur écran
+tactile (`hover: none`), aucune animation continue et fond d'ambiance en dégradés fixes
+(`ambient-static`) ; la bordure animée des cartes ne tourne qu'au survol. Mesure
+(tableau de bord, processeur ×4) : peinture + rastérisation pendant le défilement
+1 100 ms → 14 ms ; au repos 118 images redessinées en 2 s → 0. Sur ordinateur, le décor
+vivant reste.
+
 ## Code
 
 `src/domain/navigation/nav.ts` (choix des entrées, testé : `tests/unit/navigation`),

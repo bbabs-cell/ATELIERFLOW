@@ -39,7 +39,7 @@ export function Kanban({ columns, className, onCardClick }: KanbanProps) {
         <section
           key={col.id}
           aria-label={typeof col.title === "string" ? col.title : "Colonne"}
-          className="rounded-xl border border-outline bg-surface-2/80 p-3 backdrop-blur animate-fade-up"
+          className="rounded-xl border border-outline bg-surface-2 p-3 animate-fade-up"
         >
           <header className="mb-3 flex items-center justify-between gap-2 px-1">
             <span className="flex min-w-0 items-center gap-2 text-sm font-medium text-ink">

@@ -102,7 +102,7 @@ export function OrderBoard({ orders, filters, assignees, busyId, onOpen, onMove,
             onDragLeave={() => setHover((h) => (h === status ? null : h))}
             onDrop={(e) => drop(e, status)}
             className={cx(
-              "flex w-[82vw] max-w-[19rem] shrink-0 snap-start flex-col rounded-2xl border bg-surface-2/80 backdrop-blur transition-all duration-300 animate-fade-up sm:w-72",
+              "flex w-[82vw] max-w-[19rem] shrink-0 snap-start flex-col rounded-2xl border bg-surface-2 transition-all duration-300 animate-fade-up sm:w-72",
               hover === status
                 ? "scale-[1.02] border-flamme-400 bg-flamme-50 shadow-glow"
                 : dragging && allowed

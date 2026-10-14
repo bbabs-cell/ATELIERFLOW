@@ -455,6 +455,51 @@
 
 /* Accessibilité : on garde les transitions courtes mais on coupe les
    mouvements continus pour qui a demandé moins d'animations. */
+/*
+ * Écrans tactiles (téléphones, tablettes) : aucune animation qui tourne en
+ * continu sans action de la personne. Mesuré : au repos, l'application
+ * redessinait l'écran ~60 fois par seconde (taches floues mobiles, logo en
+ * dégradé animé, bordures animées invisibles, pastilles qui pulsent) ; ajouté
+ * au défilement, la puce graphique saturait et des zones restaient blanches
+ * pendant le défilement. Les entrées, le toucher et les chargements restent
+ * animés. Sur ordinateur (souris), le décor vivant reste.
+ */
+@media (hover: none) {
+  .animate-blob,
+  .animate-float,
+  .animate-gradient,
+  .animate-marquee,
+  .animate-pulse-ring,
+  .animate-spin-slow,
+  .ambient-motion,
+  .text-gradient,
+  .page-title::after,
+  .gradient-border::before {
+    animation: none !important;
+  }
+}
+
+/* Bordure animée : le dégradé ne tourne que pendant le survol (sinon il
+   tournait en permanence sous une opacité 0, en redessinant chaque carte). */
+.gradient-border::before {
+  animation-play-state: paused;
+}
+.gradient-border:hover::before,
+.gradient-border:focus-within::before {
+  animation-play-state: running;
+}
+
+/*
+ * Fond d'ambiance statique (téléphone) : mêmes couleurs que les taches
+ * floues du bureau, en simples dégradés — aucun filtre de flou à recalculer.
+ */
+.ambient-static {
+  background:
+    radial-gradient(22rem 18rem at 0% 0%, color-mix(in srgb, var(--color-flamme-400) 22%, transparent), transparent 70%),
+    radial-gradient(26rem 22rem at 100% 40%, color-mix(in srgb, var(--color-chocolat-400) 16%, transparent), transparent 70%),
+    radial-gradient(22rem 18rem at 35% 100%, color-mix(in srgb, var(--color-champagne-400) 18%, transparent), transparent 70%);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
