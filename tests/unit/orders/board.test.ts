@@ -5,8 +5,8 @@ import {
   deadlineState,
   DEFAULT_BOARD_FILTERS,
   groupForBoard,
+  deadlineWords,
   matchesFilters,
-  nextStatus,
 } from "@/domain/orders/board";
 import type { OrderRecord } from "@/domain/orders/order";
 
@@ -42,8 +42,8 @@ describe("deadlineState", () => {
     expect(deadlineState(order({ expected_at: null }), TODAY)).toBe("none");
   });
 
-  it("jamais en retard une fois livrée, annulée ou prête à retirer", () => {
-    for (const status of ["DELIVERED", "CANCELLED", "READY_FOR_PICKUP"] as const) {
+  it("jamais en retard une fois livrée, annulée ou prête", () => {
+    for (const status of ["DELIVERED", "CANCELLED", "READY_FOR_PICKUP", "COMPLETED"] as const) {
       expect(deadlineState(order({ status, expected_at: "2026-09-01" }), TODAY)).toBe("none");
     }
   });
@@ -69,35 +69,46 @@ describe("filtres", () => {
 });
 
 describe("groupForBoard", () => {
-  it("une colonne par étape, annulées exclues, retard puis priorité d'abord", () => {
+  it("4 colonnes (Reçue, En couture, Prête, Livrée), annulées exclues, retard puis priorité d'abord", () => {
     const rows = [
       { order: order({ id: "normal", status: "SEWING", priority: "NORMAL", expected_at: "2026-10-20" }) },
       { order: order({ id: "urgent", status: "SEWING", priority: "URGENT", expected_at: "2026-10-20" }) },
-      { order: order({ id: "late", status: "SEWING", priority: "LOW", expected_at: "2026-09-28" }) },
+      { order: order({ id: "late", status: "FITTING", priority: "LOW", expected_at: "2026-09-28" }) },
       { order: order({ id: "cancel", status: "CANCELLED" }) },
       { order: order({ id: "reg", status: "REGISTERED" }) },
+      { order: order({ id: "tissu", status: "FABRIC_RECEIVED" }) },
+      { order: order({ id: "fini", status: "COMPLETED" }) },
     ];
     const board = groupForBoard(rows, DEFAULT_BOARD_FILTERS, TODAY);
-    expect([...board.keys()]).toHaveLength(9);
-    expect(board.has("CANCELLED")).toBe(false);
+    expect([...board.keys()]).toEqual(["RECEIVED", "SEWING", "READY", "DELIVERED"]);
     expect(board.get("SEWING")?.map((r) => r.order.id)).toEqual(["late", "urgent", "normal"]);
-    expect(board.get("REGISTERED")?.map((r) => r.order.id)).toEqual(["reg"]);
+    expect(board.get("RECEIVED")?.map((r) => r.order.id).sort()).toEqual(["reg", "tissu"]);
+    expect(board.get("READY")?.map((r) => r.order.id)).toEqual(["fini"]);
   });
 });
 
 describe("déplacements", () => {
-  it("respecte les transitions du domaine et interdit l'annulation par glisser", () => {
-    expect(canDrop("SEWING", "FITTING")).toBe(true);
-    expect(canDrop("SEWING", "PREPARATION")).toBe(true);
-    expect(canDrop("SEWING", "REGISTERED")).toBe(false);
-    expect(canDrop("SEWING", "CANCELLED")).toBe(false);
+  it("vers l'étape suivante ou précédente, jamais depuis une commande livrée ou annulée", () => {
+    expect(canDrop("REGISTERED", "SEWING")).toBe(true);
+    expect(canDrop("REGISTERED", "READY")).toBe(true);
+    expect(canDrop("SEWING", "RECEIVED")).toBe(true);
+    expect(canDrop("FITTING", "RECEIVED")).toBe(true);
+    expect(canDrop("SEWING", "SEWING")).toBe(false);
+    expect(canDrop("READY_FOR_PICKUP", "RECEIVED")).toBe(false);
     expect(canDrop("DELIVERED", "SEWING")).toBe(false);
+    expect(canDrop("CANCELLED", "SEWING")).toBe(false);
   });
+});
 
-  it("étape suivante du flux", () => {
-    expect(nextStatus("REGISTERED")).toBe("FABRIC_RECEIVED");
-    expect(nextStatus("READY_FOR_PICKUP")).toBe("DELIVERED");
-    expect(nextStatus("DELIVERED")).toBeNull();
-    expect(nextStatus("CANCELLED")).toBeNull();
+describe("échéance en mots", () => {
+  it("retard, aujourd'hui, demain, dans n jours, puis la date", () => {
+    expect(deadlineWords(order({ expected_at: "2026-09-30" }), TODAY)?.text).toBe("En retard de 2 jours");
+    expect(deadlineWords(order({ expected_at: "2026-10-01" }), TODAY)?.text).toBe("En retard de 1 jour");
+    expect(deadlineWords(order({ expected_at: "2026-10-02" }), TODAY)?.text).toBe("Aujourd'hui");
+    expect(deadlineWords(order({ expected_at: "2026-10-03" }), TODAY)?.text).toBe("Demain");
+    expect(deadlineWords(order({ expected_at: "2026-10-06" }), TODAY)?.text).toBe("Dans 4 jours");
+    expect(deadlineWords(order({ expected_at: "2026-10-24" }), TODAY)?.text).toBe("Le 24 octobre");
+    expect(deadlineWords(order({ expected_at: null }), TODAY)).toBeNull();
+    expect(deadlineWords(order({ status: "READY_FOR_PICKUP", expected_at: "2026-09-01" }), TODAY)).toBeNull();
   });
 });

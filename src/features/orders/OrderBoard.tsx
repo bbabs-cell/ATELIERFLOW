@@ -1,41 +1,30 @@
 "use client";
 
 import { useState, type DragEvent } from "react";
-import { AlarmClock, ArrowRight, CalendarClock, GripVertical, UserRound } from "lucide-react";
-import { Badge } from "@/ui";
+import { AlarmClock, CalendarClock, Check, Volume2 } from "lucide-react";
 import { cx } from "@/lib/cx";
 import { formatFcfa } from "@/domain/money";
 import type { OrderStatus } from "@/domain/orders/order";
-import {
-  BOARD_STATUSES,
-  canDrop,
-  daysLate,
-  deadlineState,
-  groupForBoard,
-  nextStatus,
-  type BoardFilters,
-} from "@/domain/orders/board";
+import { BOARD_STAGES, canDrop, deadlineWords, groupForBoard, type BoardFilters } from "@/domain/orders/board";
+import { nextStage, statusForStage, type OrderStage } from "@/domain/orders/stages";
 import type { OrderWithCustomer } from "@/application/orders/orderService";
-import { ORDER_PRIORITY_META, ORDER_STATUS_LABELS } from "./constants";
-import { assigneeName, type Assignee } from "./useAssignees";
+import { canSpeak, speak } from "@/infrastructure/speech/speak";
+import type { Assignee } from "./useAssignees";
+import { STAGE_META } from "./stageMeta";
+import { orderSpeech } from "./orderSpeech";
 
 /**
- * En-tête par étape (texte blanc lisible) : marron à l'arrivée, ORANGE de
- * plus en plus soutenu pendant le travail, marron une fois livrée, ROUGE
- * si annulée.
+ * Tableau de l'atelier en 4 étapes : Reçue → En couture → Prête → Livrée.
+ *
+ * Pensé pour une personne qui ne lit pas : chaque étape a une image et une
+ * couleur ; une carte montre le nom du client en grand, l'habit, l'échéance
+ * en mots, et UN gros bouton (image + un verbe) qui fait passer à l'étape
+ * suivante. Le haut-parleur lit la commande à voix haute.
+ * Téléphone, tablette et petit portable (< 1280 px) : 4 grosses images (avec
+ * le nombre de commandes) pour choisir l'étape, puis ses commandes. Grand
+ * écran : 4 colonnes, glisser-déposer (à 1024 px, à côté du menu, les
+ * colonnes étaient trop étroites pour lire les noms).
  */
-const COLUMN_TONES: Record<OrderStatus, string> = {
-  REGISTERED: "from-chocolat-400 to-chocolat-500",
-  FABRIC_RECEIVED: "from-flamme-500 to-flamme-600",
-  PREPARATION: "from-flamme-500 to-flamme-600",
-  SEWING: "from-flamme-600 to-flamme-700",
-  FITTING: "from-flamme-600 to-flamme-700",
-  ALTERATION: "from-flamme-600 to-flamme-700",
-  COMPLETED: "from-flamme-700 to-flamme-700",
-  READY_FOR_PICKUP: "from-flamme-700 to-chocolat-600",
-  DELIVERED: "from-chocolat-500 to-chocolat-700",
-  CANCELLED: "from-wax-500 to-wax-600",
-};
 
 const DND_TYPE = "application/x-atelier-order";
 
@@ -49,181 +38,216 @@ export interface OrderBoardProps {
   onRefused: (message: string) => void;
 }
 
-function initials(name: string): string {
-  const parts = name.replace(/\(moi\)/, "").trim().split(/\s+/).filter(Boolean);
-  return ((parts[0]?.[0] ?? "?") + (parts[1]?.[0] ?? "")).toUpperCase();
+function articleOf(items: OrderWithCustomer["items"]): string | null {
+  const live = items.filter((i) => i.deleted_at === null);
+  if (live.length === 0) return null;
+  return live.length > 1 ? `${live[0].description} + ${live.length - 1}` : live[0].description;
 }
 
-export function OrderBoard({ orders, filters, assignees, busyId, onOpen, onMove, onRefused }: OrderBoardProps) {
+export function OrderBoard({ orders, filters, busyId, onOpen, onMove, onRefused }: OrderBoardProps) {
   const today = new Date().toISOString();
   const columns = groupForBoard(orders, filters, today);
   const [dragging, setDragging] = useState<{ id: string; from: OrderStatus } | null>(null);
-  const [hover, setHover] = useState<OrderStatus | null>(null);
-  const [refused, setRefused] = useState<string | null>(null);
+  const [hover, setHover] = useState<OrderStage | null>(null);
+  const [chosen, setChosen] = useState<OrderStage | null>(null);
+  const speech = canSpeak();
+  // Téléphone : sans choix, l'étape où il y a du travail (couture, sinon reçues).
+  const selected: OrderStage =
+    chosen ?? (BOARD_STAGES.find((s) => s !== "DELIVERED" && (columns.get(s)?.length ?? 0) > 0) ?? "RECEIVED");
 
-  function drop(event: DragEvent, to: OrderStatus) {
+  function drop(event: DragEvent, stage: OrderStage) {
     event.preventDefault();
     setHover(null);
     const raw = event.dataTransfer.getData(DND_TYPE);
     const source = dragging ?? (raw ? (JSON.parse(raw) as { id: string; from: OrderStatus }) : null);
     setDragging(null);
-    if (!source || source.from === to) return;
-    if (!canDrop(source.from, to)) {
-      setRefused(source.id);
-      window.setTimeout(() => setRefused(null), 700);
-      onRefused(`Passage « ${ORDER_STATUS_LABELS[source.from]} » → « ${ORDER_STATUS_LABELS[to]} » non autorisé.`);
+    if (!source) return;
+    const to = statusForStage(source.from, stage);
+    if (to === null) {
+      onRefused(`Impossible de mettre cette commande dans « ${STAGE_META[stage].label} ».`);
       return;
     }
     onMove(source.id, to);
   }
 
   return (
-    <div
-      className="-mx-4 flex items-start snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 sm:snap-none"
-      role="list"
-      aria-label="Tableau de l'atelier"
-    >
-      {BOARD_STATUSES.map((status, columnIndex) => {
-        const rows = columns.get(status) ?? [];
-        const allowed = dragging ? canDrop(dragging.from, status) : false;
-        return (
-          <section
-            key={status}
-            role="listitem"
-            aria-label={ORDER_STATUS_LABELS[status]}
-            onDragOver={(e) => {
-              // Toute colonne accepte le dépôt : un passage interdit est
-              // refusé avec une explication plutôt qu'en silence.
-              if (dragging) {
-                e.preventDefault();
-                if (allowed) setHover(status);
-              }
-            }}
-            onDragLeave={() => setHover((h) => (h === status ? null : h))}
-            onDrop={(e) => drop(e, status)}
-            className={cx(
-              "flex w-[82vw] max-w-[19rem] shrink-0 snap-start flex-col rounded-2xl border bg-surface-2 transition duration-300 sm:w-72",
-              hover === status
-                ? "scale-[1.02] border-flamme-400 bg-flamme-50 shadow-glow"
-                : dragging && allowed
-                  ? "border-dashed border-flamme-300"
-                  : dragging
-                    ? "border-outline opacity-50"
-                    : "border-outline",
-            )}
-            style={{ animationDelay: `${Math.min(columnIndex * 30, 150)}ms` }}
-          >
-            <header className={cx("flex items-center justify-between gap-2 rounded-t-2xl bg-gradient-to-r px-4 py-3 text-white", COLUMN_TONES[status])}>
-              <h3 className="truncate font-display text-base font-bold">{ORDER_STATUS_LABELS[status]}</h3>
-              <span key={rows.length} className="grid min-w-7 place-items-center rounded-full bg-white/25 px-2 text-xs font-bold animate-pop">
-                {rows.length}
+    <div>
+      {/* Téléphone et tablette : une grosse image par étape, avec le nombre de commandes. */}
+      <div role="tablist" aria-label="Étapes de l'atelier" className="grid grid-cols-4 gap-2 2xl:hidden">
+        {BOARD_STAGES.map((stage) => {
+          const meta = STAGE_META[stage];
+          const count = columns.get(stage)?.length ?? 0;
+          const active = stage === selected;
+          return (
+            <button
+              key={stage}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              aria-label={`${meta.label} : ${count} commande${count > 1 ? "s" : ""}`}
+              onClick={() => {
+                setChosen(stage);
+                if (speech) speak(`${meta.label}. ${count} commande${count > 1 ? "s" : ""}.`);
+              }}
+              className={cx(
+                "relative flex min-w-0 flex-col items-center gap-1 rounded-2xl border-2 px-1 py-2.5 transition active:scale-95",
+                active ? cx(meta.solid, "border-transparent shadow-soft") : "border-outline bg-surface text-ink",
+              )}
+            >
+              <meta.icon className="size-7" aria-hidden="true" />
+              <span className="max-w-full truncate text-[12px] font-bold">{meta.label}</span>
+              <span
+                className={cx(
+                  "absolute -right-1 -top-1.5 grid min-w-6 place-items-center rounded-full px-1.5 text-xs font-extrabold",
+                  active ? "bg-surface text-ink" : count > 0 ? meta.solid : "bg-surface-2 text-ink-faint",
+                )}
+              >
+                {count}
               </span>
-            </header>
+            </button>
+          );
+        })}
+      </div>
 
-            <div className="flex min-h-32 flex-1 flex-col gap-2.5 p-3">
-              {rows.length === 0 ? (
-                <p className="m-auto py-6 text-center font-mono text-[11px] uppercase tracking-wider text-ink-faint">
-                  {dragging && allowed ? "Déposer ici" : "Aucune commande"}
-                </p>
-              ) : (
-                rows.map(({ order, customerName }, index) => {
-                  const deadline = deadlineState(order, today);
-                  const priority = ORDER_PRIORITY_META[order.priority];
-                  const next = nextStatus(order.status);
-                  const assignee = assigneeName(assignees, order.employee_id);
-                  return (
-                    <article
-                      key={order.id}
-                      draggable
-                      onDragStart={(e) => {
-                        e.dataTransfer.effectAllowed = "move";
-                        e.dataTransfer.setData(DND_TYPE, JSON.stringify({ id: order.id, from: order.status }));
-                        setDragging({ id: order.id, from: order.status });
-                      }}
-                      onDragEnd={() => {
-                        setDragging(null);
-                        setHover(null);
-                      }}
-                      className={cx(
-                        "gradient-border group relative cursor-grab rounded-xl border bg-surface p-3 shadow-soft transition-transform duration-200 hover:-translate-y-1 hover:rotate-[-0.6deg] hover:shadow-lift active:cursor-grabbing animate-fade-up",
-                        deadline === "late" ? "border-wax-300" : "border-outline",
-                        dragging?.id === order.id && "rotate-2 opacity-60",
-                        refused === order.id && "animate-wiggle",
-                        busyId === order.id && "animate-pulse",
-                      )}
-                      style={{ animationDelay: `${Math.min(columnIndex * 30 + index * 25, 200)}ms` }}
-                    >
-                      {deadline === "late" ? (
-                        <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1 rounded-l-xl bg-wax-500 animate-pulse" />
-                      ) : null}
-                      <button
-                        type="button"
-                        onClick={() => onOpen(order.id)}
-                        className="block w-full text-left"
-                        aria-label={`Ouvrir ${order.reference}`}
+      <div className="mt-4 2xl:mt-0 2xl:grid 2xl:grid-cols-4 2xl:gap-4">
+        {BOARD_STAGES.map((stage) => {
+          const meta = STAGE_META[stage];
+          const rows = columns.get(stage) ?? [];
+          const allowed = dragging ? canDrop(dragging.from, stage) : false;
+          return (
+            <section
+              key={stage}
+              aria-label={meta.label}
+              onDragOver={(e) => {
+                if (dragging) {
+                  e.preventDefault();
+                  if (allowed) setHover(stage);
+                }
+              }}
+              onDragLeave={() => setHover((h) => (h === stage ? null : h))}
+              onDrop={(e) => drop(e, stage)}
+              className={cx(
+                "min-w-0 flex-col rounded-2xl border",
+                stage === selected ? "flex" : "hidden 2xl:flex",
+                hover === stage ? "border-flamme-400 ring-2 ring-flamme-300" : dragging && !allowed ? "border-outline opacity-50" : "border-outline",
+                meta.soft,
+              )}
+            >
+              <header className={cx("flex items-center gap-3 rounded-t-2xl px-4 py-3", meta.solid)}>
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white/20">
+                  <meta.icon className="size-5" aria-hidden="true" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-display text-lg font-bold leading-tight">{meta.label}</span>
+                  <span className="block truncate text-xs text-white/85">{meta.hint}</span>
+                </span>
+                <span className="grid min-w-8 place-items-center rounded-full bg-white/25 px-2 text-sm font-extrabold">{rows.length}</span>
+              </header>
+
+              <div className="flex min-h-32 flex-1 flex-col gap-3 p-3">
+                {rows.length === 0 ? (
+                  <p className="m-auto flex flex-col items-center gap-2 py-8 text-center text-sm text-ink-faint">
+                    <meta.icon className="size-8 opacity-40" aria-hidden="true" />
+                    {dragging && allowed ? "Déposer ici" : "Aucune commande"}
+                  </p>
+                ) : (
+                  rows.map(({ order, customerName, items }) => {
+                    const deadline = deadlineWords(order, today);
+                    const next = nextStage(order.status);
+                    const to = next ? statusForStage(order.status, next) : null;
+                    const article = articleOf(items);
+                    const NextIcon = next ? STAGE_META[next].icon : Check;
+                    return (
+                      <article
+                        key={order.id}
+                        draggable
+                        onDragStart={(e) => {
+                          e.dataTransfer.effectAllowed = "move";
+                          e.dataTransfer.setData(DND_TYPE, JSON.stringify({ id: order.id, from: order.status }));
+                          setDragging({ id: order.id, from: order.status });
+                        }}
+                        onDragEnd={() => {
+                          setDragging(null);
+                          setHover(null);
+                        }}
+                        className={cx(
+                          "relative overflow-hidden rounded-2xl border bg-surface p-3 shadow-soft",
+                          deadline?.state === "late" ? "border-wax-300" : "border-outline",
+                          dragging?.id === order.id && "opacity-60",
+                          busyId === order.id && "opacity-70",
+                        )}
                       >
-                        <span className="flex items-start justify-between gap-2">
-                          <span className="font-mono text-[13px] font-semibold text-ink">{order.reference}</span>
-                          <GripVertical className="size-4 shrink-0 text-ink-faint transition-colors group-hover:text-flamme-500" aria-hidden="true" />
-                        </span>
-                        <span className="mt-0.5 block truncate text-sm font-bold text-ink">{customerName ?? "Client"}</span>
-                        <span className="mt-2 flex flex-wrap items-center gap-1.5">
-                          {order.priority !== "NORMAL" ? (
-                            <Badge tone={priority.tone} dot={order.priority === "URGENT"}>
-                              {priority.label}
-                            </Badge>
-                          ) : null}
-                          {deadline === "late" ? (
-                            <Badge tone="danger" dot>
-                              <AlarmClock className="size-3" aria-hidden="true" /> {daysLate(order, today)} j de retard
-                            </Badge>
-                          ) : deadline === "today" ? (
-                            <Badge tone="warning" dot>
-                              Aujourd&apos;hui
-                            </Badge>
-                          ) : order.expected_at && deadline !== "none" ? (
-                            <span className={cx("inline-flex items-center gap-1 text-xs", deadline === "soon" ? "font-semibold text-flamme-700" : "text-ink-soft")}>
-                              <CalendarClock className="size-3.5" aria-hidden="true" />
-                              {new Date(order.expected_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+                        {deadline?.state === "late" ? <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-wax-500" /> : null}
+                        <button type="button" onClick={() => onOpen(order.id)} className="block w-full min-w-0 text-left" aria-label={`Ouvrir la commande de ${customerName ?? "client"}`}>
+                          <span className="flex items-center gap-2">
+                            <span className="min-w-0 flex-1 truncate text-lg font-bold text-ink">{customerName ?? "Client"}</span>
+                            {order.priority === "URGENT" ? (
+                              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-wax-100 px-2 py-0.5 text-xs font-bold text-wax-600">
+                                <AlarmClock className="size-3.5" aria-hidden="true" /> Urgent
+                              </span>
+                            ) : null}
+                          </span>
+                          {article ? <span className="mt-0.5 block truncate text-sm text-ink-soft">{article}</span> : null}
+                          {deadline ? (
+                            <span
+                              className={cx(
+                                "mt-2 flex items-center gap-1.5 text-sm font-semibold",
+                                deadline.state === "late" ? "text-wax-600" : deadline.state === "today" || deadline.state === "soon" ? "text-flamme-700" : "text-ink-soft",
+                              )}
+                            >
+                              {deadline.state === "late" ? <AlarmClock className="size-4" aria-hidden="true" /> : <CalendarClock className="size-4" aria-hidden="true" />}
+                              {deadline.text}
                             </span>
                           ) : null}
-                        </span>
-                      </button>
-                      <div className="mt-3 flex items-center justify-between gap-2 border-t border-anthracite-100 pt-2.5">
-                        <span className="flex min-w-0 items-center gap-1.5">
-                          {assignee ? (
-                            <span title={assignee} className="grid size-7 shrink-0 place-items-center rounded-full bg-ocean-gradient text-[10px] font-bold text-white shadow-soft">
-                              {initials(assignee)}
-                            </span>
+                          <span className="mt-1 block truncate text-xs text-ink-faint">
+                            <span className="tabular font-semibold text-ink-soft">{formatFcfa(order.total_price)}</span> · {order.reference}
+                          </span>
+                        </button>
+
+                        <div className="mt-3 flex items-stretch gap-2">
+                          {next && to ? (
+                            // Action de la carte en secondaire (fond doux de l'étape suivante) : la couleur
+                            // pleine reste au seul bouton principal de l'écran (« Nouvelle commande »).
+                            <button
+                              type="button"
+                              onClick={() => onMove(order.id, to)}
+                              disabled={busyId === order.id}
+                              className={cx(
+                                "flex h-12 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border-2 px-2 text-base font-bold transition active:scale-95 disabled:opacity-50 2xl:h-11 2xl:text-sm",
+                                next === "SEWING" && "border-flamme-300 bg-flamme-50 text-flamme-700",
+                                next === "READY" && "border-menthe-300 bg-menthe-50 text-menthe-600",
+                                next === "DELIVERED" && "border-azur-300 bg-azur-50 text-azur-700",
+                              )}
+                            >
+                              <NextIcon className="size-5 shrink-0" aria-hidden="true" />
+                              <span className="truncate">{STAGE_META[next].action}</span>
+                            </button>
                           ) : (
-                            <span title="Non affectée" className="grid size-7 shrink-0 place-items-center rounded-full border-2 border-dashed border-anthracite-300 text-ink-faint">
-                              <UserRound className="size-3.5" aria-hidden="true" />
+                            <span className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-azur-50 text-sm font-bold text-azur-700">
+                              <Check className="size-5" aria-hidden="true" /> Livrée
                             </span>
                           )}
-                          <span className="truncate text-xs font-semibold tabular text-ink">{formatFcfa(order.total_price)}</span>
-                        </span>
-                        {/* Étape suivante en secondaire : la couleur pleine reste au seul bouton principal de l'écran (« Nouvelle commande »). */}
-                        {next ? (
-                          <button
-                            type="button"
-                            onClick={() => onMove(order.id, next)}
-                            disabled={busyId === order.id}
-                            title={`Passer à « ${ORDER_STATUS_LABELS[next]} »`}
-                            className="inline-flex h-8 shrink-0 items-center gap-1 rounded-full pointer-coarse:h-10 border-2 border-flamme-200 bg-surface px-3 text-[11px] font-bold text-flamme-700 transition duration-200 hover:-translate-y-0.5 hover:border-flamme-400 hover:shadow-soft disabled:opacity-50"
-                          >
-                            <span className="max-w-24 truncate">{ORDER_STATUS_LABELS[next]}</span>
-                            <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-                          </button>
-                        ) : null}
-                      </div>
-                    </article>
-                  );
-                })
-              )}
-            </div>
-          </section>
-        );
-      })}
+                          {speech ? (
+                            <button
+                              type="button"
+                              onClick={() => speak(orderSpeech(order, customerName, article, today))}
+                              aria-label="Écouter la commande"
+                              title="Écouter la commande"
+                              className="grid size-12 shrink-0 place-items-center rounded-xl border-2 border-outline bg-surface text-ink-soft transition hover:text-ink active:scale-95 2xl:size-11"
+                            >
+                              <Volume2 className="size-5" aria-hidden="true" />
+                            </button>
+                          ) : null}
+                        </div>
+                      </article>
+                    );
+                  })
+                )}
+              </div>
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }

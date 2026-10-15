@@ -56,6 +56,33 @@ export const PROFILE_FIELDS_MAX = 60;
 export const PROFILE_FIELD_LABEL_MAX = 60;
 export const PROFILE_FIELD_UNIT_MAX = 12;
 
+/**
+ * Mesures de base, intégrées : sans profil de mesures créé à l'avance, on peut
+ * prendre les mesures dès la première commande. Les clés sont stables (elles
+ * sont enregistrées dans les mesures du client).
+ */
+export const DEFAULT_PROFILE_NAME = "Mesures de base";
+export const DEFAULT_MEASUREMENT_FIELDS: readonly MeasurementField[] = [
+  { key: "tour_cou", label: "Tour de cou", kind: "number", unit: "cm" },
+  { key: "epaules", label: "Épaules", kind: "number", unit: "cm" },
+  { key: "poitrine", label: "Poitrine", kind: "number", unit: "cm" },
+  { key: "taille", label: "Taille", kind: "number", unit: "cm" },
+  { key: "hanches", label: "Hanches", kind: "number", unit: "cm" },
+  { key: "longueur_manche", label: "Longueur de manche", kind: "number", unit: "cm" },
+  { key: "tour_bras", label: "Tour de bras", kind: "number", unit: "cm" },
+  { key: "poignet", label: "Poignet", kind: "number", unit: "cm" },
+  { key: "longueur_haut", label: "Longueur du haut", kind: "number", unit: "cm" },
+  { key: "longueur_boubou", label: "Longueur boubou / robe", kind: "number", unit: "cm" },
+  { key: "tour_cuisse", label: "Cuisse", kind: "number", unit: "cm" },
+  { key: "longueur_pantalon", label: "Longueur pantalon", kind: "number", unit: "cm" },
+  { key: "bas_pantalon", label: "Bas du pantalon", kind: "number", unit: "cm" },
+];
+
+/** Champs à saisir : ceux du profil choisi, sinon les mesures de base. */
+export function fieldsFor(profile: MeasurementProfile | null): readonly MeasurementField[] {
+  return profile && profile.fields.length > 0 ? profile.fields : DEFAULT_MEASUREMENT_FIELDS;
+}
+
 export function normalizeProfileName(value: string): string {
   return value.trim().replace(/\s+/g, " ");
 }
@@ -196,8 +223,9 @@ export function hydrateMeasurement(
   if (snapshot === null) {
     return { profile_id: null, profile_name: null, taken_at: null, taken_by: null, unit: "cm", notes: null, entries: [] };
   }
-  const byKey = new Map(profile?.fields.map((f) => [f.key, f]) ?? []);
-  const ordering = profile?.fields.map((f) => f.key) ?? Object.keys(snapshot.values ?? {});
+  const fields = fieldsFor(profile);
+  const byKey = new Map(fields.map((f) => [f.key, f]));
+  const ordering = profile ? profile.fields.map((f) => f.key) : DEFAULT_MEASUREMENT_FIELDS.map((f) => f.key).filter((k) => k in (snapshot.values ?? {}));
   const keys = new Set([...ordering]);
   for (const key of Object.keys(snapshot.values)) keys.add(key);
 
@@ -214,7 +242,7 @@ export function hydrateMeasurement(
 
   return {
     profile_id: snapshot.profile_id,
-    profile_name: profile?.name ?? null,
+    profile_name: profile?.name ?? (snapshot.profile_id === null ? DEFAULT_PROFILE_NAME : null),
     taken_at: snapshot.taken_at,
     taken_by: snapshot.taken_by,
     unit: snapshot.unit,

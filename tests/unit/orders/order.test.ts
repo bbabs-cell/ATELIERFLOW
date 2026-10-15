@@ -65,7 +65,9 @@ describe("machine à états", () => {
   });
 
   it("interdit les retours excessifs et les transitions identiques", () => {
-    expect(canTransition("SEWING", "REGISTERED")).toBe(false);
+    // Retour d'une seule étape simple permis (couture → reçue) ; pas de prête → reçue.
+    expect(canTransition("SEWING", "REGISTERED")).toBe(true);
+    expect(canTransition("READY_FOR_PICKUP", "REGISTERED")).toBe(false);
     expect(canTransition("REGISTERED", "REGISTERED")).toBe(false);
   });
 
@@ -98,7 +100,7 @@ describe("machine à états", () => {
   });
 
   it("refuse une transition non autorisée", () => {
-    const t = transitionOrder(order({ status: "SEWING" }), "REGISTERED", {
+    const t = transitionOrder(order({ status: "READY_FOR_PICKUP" }), "REGISTERED", {
       changedBy: "u1",
       note: null,
       now: "2026-02-01T00:00:00.000Z",
@@ -113,7 +115,7 @@ describe("machine à états", () => {
     expect(to).toContain("ALTERATION");
     expect(to).toContain("SEWING");
     expect(to).toContain("CANCELLED");
-    expect(to).not.toContain("REGISTERED");
+    expect(to).not.toContain("FABRIC_RECEIVED");
     expect(list.find((t) => t.to === "SEWING")?.kind).toBe("backward");
     expect(list.find((t) => t.to === "COMPLETED")?.kind).toBe("forward");
   });

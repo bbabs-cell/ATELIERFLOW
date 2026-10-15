@@ -23,7 +23,7 @@ export interface NavItem {
 export interface AppShellProps {
   brand: ReactNode;
   navItems: NavItem[];
-  /** Les 4 écrans de la barre du bas (téléphone et tablette, sous 1024 px). */
+  /** Les 4 écrans de la barre du bas (téléphone et tablette, sous 820 px = lg). */
   bottomItems?: NavItem[];
   children: ReactNode;
   onNavigate?: (item: NavItem) => void;
@@ -185,7 +185,7 @@ export function AppShell({
       </Drawer>
 
       {/*
-        Barre du bas sous 1024 px : les 4 écrans les plus ouverts + « Plus ».
+        Barre du bas sous 820 px (lg) : les 4 écrans les plus ouverts + « Plus ».
         Pourquoi : tout passait par ☰, deux gestes par changement d'écran, des
         dizaines de fois par jour. Placée hors du contenu animé : une
         transformation d'entrée sur un parent capturerait cette barre fixe.

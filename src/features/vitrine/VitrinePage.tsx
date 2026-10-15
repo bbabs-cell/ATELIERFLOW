@@ -42,7 +42,7 @@ const PROBLEMS = [
   },
   {
     term: "Chaque commande a son étape",
-    detail: "Tissu reçu, coupe, couture, essayage, retouches, prête à retirer : vous voyez d'un coup d'œil où en est chaque robe, et ce qui est en retard.",
+    detail: "Reçue, en couture, prête, livrée : 4 étapes en images, un seul bouton pour passer à la suivante. Vous voyez d'un coup d'œil où en est chaque habit, et ce qui est en retard.",
   },
   {
     term: "Le travail continue sans réseau",

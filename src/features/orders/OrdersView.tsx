@@ -213,6 +213,19 @@ export function OrdersView(): React.ReactElement {
         setFormErrors(result.errors);
         return;
       }
+      // Mesures prises avec la commande : gardées pour le client et liées à la commande.
+      let measured = false;
+      if (values.measurements) {
+        const saved = await getClientsFacade()
+          .measures.saveMeasurements({
+            customerId,
+            profileId: values.measurements.profileId,
+            values: values.measurements.values,
+            orderId: result.order.id,
+          })
+          .catch(() => null);
+        measured = saved?.ok === true;
+      }
       const scheduled = await scheduleOrderAppointment(result.order, values.appointment);
       setFormOpen(false);
       await load(search);
@@ -220,8 +233,9 @@ export function OrdersView(): React.ReactElement {
         setNotice(message);
         window.setTimeout(() => setNotice((m) => (m === message ? null : m)), ms);
       };
+      const extras = [measured ? "mesures gardées" : null, scheduled ? "rendez-vous noté" : null].filter(Boolean).join(", ");
       if (values.fabricPhotos.length > 0) {
-        show(`Commande enregistrée${scheduled ? ", rendez-vous noté" : ""}. Envoi de la photo du tissu…`, 60_000);
+        show(`Commande enregistrée${extras ? `, ${extras}` : ""}. Envoi de la photo du tissu…`, 60_000);
         const createdId = result.order.id;
         void uploadOrderPhotos(createdId, values.fabricPhotos).then(({ sent, failed }) => {
           show(
@@ -232,8 +246,8 @@ export function OrdersView(): React.ReactElement {
           );
           if (selectedIdRef.current === createdId) void selectOrder(createdId).catch(() => undefined);
         });
-      } else if (scheduled) {
-        show("Commande enregistrée et rendez-vous noté dans le calendrier.");
+      } else if (extras) {
+        show(`Commande enregistrée : ${extras}.`);
       }
       void selectOrder(result.order.id).catch(() => undefined);
     } finally {
@@ -334,7 +348,7 @@ export function OrdersView(): React.ReactElement {
           ))}
         </div>
 
-        <div className="w-full sm:w-52">
+        <div className="min-w-0 flex-1 basis-[calc(50%-0.375rem)] sm:w-52 sm:flex-none sm:basis-auto">
         <Select
             aria-label="Filtrer par priorité"
             className="h-11 min-h-11 w-auto rounded-full py-0 text-sm"
@@ -349,7 +363,7 @@ export function OrdersView(): React.ReactElement {
             ))}
           </Select>
         </div>
-        <div className="w-full sm:w-52">
+        <div className="min-w-0 flex-1 basis-[calc(50%-0.375rem)] sm:w-52 sm:flex-none sm:basis-auto">
         <Select
             aria-label="Filtrer par personne affectée"
             className="h-11 min-h-11 w-auto rounded-full py-0 text-sm"

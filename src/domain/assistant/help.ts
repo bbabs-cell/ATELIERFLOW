@@ -65,13 +65,12 @@ export const HELP_TOPICS: readonly HelpTopic[] = [
     title: "Enregistrer les mesures (mensurations)",
     keywords: ["mesure", "mensuration", "tour de taille", "tour de poitrine", "tour de hanche", "longueur", "prendre les mesures", "carrure", "encolure", "taille du client"],
     steps: [
-      "Ouvrez « Clients » et appuyez sur la fiche du client.",
-      "Dans la partie « Mesures », appuyez sur « Créer un profil » et donnez-lui un nom (ex. « Boubou », « Pantalon », « Robe »).",
-      "Ajoutez chaque mesure : son nom (« Tour de taille »…) et la valeur en centimètres.",
-      "Appuyez sur « Enregistrer les mesures ».",
+      "Le plus simple : en prenant la commande, remplissez la partie « Mesures du client » (poitrine, taille, longueurs…).",
+      "Elles sont gardées pour le client ET pour cette commande ; à la commande suivante, elles sont déjà remplies : changez seulement ce qui a changé.",
+      "Vous pouvez aussi les noter depuis la fiche du client (« Clients » → le client → « Mesures »).",
     ],
-    note: "Un client peut avoir plusieurs profils de mesures. Les anciennes valeurs restent dans l'historique.",
-    link: { label: "Ouvrir Clients", href: "/clients" },
+    note: "Les mesures de base sont prêtes : aucun profil à créer. Les anciennes valeurs restent dans l'historique, et la commande montre les mesures prises avec elle.",
+    link: { label: "Ouvrir Commandes", href: "/commandes" },
   },
   {
     id: "order-new",
@@ -90,13 +89,13 @@ export const HELP_TOPICS: readonly HelpTopic[] = [
   {
     id: "order-progress",
     title: "Faire avancer une commande (étapes)",
-    keywords: ["avancer", "etape", "changer le statut", "statut", "deplacer une commande", "colonne", "passer a l etape", "marquer comme", "livree", "terminee"],
+    keywords: ["avancer", "etape", "changer le statut", "statut", "deplacer une commande", "colonne", "passer a l etape", "marquer comme", "livree", "terminee", "prete", "commencer", "couture"],
     steps: [
-      "Ouvrez « Commandes » en vue « Atelier » : une colonne par étape (Enregistrée, Tissu reçu, Couture, Essayage…).",
-      "Sur ordinateur, faites glisser la carte vers la colonne suivante.",
-      "Sur téléphone, appuyez sur le bouton de l'étape suivante en bas de la carte.",
+      "Ouvrez « Commandes » en vue « Atelier » : 4 étapes, chacune avec son image — Reçue, En couture, Prête, Livrée.",
+      "Appuyez sur le gros bouton de la carte : « Commencer », puis « C'est prêt », puis « Remise au client ».",
+      "Sur ordinateur, vous pouvez aussi faire glisser la carte vers la colonne suivante.",
     ],
-    note: "Vous pouvez aussi ouvrir la commande et utiliser « Faire avancer l'atelier ». Chaque changement est gardé dans l'historique.",
+    note: "Le haut-parleur de la carte lit la commande à voix haute. Un toucher par erreur ? Ouvrez la commande et touchez « Revenir ». Chaque changement est gardé dans l'historique.",
     link: { label: "Ouvrir Commandes", href: "/commandes" },
   },
   {

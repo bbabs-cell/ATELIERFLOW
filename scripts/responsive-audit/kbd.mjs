@@ -17,7 +17,7 @@ console.log('Échap ferme :', (await p.locator('[role=dialog]').count()) === 0, 
 // fenêtres empilées : commande (tiroir) puis reçu (fenêtre)
 await p.goto(B + '/commandes', { waitUntil: 'networkidle' }); await p.waitForTimeout(800);
 await p.getByRole('tab', { name: /Atelier/ }).click(); await p.waitForTimeout(500);
-await p.locator('section[role=listitem] article').first().locator('button').first().click(); await p.waitForTimeout(1000);
+await p.locator('section[aria-label] article:visible').first().locator('button').first().click(); await p.waitForTimeout(1000);
 await p.getByRole('button', { name: /Voir/ }).first().click(); await p.waitForTimeout(1200);
 const before = await p.locator('[role=dialog]').count();
 await p.keyboard.press('Escape'); await p.waitForTimeout(500);

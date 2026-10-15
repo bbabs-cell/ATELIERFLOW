@@ -57,3 +57,9 @@ fake-indexeddb et un serveur de sync simulé (déduplication par `idempotencyKey
   (route `POST /api/sync` déployée phase 04) sur `remote` du moteur de sync — déjà prévu par contrat.
 - Recherche : passer de la recherche locale par filtre à `pg_trgm` postgres (index `customers_search_idx` en 0001).
 - Snapshots liés à une commande (`order_id`) et photos clients (R2, Prompt 18).
+## Mesures sans profil et à la prise de commande (2026-10-15)
+
+Les mesures de base (`DEFAULT_MEASUREMENT_FIELDS`, `fieldsFor`) sont intégrées : la fiche du
+client et la prise de commande permettent de mesurer sans créer de profil. Une mesure prise
+avec une commande est liée à elle (`order_id`) et devient la dernière mesure du client,
+reprise à la commande suivante. Voir `docs/ORDERS.md`.
