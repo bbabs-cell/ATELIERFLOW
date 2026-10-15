@@ -231,4 +231,42 @@ describe("createMeasurementService", () => {
     expect(entities).toContain("measurement_snapshots");
     expect(entities).toContain("customers");
   });
+
+  it("sans profil : mesures de base, liées à la commande, retrouvées avec elle", async () => {
+    const h = makeHarness();
+    const customer = await h.clients.createCustomer(CONTACT);
+    if (!customer.ok) return;
+    const orderId = "aaaaaaaa-0000-4000-8000-0000000000aa";
+    const res = await h.measures.saveMeasurements({
+      customerId: customer.customer.id,
+      profileId: null,
+      values: { poitrine: "92,5", taille: "78", inconnue: "3" },
+      orderId,
+    });
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.snapshot.order_id).toBe(orderId);
+    expect(res.snapshot.values).toEqual({ poitrine: 92.5, taille: 78 });
+
+    const forOrder = await h.measures.orderMeasurements(customer.customer.id, orderId);
+    expect(forOrder?.profile_name).toBe("Mesures de base");
+    expect(forOrder?.entries.map((e) => e.label)).toEqual(["Poitrine", "Taille"]);
+    expect(await h.measures.orderMeasurements(customer.customer.id, "autre-commande")).toBeNull();
+
+    // Ce sont aussi les dernières mesures du client (pré-remplies à la commande suivante).
+    const latest = await h.measures.latestMeasurements(customer.customer.id);
+    expect(latest.entries.find((e) => e.key === "taille")?.value).toBe(78);
+  });
+
+  it("refuse un enregistrement sans aucune mesure (rien n'est écrit)", async () => {
+    const h = makeHarness();
+    const customer = await h.clients.createCustomer(CONTACT);
+    if (!customer.ok) return;
+    const before = (await h.queue.listAll()).length;
+    const res = await h.measures.saveMeasurements({ customerId: customer.customer.id, profileId: null, values: { poitrine: "" } });
+    expect(res.ok).toBe(false);
+    const latest = await h.measures.latestMeasurements(customer.customer.id);
+    expect(latest.entries).toHaveLength(0);
+    expect((await h.queue.listAll()).length).toBe(before);
+  });
 });

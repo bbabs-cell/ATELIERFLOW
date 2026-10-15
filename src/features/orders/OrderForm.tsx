@@ -17,6 +17,10 @@ import {
 } from "@/domain/appointments/fromOrder";
 import { canWriteAppointments, type OrderAppointmentChoice } from "./orderAppointments";
 import { canAttachOrderPhotos, MAX_ORDER_FORM_PHOTOS } from "./orderPhotos";
+import { DEFAULT_PROFILE_NAME, fieldsFor, type MeasurementProfile } from "@/domain/clients/measurements";
+import { getClientsFacade } from "@/features/clients/facade";
+import { canWriteMeasurements } from "@/features/clients/measurementAccess";
+import { MeasureFields, MeasureTitle } from "@/features/clients/MeasureFields";
 
 export interface OrderFormValues {
   customerId: string;
@@ -30,6 +34,11 @@ export interface OrderFormValues {
   fabricPhotos: File[];
   /** Client non enregistré : créé avec la commande (nom + téléphone). */
   newCustomer: { fullName: string; phone: string } | null;
+  /**
+   * Mesures prises avec la commande : enregistrées pour le client ET liées à
+   * la commande. null si aucune mesure n'est remplie.
+   */
+  measurements: { profileId: string | null; values: Record<string, string> } | null;
 }
 
 type CustomerMode = "existing" | "new";
@@ -103,6 +112,57 @@ export function OrderForm({
     URL.revokeObjectURL(url);
     setPhotos((ps) => ps.filter((p) => p.url !== url));
   }
+  // Mesures : celles du profil choisi, sinon les mesures de base ; reprises du
+  // client enregistré (on ne corrige que ce qui a changé).
+  const allowMeasures = canWriteMeasurements();
+  const [profiles, setProfiles] = useState<MeasurementProfile[]>([]);
+  const [profileId, setProfileId] = useState<string>("");
+  const [measureValues, setMeasureValues] = useState<Record<string, string>>({});
+  const [prefilled, setPrefilled] = useState(false);
+  useEffect(() => {
+    if (!allowMeasures) return;
+    let cancelled = false;
+    void getClientsFacade()
+      .measures.listProfiles()
+      .then((list) => {
+        if (!cancelled) setProfiles(list.filter((p) => p.deleted_at === null));
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [allowMeasures]);
+  const measuredCustomer = customerMode === "existing" ? customerId : "";
+  useEffect(() => {
+    if (!allowMeasures) return;
+    let cancelled = false;
+    void (async () => {
+      if (!measuredCustomer) {
+        if (!cancelled) {
+          setMeasureValues({});
+          setPrefilled(false);
+        }
+        return;
+      }
+      try {
+        const latest = await getClientsFacade().measures.latestMeasurements(measuredCustomer);
+        if (cancelled) return;
+        const values: Record<string, string> = {};
+        for (const e of latest.entries) if (e.value !== null) values[e.key] = String(e.value).replace(".", ",");
+        setMeasureValues(values);
+        setPrefilled(Object.keys(values).length > 0);
+        setProfileId(latest.profile_id ?? "");
+      } catch {
+        // pas de mesures lisibles : cases vides
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [allowMeasures, measuredCustomer]);
+  const activeProfile = profiles.find((p) => p.id === profileId) ?? null;
+  const measureFields = fieldsFor(activeProfile);
+
   const [rows, setRows] = useState<ItemRow[]>(() => [blankRow()]);
   const [localErrors, setLocalErrors] = useState<Record<string, string>>({});
 
@@ -160,6 +220,13 @@ export function OrderForm({
       expectedAt: expectedAt || "",
       notes,
       fabricPhotos: photos.map((p) => p.file),
+      measurements:
+        allowMeasures && measureFields.some((f) => (measureValues[f.key] ?? "").trim() !== "")
+          ? {
+              profileId: activeProfile?.id ?? null,
+              values: Object.fromEntries(measureFields.map((f) => [f.key, measureValues[f.key] ?? ""])),
+            }
+          : null,
       appointment: { enabled: allowAppointment && addAppointment && expectedAt !== "", time: appointmentTime || DEFAULT_ORDER_APPOINTMENT_TIME, type: appointmentType },
       items: rows.map((row, index) => ({
         description: row.description.trim(),
@@ -403,6 +470,44 @@ export function OrderForm({
             <span className="font-display text-xl text-ink">{formatFcfa(grandTotal ?? 0)}</span>
           </div>
         </div>
+
+        {allowMeasures ? (
+          <div className="flex flex-col gap-3 rounded-lg border border-azur-200 bg-azur-50 p-3">
+            <MeasureTitle
+              title="Mesures du client"
+              hint={
+                prefilled
+                  ? "Dernières mesures du client reprises : changez seulement ce qui a changé."
+                  : "Remplissez ce que vous mesurez. Elles seront gardées pour ce client et cette commande."
+              }
+            />
+            {profiles.length > 0 ? (
+              <div role="radiogroup" aria-label="Type de mesures" className="flex flex-wrap gap-1.5">
+                {[{ id: "", name: DEFAULT_PROFILE_NAME }, ...profiles].map((p) => (
+                  <button
+                    key={p.id || "base"}
+                    type="button"
+                    role="radio"
+                    aria-checked={profileId === p.id}
+                    onClick={() => setProfileId(p.id)}
+                    className={cx(
+                      "h-10 rounded-full border-2 px-3 text-sm font-semibold transition pointer-coarse:h-11",
+                      profileId === p.id ? "border-azur-600 bg-azur-600 text-white" : "border-azur-200 bg-surface text-ink",
+                    )}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+            <MeasureFields
+              idPrefix="order-measure"
+              fields={measureFields}
+              values={measureValues}
+              onChange={(key, value) => setMeasureValues((v) => ({ ...v, [key]: value }))}
+            />
+          </div>
+        ) : null}
 
         {allowPhotos ? (
           <div className="flex flex-col gap-2 rounded-lg border border-outline bg-surface-2 p-3">

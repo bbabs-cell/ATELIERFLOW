@@ -6,19 +6,24 @@ import {
   type OrderStatus,
 } from "@/domain/orders/order";
 
-/** Commandes = ORANGE ; livrée = marron (terminé) ; annulée = rouge (alerte). */
+/**
+ * Libellés des statuts = libellés des 4 étapes (stages.ts) : partout dans
+ * l'application, une commande est « Reçue », « En couture », « Prête » ou
+ * « Livrée » — jamais un mot d'atelier de plus. Commandes = ORANGE ;
+ * prête = vert ; livrée = bleu ; annulée = rouge.
+ */
 export const ORDER_STATUS_META: Record<
   OrderStatus,
   { label: string; tone: BadgeTone }
 > = {
-  REGISTERED: { label: "Enregistrée", tone: "neutral" },
-  FABRIC_RECEIVED: { label: "Tissu reçu", tone: "accent" },
-  PREPARATION: { label: "Préparation", tone: "accent" },
+  REGISTERED: { label: "Reçue", tone: "neutral" },
+  FABRIC_RECEIVED: { label: "Reçue", tone: "neutral" },
+  PREPARATION: { label: "En couture", tone: "accent" },
   SEWING: { label: "En couture", tone: "accent" },
-  FITTING: { label: "Essayage", tone: "accent" },
-  ALTERATION: { label: "Retouches", tone: "accent" },
-  COMPLETED: { label: "Terminée", tone: "primary" },
-  READY_FOR_PICKUP: { label: "À retirer", tone: "primary" },
+  FITTING: { label: "En couture", tone: "accent" },
+  ALTERATION: { label: "En couture", tone: "accent" },
+  COMPLETED: { label: "Prête", tone: "success" },
+  READY_FOR_PICKUP: { label: "Prête", tone: "success" },
   DELIVERED: { label: "Livrée", tone: "info" },
   CANCELLED: { label: "Annulée", tone: "danger" },
 };

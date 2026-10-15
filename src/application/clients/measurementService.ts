@@ -1,6 +1,7 @@
 import { SyncEngine } from "@/application/sync/engine";
 import { newIdempotencyKey } from "@/domain/ids/idempotency";
 import {
+  fieldsFor,
   hydrateMeasurement,
   normalizeProfileFields,
   normalizeProfileName,
@@ -40,8 +41,12 @@ export interface MeasurementService {
     values: Record<string, unknown>;
     notes?: string | null;
     takenAt?: string;
+    /** Commande pour laquelle les mesures sont prises (prise de commande). */
+    orderId?: string | null;
   }): Promise<SnapshotResult>;
   latestMeasurements(customerId: string): Promise<HydratedMeasurement>;
+  /** Mesures prises avec une commande (la plus récente), ou null. */
+  orderMeasurements(customerId: string, orderId: string): Promise<HydratedMeasurement | null>;
 }
 
 export interface MeasurementServiceDeps {
@@ -178,7 +183,11 @@ export function createMeasurementService(
           return { ok: false, errors };
         }
       }
-      const normalized = normalizeSnapshotValues(profile?.fields ?? [], input.values);
+      const normalized = normalizeSnapshotValues([...fieldsFor(profile)], input.values);
+      if (Object.keys(normalized.values).length === 0) {
+        errors.generic = "Aucune mesure saisie.";
+        return { ok: false, errors };
+      }
       const taken_at = input.takenAt !== undefined ? (input.takenAt ?? now()) : now();
 
       const snapshot: MeasurementSnapshot = {
@@ -186,7 +195,7 @@ export function createMeasurementService(
         tenant_id: deps.tenantId,
         customer_id: input.customerId,
         profile_id: profile?.id ?? null,
-        order_id: null,
+        order_id: input.orderId ?? null,
         values: normalized.values,
         unit: "cm",
         notes: input.notes !== undefined ? input.notes ?? null : null,
@@ -204,6 +213,19 @@ export function createMeasurementService(
         payload: snapshot,
       });
       return { ok: true, snapshot, ignored: normalized.ignored };
+    },
+
+    async orderMeasurements(customerId, orderId) {
+      const [snapshots, profiles] = await Promise.all([
+        deps.snapshots.listSnapshots(customerId),
+        deps.profiles.listProfiles(),
+      ]);
+      const forOrder = snapshots
+        .filter((s) => s.order_id === orderId)
+        .sort((a, b) => timestampCompare(b.taken_at, a.taken_at))[0];
+      if (!forOrder) return null;
+      const profile = forOrder.profile_id ? profiles.find((p) => p.id === forOrder.profile_id) ?? null : null;
+      return hydrateMeasurement(forOrder, profile);
     },
 
     async latestMeasurements(customerId) {

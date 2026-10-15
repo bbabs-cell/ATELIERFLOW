@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Plus, Ruler } from "lucide-react";
-import { Button, Field, Input, Select, Textarea, StateView } from "@/ui";
-import type { HydratedMeasurement } from "@/domain/clients/measurements";
-import type { MeasurementProfile } from "@/domain/clients/measurements";
+import { Button, Field, Select, Textarea, StateView } from "@/ui";
+import { DEFAULT_PROFILE_NAME, fieldsFor, type HydratedMeasurement, type MeasurementProfile } from "@/domain/clients/measurements";
+import { MeasureFields } from "./MeasureFields";
 import { getClientsFacade } from "./facade";
 
 export interface MeasurementsPanelProps {
@@ -34,12 +34,9 @@ export function MeasurementsPanel({
     ]);
     setProfiles(list);
     setLatest(hydrated);
-    if (profileId === "" && list.length > 0) {
-      setProfileId(list[0].id);
-    }
     setNotes(hydrated.notes ?? "");
     setLoading(false);
-  }, [customerId, profileId]);
+  }, [customerId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -55,23 +52,23 @@ export function MeasurementsPanel({
     };
   }, [reload]);
 
-  const activeProfile =
-    profiles.find((p) => p.id === profileId) ?? profiles[0] ?? null;
+  // Sans profil choisi : les mesures de base (aucun profil à créer avant de mesurer).
+  const activeProfile = profiles.find((p) => p.id === profileId) ?? null;
+  const fields = fieldsFor(activeProfile);
 
   async function save() {
-    if (!activeProfile) return;
     setSaving(true);
     setError(null);
     setSaved(false);
     try {
       const result = await getClientsFacade().measures.saveMeasurements({
         customerId,
-        profileId: activeProfile.id,
+        profileId: activeProfile?.id ?? null,
         values,
         notes: notes.trim() !== "" ? notes.trim() : null,
       });
       if (!result.ok) {
-        setError("Valeurs de mesures invalides.");
+        setError(result.errors.generic === "Aucune mesure saisie." ? "Remplissez au moins une mesure." : "Valeurs de mesures invalides.");
         return;
       }
       setSaved(true);
@@ -117,62 +114,39 @@ export function MeasurementsPanel({
         </p>
       ) : null}
 
-      {profiles.length === 0 ? (
-        <StateView
-          variant="empty"
-          title="Aucun profil de mesures"
-          description="Créez un profil (ex : Costume homme, Robe) pour saisir les mesures du client."
-          action={
-            <Button type="button" variant="outline" size="sm" onClick={onNewProfile}>
-              Créer un profil
-            </Button>
-          }
-        />
-      ) : (
-        <form
+      <form
           className="flex flex-col gap-4"
           onSubmit={(e) => {
             e.preventDefault();
             void save();
           }}
         >
-          <Field label="Profil de mesures" htmlFor="profile">
-            <Select
-              id="profile"
-              value={activeProfile?.id ?? ""}
-              onChange={(e) => {
-                setProfileId(e.target.value);
-                setValues({});
-              }}
-            >
-              {profiles.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </Select>
-          </Field>
-
-          {activeProfile ? (
-            <div className="grid gap-3 min-[480px]:grid-cols-2">
-              {activeProfile.fields.map((field) => (
-                <Field key={field.key} label={field.label}>
-                  <Input
-                    name={field.key}
-                    type={field.kind === "text" ? "text" : "number"}
-                    inputMode={field.kind === "text" ? "text" : "decimal"}
-                    step={field.kind === "text" ? undefined : "0.1"}
-                    min={field.kind === "text" ? undefined : 0}
-                    value={values[field.key] ?? ""}
-                    onChange={(e) =>
-                      setValues((v) => ({ ...v, [field.key]: e.target.value }))
-                    }
-                    placeholder={field.kind === "number" ? `en ${field.unit}` : ""}
-                  />
-                </Field>
-              ))}
-            </div>
+          {profiles.length > 0 ? (
+            <Field label="Type de mesures" htmlFor="profile">
+              <Select
+                id="profile"
+                value={profileId}
+                onChange={(e) => {
+                  setProfileId(e.target.value);
+                  setValues({});
+                }}
+              >
+                <option value="">{DEFAULT_PROFILE_NAME}</option>
+                {profiles.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </Select>
+            </Field>
           ) : null}
+
+          <MeasureFields
+            idPrefix="client-measure"
+            fields={fields}
+            values={values}
+            onChange={(key, value) => setValues((v) => ({ ...v, [key]: value }))}
+          />
 
           <Field label="Notes">
             <Textarea
@@ -189,7 +163,6 @@ export function MeasurementsPanel({
             </Button>
           </div>
         </form>
-      )}
 
       {latest?.entries.length ? (
         <div className="mt-2 rounded-xl border border-outline bg-surface-2/80 p-4">
@@ -206,7 +179,7 @@ export function MeasurementsPanel({
                 <div key={e.key} className="flex items-baseline justify-between gap-2">
                   <dt className="truncate text-xs text-ink-soft">{e.label}</dt>
                   <dd className="text-sm font-medium text-ink">
-                    {e.value}
+                    {typeof e.value === "number" ? e.value.toLocaleString("fr-FR") : e.value}
                     <span className="ml-1 text-xs text-ink-faint">{e.unit}</span>
                   </dd>
                 </div>

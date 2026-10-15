@@ -9,14 +9,14 @@ Abonnement) : il tombait sur un refus.
 
 ## Ce que ça fait
 
-- **Barre du bas** (téléphone et tablette, sous 1024 px) : les 4 écrans les plus ouverts —
+- **Barre du bas** (téléphone et tablette, sous 820 px — point de rupture lg du projet) : les 4 écrans les plus ouverts —
   Tableau de bord, Commandes, Clients, Rendez-vous — et « Plus », qui ouvre le menu complet.
   Si le rôle n'a pas accès à l'un d'eux, le suivant autorisé prend sa place (Stock, Mes
   modèles).
 - **Menu selon le rôle** : une entrée que le rôle ne peut pas ouvrir n'est plus affichée
   (droit requis par entrée dans `AuthGate`). Le serveur refuse de toute façon ; on évite
   seulement l'impasse. Rôle inconnu (démo, ancien jeton) : tout reste visible.
-- Sur ordinateur (1024 px et plus), rien ne change : barre latérale.
+- Sur ordinateur (820 px et plus), rien ne change : barre latérale.
 
 ## Règles et pourquoi
 

@@ -23,12 +23,14 @@ for (const [ci, prio, date, desc, price] of orders) {
   await p.selectOption('#order-customer', { index: ci }); await p.selectOption('#order-priority', prio);
   await p.fill('#order-expected', date);
   await p.locator('input[id$="-desc"]').first().fill(desc); await p.locator('input[id$="-price"]').first().fill(price);
+  // Mesures prises avec la commande (section « Mesures du client »).
+  if (ci === 1 && prio === 'URGENT') { await p.fill('#order-measure-poitrine', '96'); await p.fill('#order-measure-taille', '84,5'); await p.fill('#order-measure-longueur_boubou', '142'); }
   await p.locator('[role=dialog] button[type=submit]').last().click(); await p.waitForTimeout(900);
   await p.keyboard.press('Escape'); await p.waitForTimeout(300);
 }
 // paiement + reçu sur la première commande
 await p.goto(B + '/commandes', { waitUntil: 'networkidle' }); await p.waitForTimeout(1200);
-await p.locator('section[aria-label="Enregistrée"] article').first().locator('button').first().click(); await p.waitForTimeout(900);
+await p.locator('section[aria-label="Reçue"] article:visible').first().locator('button').first().click(); await p.waitForTimeout(900);
 await p.getByRole('button', { name: /Encaisser/ }).first().click(); await p.waitForTimeout(400);
 await p.locator('#pay-amount').fill('100000'); await p.selectOption('#pay-method', 'ORANGE_MONEY'); await p.fill('#pay-note', 'Acompte à la commande');
 await p.locator('[role=dialog]').last().getByRole('button', { name: 'Encaisser' }).click(); await p.waitForTimeout(800);

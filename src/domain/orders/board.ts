@@ -1,21 +1,20 @@
 import {
-  canTransition,
   isTerminal,
-  ORDER_FLOW,
   type OrderPriority,
   type OrderRecord,
   type OrderStatus,
 } from "./order";
+import { ORDER_STAGES, stageOf, statusForStage, type OrderStage } from "./stages";
 
 /**
- * Kanban de l'atelier (prompt 14) — logique pure.
- * Une colonne par étape du flux (REGISTERED → DELIVERED) ; les commandes
- * annulées ne sont pas sur le tableau. Un déplacement n'est accepté que
- * s'il respecte les transitions du domaine (canTransition) : le tableau
- * ne contourne jamais les règles de l'historique.
+ * Tableau de l'atelier — logique pure.
+ * Une colonne par étape simple (Reçue, En couture, Prête, Livrée : stages.ts) ;
+ * les commandes annulées ne sont pas sur le tableau. Un déplacement n'est
+ * accepté que s'il respecte les transitions du domaine (statusForStage →
+ * canTransition) : le tableau ne contourne jamais les règles de l'historique.
  */
 
-export const BOARD_STATUSES: readonly OrderStatus[] = ORDER_FLOW;
+export const BOARD_STAGES: readonly OrderStage[] = ORDER_STAGES;
 
 export type DeadlineState = "late" | "today" | "soon" | "ok" | "none";
 
@@ -28,11 +27,11 @@ function dayDiff(fromIsoDay: string, toIsoDay: string): number {
 
 /**
  * Échéance : en retard si la date prévue est passée et que la commande
- * n'est ni livrée ni annulée ni déjà prête à retirer (le travail de
- * l'atelier est alors terminé).
+ * n'est ni livrée ni annulée ni déjà prête (le travail de l'atelier est
+ * alors terminé).
  */
 export function deadlineState(order: Pick<OrderRecord, "expected_at" | "status">, today: string): DeadlineState {
-  if (!order.expected_at || isTerminal(order.status) || order.status === "READY_FOR_PICKUP") {
+  if (!order.expected_at || isTerminal(order.status) || stageOf(order.status) === "READY") {
     return "none";
   }
   const days = dayDiff(today.slice(0, 10), order.expected_at.slice(0, 10));
@@ -93,10 +92,11 @@ export function groupForBoard<T extends { order: OrderRecord }>(
   rows: readonly T[],
   filters: BoardFilters,
   today: string,
-): Map<OrderStatus, T[]> {
-  const columns = new Map<OrderStatus, T[]>(BOARD_STATUSES.map((s) => [s, []]));
+): Map<OrderStage, T[]> {
+  const columns = new Map<OrderStage, T[]>(BOARD_STAGES.map((s) => [s, []]));
   for (const row of rows) {
-    const column = columns.get(row.order.status);
+    const stage = stageOf(row.order.status);
+    const column = stage ? columns.get(stage) : undefined;
     if (!column) continue;
     if (!matchesFilters(row.order, filters, today)) continue;
     column.push(row);
@@ -107,15 +107,30 @@ export function groupForBoard<T extends { order: OrderRecord }>(
   return columns;
 }
 
-/** Déplacement par glisser-déposer : transitions du domaine, jamais l'annulation. */
-export function canDrop(from: OrderStatus, to: OrderStatus): boolean {
-  return to !== "CANCELLED" && canTransition(from, to);
+/** Déplacement par glisser-déposer vers une étape : transitions du domaine, jamais l'annulation. */
+export function canDrop(from: OrderStatus, to: OrderStage): boolean {
+  return statusForStage(from, to) !== null;
 }
 
-/** Étape suivante directe dans le flux (bouton « → » sur les cartes). */
-export function nextStatus(from: OrderStatus): OrderStatus | null {
-  if (isTerminal(from)) return null;
-  const index = ORDER_FLOW.indexOf(from);
-  const next = index >= 0 ? ORDER_FLOW[index + 1] : undefined;
-  return next && canTransition(from, next) ? next : null;
+export interface DeadlineWords {
+  /** « En retard de 2 jours », « Aujourd'hui », « Demain », « Dans 3 jours », « Le 24 déc. ». */
+  text: string;
+  state: DeadlineState;
+}
+
+/**
+ * Échéance en mots plutôt qu'en date à décompter de tête (méthode : « dans
+ * 3 jours », « dépassée de 2 jours ») — lisible et prononçable à voix haute.
+ * null : pas de date, ou commande déjà prête, livrée ou annulée.
+ */
+export function deadlineWords(order: Pick<OrderRecord, "expected_at" | "status">, today: string): DeadlineWords | null {
+  const state = deadlineState(order, today);
+  if (state === "none" || !order.expected_at) return null;
+  const days = dayDiff(today.slice(0, 10), order.expected_at.slice(0, 10));
+  if (days < 0) return { state, text: `En retard de ${-days} jour${days < -1 ? "s" : ""}` };
+  if (days === 0) return { state, text: "Aujourd'hui" };
+  if (days === 1) return { state, text: "Demain" };
+  if (days <= 6) return { state, text: `Dans ${days} jours` };
+  const date = new Date(`${order.expected_at.slice(0, 10)}T12:00:00Z`);
+  return { state, text: `Le ${date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", timeZone: "UTC" })}` };
 }

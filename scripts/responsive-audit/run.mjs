@@ -4,7 +4,7 @@ const [, , label, wStr, hStr] = process.argv;
 const viewport = { width: Number(wStr), height: Number(hStr) };
 const open = (re) => async (p) => { await p.getByRole('button', { name: re }).first().click(); await p.waitForTimeout(700); };
 const go = (path, wait = 1200) => async (p) => { await p.goto(B + path, { waitUntil: 'networkidle' }); await p.waitForTimeout(wait); };
-const openOrder = async (p) => { await go('/commandes')(p); await p.getByRole('tab', { name: /Atelier/ }).click(); await p.waitForTimeout(600); await p.locator('section[role=listitem] article').first().locator('button').first().click(); await p.waitForTimeout(1200); };
+const openOrder = async (p) => { await go('/commandes')(p); await p.getByRole('tab', { name: /Atelier/ }).click(); await p.waitForTimeout(600); await p.locator('section[aria-label] article:visible').first().locator('button').first().click(); await p.waitForTimeout(1200); };
 const scenarios = [
   ['tableau-de-bord', go('/dashboard', 2500)],
   ['recherche', async (p) => { await go('/dashboard', 2000)(p); await p.getByPlaceholder(/Rechercher/).fill('Diarra'); await p.waitForTimeout(1200); }],

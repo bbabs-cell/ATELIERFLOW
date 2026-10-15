@@ -102,3 +102,51 @@ Essayage, heure 10 h modifiable). Le rendez-vous suit ensuite la commande : livr
 terminé, annulée → annulé (`src/domain/appointments/fromOrder.ts`,
 `src/features/orders/orderAppointments.ts`). Réservé aux rôles qui peuvent gérer les
 rendez-vous.
+
+## Commandes en 4 étapes, pour tous (2026-10-15)
+
+**Le problème** : 9 étapes pour suivre un habit (enregistrée, tissu reçu, préparation, couture,
+essayage, retouches, terminée, à retirer, livrée) — « trop d'étapes », et l'écran doit se
+comprendre même par quelqu'un qui n'a jamais été à l'école.
+
+**Ce qui change**
+- 4 étapes, chacune avec une image et une couleur : **Reçue** (boîte), **En couture**
+  (ciseaux), **Prête** (paquet), **Livrée** (poignée de main) — `src/domain/orders/stages.ts`.
+- Téléphone : 4 grosses images avec le nombre de commandes ; on touche une étape, ses
+  commandes s'affichent. Ordinateur : 4 colonnes (glisser-déposer gardé).
+- Carte : nom du client en grand, l'habit, l'échéance **en mots** (« Demain », « En retard de
+  2 jours »), le prix, et **un seul gros bouton** (image + un verbe) : « Commencer », « C'est
+  prêt », « Remise au client ». Le **haut-parleur** lit la commande à voix haute (voix du
+  téléphone, `src/infrastructure/speech/speak.ts`, texte `orderSpeech.ts`).
+- Détail de la commande : les 4 étapes en images, le bouton de l'étape suivante, « Revenir »
+  pour corriger un toucher par erreur, « Annuler la commande ».
+- Partout (liste, badges, assistant, historique) une commande est « Reçue », « En couture »,
+  « Prête » ou « Livrée ».
+
+**Règles et pourquoi**
+- **Aucune migration** : les statuts enregistrés restent les mêmes (historique,
+  synchronisation, base, rendez-vous liés). Chaque étape entre par un statut
+  (`STAGE_STATUS` : REGISTERED, SEWING, READY_FOR_PICKUP, DELIVERED) ; les commandes anciennes
+  à une étape intermédiaire (essayage, retouches…) sont rangées dans l'étape qui les contient
+  et avancent normalement.
+- Retour d'une seule étape (couture → reçue, prête → couture) : `BACKWARD_ALLOWED` accepte
+  désormais couture/essayage/retouches → enregistrée. Jamais de retour après la livraison.
+- Une commande prête n'est plus « en retard ».
+- Le bouton de carte est en style secondaire (fond doux) : la couleur pleine reste au seul
+  bouton principal de l'écran (« Nouvelle commande »).
+
+**Tests** : `tests/unit/orders/stages.test.ts`, `board.test.ts` (4 colonnes, déplacements,
+échéance en mots), `orderSpeech.test.ts`.
+
+## Mesures à la prise de commande (2026-10-15)
+
+Dans « Nouvelle commande », la partie **Mesures du client** : les mesures de base sont prêtes
+(tour de cou, épaules, poitrine, taille, hanches, manches, longueurs…), sans profil à créer.
+Pour un client enregistré, ses dernières mesures sont déjà remplies : on ne change que ce qui a
+changé. À l'enregistrement, les mesures sont gardées **pour le client et liées à la commande**
+(`measurement_snapshots.order_id`, colonne existante — aucune migration) ; le détail de la
+commande affiche « Mesures de cette commande ». Si l'atelier a créé des profils (Boubou,
+Pantalon…), on choisit le profil en un toucher. Rôle sans le droit `measurements.write` : la
+partie n'est pas affichée (le serveur refuse de toute façon). Tests :
+`tests/integration/clients/clientService.test.ts` (mesures de base liées à la commande, rien
+n'est écrit sans mesure).
