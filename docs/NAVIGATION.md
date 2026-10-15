@@ -52,6 +52,21 @@ tactile (`hover: none`), aucune animation continue et fond d'ambiance en dégrad
 1 100 ms → 14 ms ; au repos 118 images redessinées en 2 s → 0. Sur ordinateur, le décor
 vivant reste.
 
+## Animations sobres et PC léger (2026-10-15)
+
+Signalé : « sur PC c'est toujours un peu lourd », « les animations ne sont pas bien
+faites ». Filmé image par image : au changement d'écran, le fondu de la page, le zoom du
+bandeau du tableau de bord et le retour des cartes se superposaient ; le tableau de bord
+repassait par ses blocs de chargement et son bandeau grandissait à l'arrivée des chiffres
+(contenu qui saute) ; 32 animations tournaient en continu sur PC. Désormais : une seule
+entrée par écran (fondu 0,18 s) + cascade sur les listes ; animations réservées à ce qui
+apparaît après une action ; plus aucune animation continue (PC compris) ; `transition` au
+lieu de `transition-all` ; au survol, seul le soulèvement s'anime ; derniers chiffres du
+tableau de bord affichés tout de suite puis recalculés en silence ; compteurs depuis 0
+seulement au premier affichage (0,6 s) ; entrée du menu active dès le clic. Mesures PC
+(1366 px) : dessin au repos 388 ms/2 s → 0 ; pendant le défilement 1 386 ms → 25 ms ;
+clic → menu actif < 15 ms.
+
 ## Code
 
 `src/domain/navigation/nav.ts` (choix des entrées, testé : `tests/unit/navigation`),

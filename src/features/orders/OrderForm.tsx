@@ -214,7 +214,7 @@ export function OrderForm({
                 aria-checked={customerMode === mode}
                 onClick={() => setChosenMode(mode)}
                 className={cx(
-                  "h-10 rounded-full px-3 text-sm font-semibold transition-all duration-200 pointer-coarse:h-11",
+                  "h-10 rounded-full px-3 text-sm font-semibold transition duration-200 pointer-coarse:h-11",
                   customerMode === mode ? "bg-surface text-ink shadow-soft" : "text-ink-soft hover:text-ink",
                 )}
               >
@@ -414,7 +414,7 @@ export function OrderForm({
               {photos.length < MAX_ORDER_FORM_PHOTOS ? (
                 <label
                   htmlFor={photoInputId}
-                  className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-full bg-chocolat-900 px-4 text-sm font-semibold text-ivoire-50 shadow-soft transition-all hover:-translate-y-0.5 pointer-coarse:h-11"
+                  className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-full bg-chocolat-900 px-4 text-sm font-semibold text-ivoire-50 shadow-soft transition hover:-translate-y-0.5 pointer-coarse:h-11"
                 >
                   <Camera className="size-4" aria-hidden="true" />
                   {photos.length === 0 ? "Photographier le tissu" : "Autre photo"}

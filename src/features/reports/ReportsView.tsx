@@ -141,7 +141,7 @@ export function ReportsView(): React.ReactElement {
           aria-label="Mois précédent"
           onClick={() => setMonth((m) => shiftMonth(m, -1))}
           disabled={month === months[months.length - 1]}
-          className="grid size-11 shrink-0 place-items-center rounded-full border border-outline bg-surface text-ink-soft transition-all hover:border-flamme-300 hover:text-flamme-700 disabled:opacity-40"
+          className="grid size-11 shrink-0 place-items-center rounded-full border border-outline bg-surface text-ink-soft transition hover:border-flamme-300 hover:text-flamme-700 disabled:opacity-40"
         >
           <ChevronLeft className="size-5" aria-hidden="true" />
         </button>
@@ -157,7 +157,7 @@ export function ReportsView(): React.ReactElement {
           aria-label="Mois suivant"
           onClick={() => setMonth((m) => shiftMonth(m, 1))}
           disabled={month === current}
-          className="grid size-11 shrink-0 place-items-center rounded-full border border-outline bg-surface text-ink-soft transition-all hover:border-flamme-300 hover:text-flamme-700 disabled:opacity-40"
+          className="grid size-11 shrink-0 place-items-center rounded-full border border-outline bg-surface text-ink-soft transition hover:border-flamme-300 hover:text-flamme-700 disabled:opacity-40"
         >
           <ChevronRight className="size-5" aria-hidden="true" />
         </button>
@@ -204,7 +204,7 @@ export function ReportsView(): React.ReactElement {
                   {report.daily.map((amount, i) => (
                     <div key={i} className="group flex h-full min-w-0 flex-1 flex-col items-center justify-end" title={`${i + 1} : ${money(amount)}`}>
                       <div
-                        className={cx("w-full rounded-t-md transition-all duration-300 group-hover:brightness-110", amount > 0 ? "bg-gradient-to-t from-menthe-300 to-menthe-600" : "bg-beige-100")}
+                        className={cx("w-full rounded-t-md transition duration-300 group-hover:brightness-110", amount > 0 ? "bg-gradient-to-t from-menthe-300 to-menthe-600" : "bg-beige-100")}
                         style={{ height: `${amount > 0 ? Math.max(6, Math.round((amount / maxDay) * 100)) : 3}%` }}
                       />
                       {(i + 1) % 5 === 1 ? <span className="mt-1 font-mono text-[10px] text-ink-faint">{i + 1}</span> : <span className="mt-1 h-[15px]" />}

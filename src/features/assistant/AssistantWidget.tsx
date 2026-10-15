@@ -140,7 +140,7 @@ export function AssistantWidget(): React.ReactElement {
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Ouvrir l'assistant"
-          className="fixed bottom-[calc(1.25rem+var(--bottom-nav,0px))] right-5 z-40 inline-flex h-14 min-w-14 items-center justify-center gap-2 rounded-full bg-flamme-gradient px-4 font-semibold xl:pr-5 text-white shadow-glow transition-all duration-300 hover:-translate-y-1 hover:shadow-lift print:hidden"
+          className="fixed bottom-[calc(1.25rem+var(--bottom-nav,0px))] right-5 z-40 inline-flex h-14 min-w-14 items-center justify-center gap-2 rounded-full bg-flamme-gradient px-4 font-semibold xl:pr-5 text-white shadow-glow transition-transform duration-200 hover:-translate-y-1 hover:shadow-lift print:hidden"
         >
           <Sparkles className="size-5 animate-float" aria-hidden="true" />
           <span className="hidden xl:inline">Assistant</span>
@@ -168,7 +168,7 @@ export function AssistantWidget(): React.ReactElement {
                 window.setTimeout(() => buttonRef.current?.focus(), 0);
               }}
               aria-label="Fermer l'assistant"
-              className="grid size-10 place-items-center rounded-full text-chocolat-100 transition-all hover:rotate-90 hover:bg-white/10"
+              className="grid size-10 place-items-center rounded-full text-chocolat-100 transition hover:rotate-90 hover:bg-white/10"
             >
               <X className="size-5" aria-hidden="true" />
             </button>
@@ -195,7 +195,7 @@ export function AssistantWidget(): React.ReactElement {
                             onClick={() => {
                               if (window.matchMedia("(max-width: 639px)").matches) setOpen(false);
                             }}
-                            className="inline-flex h-9 items-center gap-1.5 rounded-full bg-chocolat-900 px-3.5 text-xs font-semibold text-ivoire-50 transition-all hover:-translate-y-0.5 pointer-coarse:h-11"
+                            className="inline-flex h-9 items-center gap-1.5 rounded-full bg-chocolat-900 px-3.5 text-xs font-semibold text-ivoire-50 transition hover:-translate-y-0.5 pointer-coarse:h-11"
                           >
                             {l.label}
                             <ArrowRight className="size-3.5" aria-hidden="true" />
@@ -210,7 +210,7 @@ export function AssistantWidget(): React.ReactElement {
                             key={s}
                             type="button"
                             onClick={() => void send(s)}
-                            className="min-h-9 rounded-full border border-flamme-200 bg-flamme-50 px-3 py-1.5 text-left text-xs font-semibold text-flamme-700 transition-all hover:-translate-y-0.5 hover:border-flamme-400 pointer-coarse:min-h-11"
+                            className="min-h-9 rounded-full border border-flamme-200 bg-flamme-50 px-3 py-1.5 text-left text-xs font-semibold text-flamme-700 transition hover:-translate-y-0.5 hover:border-flamme-400 pointer-coarse:min-h-11"
                           >
                             {s}
                           </button>
@@ -252,7 +252,7 @@ export function AssistantWidget(): React.ReactElement {
               type="submit"
               disabled={!input.trim() || thinking}
               aria-label="Envoyer"
-              className="grid size-12 shrink-0 place-items-center rounded-full bg-flamme-gradient text-white shadow-soft transition-all hover:-translate-y-0.5 disabled:opacity-40"
+              className="grid size-12 shrink-0 place-items-center rounded-full bg-flamme-gradient text-white shadow-soft transition hover:-translate-y-0.5 disabled:opacity-40"
             >
               <Send className="size-5" aria-hidden="true" />
             </button>

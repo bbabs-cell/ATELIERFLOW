@@ -73,9 +73,8 @@ export function StateView({
     <div
       className={cx(
         "relative flex min-h-48 flex-col items-center justify-center gap-4 overflow-hidden rounded-xl border-2 border-dashed border-chocolat-200 bg-surface/70 p-8 text-center",
-        // Chargement visible dès la première image : une entrée en fondu le
-        // laissait invisible ~0,3 s au démarrage (écran vide sur téléphone).
-        variant === "loading" ? null : "animate-scale-in",
+        // Pas d'entrée animée : l'écran est déjà apparu avec la page (une seule
+        // entrée par écran), et le chargement doit être visible dès la première image.
         className,
       )}
     >

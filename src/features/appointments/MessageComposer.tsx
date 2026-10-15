@@ -85,7 +85,7 @@ export function MessageComposer({ item, initialKind, atelier, onClose, onOpened 
             type="button"
             onClick={() => void open()}
             disabled={text.trim() === ""}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-azur-600 px-5 text-sm font-semibold text-white shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift disabled:pointer-events-none disabled:opacity-50"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-azur-600 px-5 text-sm font-semibold text-white shadow-soft transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lift disabled:pointer-events-none disabled:opacity-50"
           >
             <MessageCircle className="size-4" aria-hidden="true" />
             Ouvrir WhatsApp

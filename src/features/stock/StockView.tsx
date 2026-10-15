@@ -172,7 +172,7 @@ export function StockView(): React.ReactElement {
         </Button>
       </header>
       {plan.allows("stock") ? null : (
-        <div className="mt-4 animate-fade-up">
+        <div className="mt-4">
           <FeatureLocked feature="stock">Vos tissus restent consultables.</FeatureLocked>
         </div>
       )}
@@ -231,7 +231,7 @@ export function StockView(): React.ReactElement {
                   return (
                     <li
                       key={fabric.id}
-                      className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-outline bg-surface shadow-soft animate-fade-up p-3"
+                      className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-outline bg-surface shadow-soft p-3"
                     >
                       {/* basis-64 : sans largeur de base, la rangée Entrée/Sortie/Ajuster restait sur la
                           même ligne et écrasait le nom du tissu (cassé mot par mot, à 28 px, sur tablette). */}

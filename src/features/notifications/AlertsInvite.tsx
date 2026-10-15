@@ -52,7 +52,7 @@ export function AlertsInvite({ className }: { className?: string }) {
   }
 
   return (
-    <div className={`flex flex-wrap items-center gap-3 rounded-xl border border-azur-200 bg-azur-50 px-4 py-3 animate-fade-up ${className ?? ""}`}>
+    <div className={`flex flex-wrap items-center gap-3 rounded-xl border border-azur-200 bg-azur-50 px-4 py-3 ${className ?? ""}`}>
       <span className="grid size-9 shrink-0 place-items-center rounded-full bg-azur-gradient text-white shadow-soft">
         <BellRing className="size-4" aria-hidden="true" />
       </span>
@@ -63,7 +63,7 @@ export function AlertsInvite({ className }: { className?: string }) {
         <button
           type="button"
           onClick={() => void enable()}
-          className="inline-flex h-10 items-center rounded-full bg-azur-600 px-4 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5 pointer-coarse:h-11"
+          className="inline-flex h-10 items-center rounded-full bg-azur-600 px-4 text-sm font-semibold text-white shadow-soft transition hover:-translate-y-0.5 pointer-coarse:h-11"
         >
           Activer
         </button>

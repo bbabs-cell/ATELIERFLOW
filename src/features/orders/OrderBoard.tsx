@@ -102,7 +102,7 @@ export function OrderBoard({ orders, filters, assignees, busyId, onOpen, onMove,
             onDragLeave={() => setHover((h) => (h === status ? null : h))}
             onDrop={(e) => drop(e, status)}
             className={cx(
-              "flex w-[82vw] max-w-[19rem] shrink-0 snap-start flex-col rounded-2xl border bg-surface-2 transition-all duration-300 animate-fade-up sm:w-72",
+              "flex w-[82vw] max-w-[19rem] shrink-0 snap-start flex-col rounded-2xl border bg-surface-2 transition duration-300 sm:w-72",
               hover === status
                 ? "scale-[1.02] border-flamme-400 bg-flamme-50 shadow-glow"
                 : dragging && allowed
@@ -145,7 +145,7 @@ export function OrderBoard({ orders, filters, assignees, busyId, onOpen, onMove,
                         setHover(null);
                       }}
                       className={cx(
-                        "gradient-border group relative cursor-grab rounded-xl border bg-surface p-3 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:rotate-[-0.6deg] hover:shadow-lift active:cursor-grabbing animate-fade-up",
+                        "gradient-border group relative cursor-grab rounded-xl border bg-surface p-3 shadow-soft transition-transform duration-200 hover:-translate-y-1 hover:rotate-[-0.6deg] hover:shadow-lift active:cursor-grabbing animate-fade-up",
                         deadline === "late" ? "border-wax-300" : "border-outline",
                         dragging?.id === order.id && "rotate-2 opacity-60",
                         refused === order.id && "animate-wiggle",
@@ -209,7 +209,7 @@ export function OrderBoard({ orders, filters, assignees, busyId, onOpen, onMove,
                             onClick={() => onMove(order.id, next)}
                             disabled={busyId === order.id}
                             title={`Passer à « ${ORDER_STATUS_LABELS[next]} »`}
-                            className="inline-flex h-8 shrink-0 items-center gap-1 rounded-full pointer-coarse:h-10 border-2 border-flamme-200 bg-surface px-3 text-[11px] font-bold text-flamme-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-flamme-400 hover:shadow-soft disabled:opacity-50"
+                            className="inline-flex h-8 shrink-0 items-center gap-1 rounded-full pointer-coarse:h-10 border-2 border-flamme-200 bg-surface px-3 text-[11px] font-bold text-flamme-700 transition duration-200 hover:-translate-y-0.5 hover:border-flamme-400 hover:shadow-soft disabled:opacity-50"
                           >
                             <span className="max-w-24 truncate">{ORDER_STATUS_LABELS[next]}</span>
                             <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />

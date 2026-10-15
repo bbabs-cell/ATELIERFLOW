@@ -102,7 +102,7 @@ export function OrderDetail({
 
       <div>
         <p className="text-sm font-medium text-ink">Articles</p>
-        <ul className="mt-2 divide-y divide-anthracite-100 overflow-hidden rounded-xl border border-outline bg-surface shadow-soft animate-fade-up">
+        <ul className="mt-2 divide-y divide-anthracite-100 overflow-hidden rounded-xl border border-outline bg-surface shadow-soft">
           {items.map((item) => (
             <li key={item.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
               <div className="min-w-0">

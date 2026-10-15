@@ -10,10 +10,14 @@ function prefersReducedMotion(): boolean {
  * Fait défiler un nombre entier de sa valeur précédente vers `target`
  * (ease-out). Toujours entier : aucune valeur financière n'est arrondie
  * autrement qu'à l'affichage de la transition, la valeur finale est exacte.
+ *
+ * `fromZero` : défiler depuis 0 au premier affichage. À réserver à la
+ * première apparition ; à chaque retour sur l'écran, compter depuis 0 pendant
+ * plus d'une seconde retardait la lecture et redessinait l'écran à chaque image.
  */
-export function useCountUp(target: number, durationMs = 1100): number {
-  const [value, setValue] = useState(0);
-  const from = useRef(0);
+export function useCountUp(target: number, durationMs = 600, fromZero = true): number {
+  const [value, setValue] = useState(fromZero ? 0 : target);
+  const from = useRef(fromZero ? 0 : target);
 
   useEffect(() => {
     const start = from.current;

@@ -113,7 +113,26 @@ survol est visible d'office au doigt (`pointer-coarse:opacity-100`).
    - bordure animée (`gradient-border`) : le dégradé ne tourne qu'au survol.
    Mesure : peinture + rastérisation pendant un défilement du tableau de bord
    1 100 ms → 14 ms ; au repos 60 images/s → 0.
-10. **Ne pas casser l'existant** : quand le client a validé les animations, on n'y touche
+10. **Une seule entrée par écran, et rien en boucle** (signalé : « les animations ne sont
+    pas bien faites », « lourd sur PC » ; filmé image par image) :
+    - l'écran entre une fois (`animate-page-in`, fondu 0,18 s) ; les blocs déjà présents à
+      l'arrivée (sections, bandeaux, cartes, badges, états vides) **n'ont pas** d'entrée
+      à eux — sinon le fondu de la page, le zoom d'un bandeau et le retour des cartes se
+      superposaient. Seules les listes gardent une cascade (`stagger`) ;
+    - `animate-fade-up` / `scale-in` / `pop` réservés à ce qui apparaît **après une
+      action** : fenêtre, menu, résultat de recherche, message de confirmation, élément
+      ajouté ;
+    - **aucune animation continue, ordinateur compris** (32 tournaient sur le tableau de
+      bord : PC lourd) ; le vivant vient du survol, du toucher et des entrées ;
+    - `transition` (jamais `transition-all`, qui animait tailles et marges) ; au survol
+      d'une carte, seul le soulèvement s'anime (`transition-transform`), l'ombre change
+      d'un coup (une transition d'ombre redessine la carte à chaque image) ;
+    - pas de contenu qui saute : garder les derniers chiffres affichés et recalculer en
+      silence, réserver la place des bandeaux ; un compteur ne défile depuis 0 qu'au
+      premier affichage (0,6 s) ;
+    - au toucher d'un lien, l'entrée du menu devient active tout de suite et une barre
+      fine avance en haut (`NavProgress`, `usePendingPath`).
+11. **Ne pas casser l'existant** : quand le client a validé les animations, on n'y touche
    pas en retouchant les couleurs ou la mise en page.
 
 ## Vérifier

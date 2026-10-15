@@ -229,7 +229,7 @@ export function AppointmentsView(): React.ReactElement {
             <button
               type="button"
               onClick={() => plan.guardFeature("whatsapp", () => setComposer({ item: flash.item, kind: flash.kind }))}
-              className="inline-flex h-9 pointer-coarse:h-11 items-center gap-1.5 rounded-full bg-azur-600 px-4 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5"
+              className="inline-flex h-9 pointer-coarse:h-11 items-center gap-1.5 rounded-full bg-azur-600 px-4 text-sm font-semibold text-white shadow-soft transition hover:-translate-y-0.5"
             >
               <MessageCircle className="size-4" aria-hidden="true" />
               Message WhatsApp
@@ -272,7 +272,7 @@ export function AppointmentsView(): React.ReactElement {
                   {due.map((item) => {
                     const typeMeta = APPOINTMENT_TYPE_META[item.appointment.type];
                     return (
-                      <li key={item.appointment.id} className="flex flex-col gap-2 rounded-xl border border-azur-200 bg-azur-50/70 p-3 animate-fade-up">
+                      <li key={item.appointment.id} className="flex flex-col gap-2 rounded-xl border border-azur-200 bg-azur-50/70 p-3">
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <p className="truncate font-bold text-ink">{item.customer?.full_name ?? "Client"}</p>
@@ -285,7 +285,7 @@ export function AppointmentsView(): React.ReactElement {
                         <button
                           type="button"
                           onClick={() => plan.guardFeature("whatsapp", () => setComposer({ item, kind: "REMINDER" }))}
-                          className="inline-flex h-9 pointer-coarse:h-11 items-center justify-center gap-1.5 rounded-full bg-azur-600 px-4 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-lift"
+                          className="inline-flex h-9 pointer-coarse:h-11 items-center justify-center gap-1.5 rounded-full bg-azur-600 px-4 text-sm font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:shadow-lift"
                         >
                           <MessageCircle className="size-4" aria-hidden="true" />
                           Préparer le rappel
@@ -358,7 +358,7 @@ export function AppointmentsView(): React.ReactElement {
                                 type="button"
                                 onClick={() => plan.guardFeature("whatsapp", () => setComposer({ item, kind: defaultMessageKind(appointment) }))}
                                 aria-label={`Message WhatsApp à ${item.customer?.full_name ?? "client"}`}
-                                className="inline-flex h-9 pointer-coarse:h-11 items-center gap-1.5 rounded-full bg-azur-600 px-3 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5"
+                                className="inline-flex h-9 pointer-coarse:h-11 items-center gap-1.5 rounded-full bg-azur-600 px-3 text-sm font-semibold text-white shadow-soft transition hover:-translate-y-0.5"
                               >
                                 <MessageCircle className="size-4" aria-hidden="true" />
                                 WhatsApp

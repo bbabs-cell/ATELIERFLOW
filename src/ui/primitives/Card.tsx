@@ -13,8 +13,8 @@ export function Card({ className, children, padded = true, interactive = true }:
   return (
     <div
       className={cx(
-        "rounded-lg border border-outline bg-surface shadow-soft animate-scale-in",
-        "transition-all duration-300 ease-out",
+        "rounded-lg border border-outline bg-surface shadow-soft",
+        "transition duration-300 ease-out",
         interactive && "gradient-border hover:-translate-y-1 hover:shadow-lift",
         padded && "p-5 sm:p-6",
         className,

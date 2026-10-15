@@ -76,7 +76,7 @@ export function Dialog({
             type="button"
             onClick={onClose}
             aria-label="Fermer"
-            className="grid size-10 shrink-0 place-items-center rounded-full text-ink-soft transition-all duration-300 hover:rotate-90 hover:bg-flamme-50 hover:text-flamme-600 pointer-coarse:size-11"
+            className="grid size-10 shrink-0 place-items-center rounded-full text-ink-soft transition duration-300 hover:rotate-90 hover:bg-flamme-50 hover:text-flamme-600 pointer-coarse:size-11"
           >
             <X className="size-5" />
           </button>

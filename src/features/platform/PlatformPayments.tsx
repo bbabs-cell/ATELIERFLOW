@@ -72,7 +72,7 @@ export function PlatformPayments({ onApproved }: { onApproved: () => void }): Re
 
   return (
     <>
-      <section className="animate-fade-up">
+      <section>
         <div className="flex flex-wrap items-end justify-between gap-3">
           <h2 className="flex items-center gap-2 font-display text-xl text-ink">
             <Wallet className="size-5 text-menthe-600" aria-hidden="true" />
@@ -141,7 +141,7 @@ export function PlatformPayments({ onApproved }: { onApproved: () => void }): Re
         )}
       </section>
 
-      <section className="mt-10 animate-fade-up">
+      <section className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="font-display text-xl text-ink">Moyens de paiement</h2>

@@ -155,8 +155,8 @@
    * Aucune entrée ne part de l'opacité 0 sur un bloc de page : mesuré au
    * téléphone, chaque changement d'écran donnait 0,2 à 0,5 s d'écran blanc.
    */
-  --animate-page-in: page-in 0.2s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-  --animate-fade-up: fade-up 0.38s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  --animate-page-in: page-in 0.18s ease-out backwards;
+  --animate-fade-up: fade-up 0.3s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   --animate-fade-in: fade-in 0.3s ease-out backwards;
   --animate-pop: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
   --animate-scale-in: scale-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) backwards;
@@ -174,11 +174,11 @@
   --animate-nav-progress: nav-progress 2.5s cubic-bezier(0.1, 0.7, 0.2, 1) forwards;
 
   @keyframes page-in {
-    from { opacity: 0.55; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0.6; }
+    to { opacity: 1; }
   }
   @keyframes fade-up {
-    from { opacity: 0.3; transform: translateY(12px); }
+    from { opacity: 0.4; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
   @keyframes fade-in {
@@ -456,48 +456,44 @@
 /* Accessibilité : on garde les transitions courtes mais on coupe les
    mouvements continus pour qui a demandé moins d'animations. */
 /*
- * Écrans tactiles (téléphones, tablettes) : aucune animation qui tourne en
- * continu sans action de la personne. Mesuré : au repos, l'application
- * redessinait l'écran ~60 fois par seconde (taches floues mobiles, logo en
- * dégradé animé, bordures animées invisibles, pastilles qui pulsent) ; ajouté
- * au défilement, la puce graphique saturait et des zones restaient blanches
- * pendant le défilement. Les entrées, le toucher et les chargements restent
- * animés. Sur ordinateur (souris), le décor vivant reste.
+ * Aucune animation qui tourne en continu sans action de la personne (méthode
+ * MagyaPro : « dans un tableau de bord, aucune animation qui ne répond pas à
+ * une action »). Mesuré : au repos, l'application redessinait l'écran ~60 fois
+ * par seconde (32 animations sur le tableau de bord : taches floues mobiles,
+ * dégradés animés, pastilles qui pulsent…) ; au téléphone, des zones restaient
+ * blanches pendant le défilement ; sur PC, tout paraissait lourd. Restent
+ * animés : l'entrée d'un écran, le survol, le toucher, ce qui apparaît après
+ * une action (fenêtre, menu, message) et les chargements.
  */
-@media (hover: none) {
-  .animate-blob,
-  .animate-float,
-  .animate-gradient,
-  .animate-marquee,
-  .animate-pulse-ring,
-  .animate-spin-slow,
-  .ambient-motion,
-  .text-gradient,
-  .page-title::after,
-  .gradient-border::before {
-    animation: none !important;
-  }
-}
-
-/* Bordure animée : le dégradé ne tourne que pendant le survol (sinon il
-   tournait en permanence sous une opacité 0, en redessinant chaque carte). */
+.animate-blob,
+.animate-float,
+.animate-gradient,
+.animate-marquee,
+.animate-pulse-ring,
+.animate-spin-slow,
+.ambient-motion,
+.text-gradient,
+.page-title::after,
 .gradient-border::before {
-  animation-play-state: paused;
-}
-.gradient-border:hover::before,
-.gradient-border:focus-within::before {
-  animation-play-state: running;
+  animation: none !important;
 }
 
 /*
- * Fond d'ambiance statique (téléphone) : mêmes couleurs que les taches
- * floues du bureau, en simples dégradés — aucun filtre de flou à recalculer.
+ * Fond d'ambiance statique : mêmes couleurs que les anciennes taches floues
+ * animées, en simples dégradés — aucun filtre de flou à recalculer.
  */
 .ambient-static {
   background:
     radial-gradient(22rem 18rem at 0% 0%, color-mix(in srgb, var(--color-flamme-400) 22%, transparent), transparent 70%),
     radial-gradient(26rem 22rem at 100% 40%, color-mix(in srgb, var(--color-chocolat-400) 16%, transparent), transparent 70%),
     radial-gradient(22rem 18rem at 35% 100%, color-mix(in srgb, var(--color-champagne-400) 18%, transparent), transparent 70%);
+}
+
+.ambient-static-dark {
+  background:
+    radial-gradient(18rem 16rem at 0% 0%, color-mix(in srgb, var(--color-flamme-400) 18%, transparent), transparent 70%),
+    radial-gradient(20rem 18rem at 100% 55%, color-mix(in srgb, var(--color-chocolat-400) 22%, transparent), transparent 70%),
+    radial-gradient(16rem 14rem at 30% 100%, color-mix(in srgb, var(--color-champagne-400) 14%, transparent), transparent 70%);
 }
 
 @media (prefers-reduced-motion: reduce) {
