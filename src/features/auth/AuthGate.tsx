@@ -39,7 +39,7 @@ import { SyncStatusChip } from "@/features/sync/SyncStatusChip";
 import { PlanBanner } from "@/features/subscriptions/PlanBanner";
 import { AssistantWidget } from "@/features/assistant/AssistantWidget";
 import { AlertStack } from "@/features/notifications/AlertStack";
-import { NavProgress } from "@/features/navigation/NavProgress";
+import { NavProgress, usePendingPath } from "@/features/navigation/NavProgress";
 import { useAlertRunner } from "@/features/notifications/useAlertRunner";
 import { usePlatformAdmin } from "@/features/platform/usePlatformAdmin";
 import { useBranding } from "@/features/branding/useBranding";
@@ -91,6 +91,7 @@ function isOffline(): boolean {
 export function AuthGate({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname() ?? "/";
+  const pendingPath = usePendingPath();
   const [state, setState] = useState<GateState>({ status: "loading" });
 
   useEffect(() => {
@@ -199,9 +200,11 @@ export function AuthGate({ children }: { children: ReactNode }) {
     setActiveCurrency(readCachedLocale(state.session.tenantId)?.currency ?? locale.currency);
   }
   const allowed = visibleEntries(NAV, permissionsOfRole(state.session.role));
+  // Entrée du menu active dès le toucher, sans attendre l'affichage de la page.
+  const current = pendingPath ?? pathname;
   const navItems: NavItem[] = (platformAdmin ? [...allowed, PLATFORM_NAV] : allowed).map((item) => ({
     ...item,
-    active: pathname === item.href || pathname.startsWith(`${item.href}/`),
+    active: current === item.href || current.startsWith(`${item.href}/`),
   }));
   const bottomItems = bottomEntries(navItems);
   return (
@@ -275,7 +278,7 @@ function AccountCard({ session, avatar }: { session: ActiveSession; avatar: stri
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 animate-fade-up max-lg:border-outline max-lg:bg-surface-2">
+    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 max-lg:border-outline max-lg:bg-surface-2">
       <Link
         href="/parametres"
         aria-label="Changer ma photo de profil"
@@ -303,7 +306,7 @@ function AccountCard({ session, avatar }: { session: ActiveSession; avatar: stri
         disabled={leaving}
         aria-label="Déconnexion"
         title="Déconnexion"
-        className="grid size-10 shrink-0 place-items-center rounded-full bg-white/10 text-ivoire-50 transition-all duration-300 hover:rotate-12 hover:bg-flamme-500 disabled:opacity-50 max-lg:bg-flamme-50 max-lg:text-flamme-600 max-lg:hover:text-white"
+        className="grid size-10 shrink-0 place-items-center rounded-full bg-white/10 text-ivoire-50 transition duration-300 hover:rotate-12 hover:bg-flamme-500 disabled:opacity-50 max-lg:bg-flamme-50 max-lg:text-flamme-600 max-lg:hover:text-white"
       >
         <LogOut className={leaving ? "size-4 animate-spin" : "size-4"} aria-hidden="true" />
       </button>

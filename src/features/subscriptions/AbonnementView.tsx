@@ -199,7 +199,7 @@ export function AbonnementView(): React.ReactElement {
         </p>
       ) : null}
 
-      <section className="rounded-xl border border-outline bg-surface p-4 shadow-soft animate-fade-up sm:p-6">
+      <section className="rounded-xl border border-outline bg-surface p-4 shadow-soft sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex min-w-0 items-start gap-3">
             <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-menthe-gradient text-white shadow-soft">
@@ -315,7 +315,7 @@ export function AbonnementView(): React.ReactElement {
               <article
                 key={plan.code}
                 className={cx(
-                  "flex flex-col rounded-lg border bg-surface p-4 transition-shadow duration-300 hover:shadow-lift",
+                  "flex flex-col rounded-lg border bg-surface p-4 transition-transform duration-200 hover:shadow-lift",
                   action === "current" ? "border-menthe-500 ring-1 ring-menthe-500" : "border-outline",
                 )}
               >

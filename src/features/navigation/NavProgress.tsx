@@ -1,19 +1,39 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 
 /**
- * Barre de progression fine en haut de l'écran pendant un changement de page.
+ * Changement de page : réponse immédiate au toucher.
  *
- * Pourquoi : sur un téléphone d'entrée de gamme, l'écran suivant met 0,3 à
- * 0,5 s à s'afficher ; sans signe visible, l'ancienne page semblait figée et
- * on touchait le lien une deuxième fois. La barre répond dès le toucher et
- * disparaît quand la nouvelle page est là. Seul `transform` est animé.
+ * Pourquoi : l'écran suivant met 0,3 à 0,5 s à s'afficher ; sans signe
+ * visible, l'ancienne page semblait figée (mesuré sur PC comme au téléphone)
+ * et on touchait le lien une deuxième fois. Dès le toucher, l'entrée du menu
+ * visée passe en « active » (`usePendingPath`) et une barre fine avance en
+ * haut de l'écran ; tout s'efface quand la nouvelle page est là. Seul
+ * `transform` est animé.
  */
+
+let pendingPath: string | null = null;
+const listeners = new Set<() => void>();
+function setPending(path: string | null) {
+  if (pendingPath === path) return;
+  pendingPath = path;
+  listeners.forEach((fn) => fn());
+}
+function subscribe(fn: () => void) {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
+}
+
+/** Page vers laquelle on est en train d'aller (null quand aucune navigation n'est en cours). */
+export function usePendingPath(): string | null {
+  return useSyncExternalStore(subscribe, () => pendingPath, () => null);
+}
+
 export function NavProgress() {
   const pathname = usePathname();
-  const [pending, setPending] = useState<string | null>(null);
+  const pending = usePendingPath();
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
@@ -28,12 +48,12 @@ export function NavProgress() {
     return () => document.removeEventListener("click", onClick, true);
   }, []);
 
-  // Nouvelle page affichée (ou navigation abandonnée) : la barre s'efface.
+  // Nouvelle page affichée (ou navigation abandonnée) : retour à l'état normal.
   useEffect(() => {
     if (pending === null) return;
     if (pending === pathname) {
-      const done = window.setTimeout(() => setPending(null), 0);
-      return () => window.clearTimeout(done);
+      setPending(null);
+      return;
     }
     const giveUp = window.setTimeout(() => setPending(null), 8000);
     return () => window.clearTimeout(giveUp);

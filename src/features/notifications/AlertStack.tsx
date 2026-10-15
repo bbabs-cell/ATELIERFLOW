@@ -28,7 +28,7 @@ export function AlertStack({ alerts, onDismiss }: { alerts: AtelierAlert[]; onDi
             <Link
               href={a.url}
               onClick={() => onDismiss(a.key)}
-              className="mt-1.5 inline-flex h-9 items-center rounded-full bg-chocolat-900 px-3.5 text-xs font-semibold text-ivoire-50 transition-all hover:-translate-y-0.5 pointer-coarse:h-11"
+              className="mt-1.5 inline-flex h-9 items-center rounded-full bg-chocolat-900 px-3.5 text-xs font-semibold text-ivoire-50 transition hover:-translate-y-0.5 pointer-coarse:h-11"
             >
               Voir
             </Link>
@@ -37,7 +37,7 @@ export function AlertStack({ alerts, onDismiss }: { alerts: AtelierAlert[]; onDi
             type="button"
             onClick={() => onDismiss(a.key)}
             aria-label="Fermer l'alerte"
-            className="grid size-9 shrink-0 place-items-center rounded-full text-ink-soft transition-all hover:rotate-90 hover:bg-flamme-50 pointer-coarse:size-11"
+            className="grid size-9 shrink-0 place-items-center rounded-full text-ink-soft transition hover:rotate-90 hover:bg-flamme-50 pointer-coarse:size-11"
           >
             <X className="size-4" aria-hidden="true" />
           </button>

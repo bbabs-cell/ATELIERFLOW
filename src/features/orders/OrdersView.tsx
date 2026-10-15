@@ -304,12 +304,12 @@ export function OrdersView(): React.ReactElement {
         </Button>
       </header>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3 animate-fade-up">
+      <div className="mt-6 flex flex-wrap items-center gap-3">
         <div role="tablist" aria-label="Affichage" className="relative grid grid-cols-2 rounded-full bg-chocolat-900 p-1.5 shadow-soft">
           <span
             aria-hidden="true"
             className={cx(
-              "absolute inset-y-1.5 left-1.5 w-[calc(50%-0.375rem)] rounded-full bg-sunset-gradient shadow-glow transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+              "absolute inset-y-1.5 left-1.5 w-[calc(50%-0.375rem)] rounded-full bg-sunset-gradient shadow-glow transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
               mode === "list" ? "translate-x-full" : "translate-x-0",
             )}
           />
@@ -370,7 +370,7 @@ export function OrdersView(): React.ReactElement {
           aria-pressed={filters.lateOnly}
           onClick={() => setFilters({ ...filters, lateOnly: !filters.lateOnly })}
           className={cx(
-            "inline-flex h-11 items-center gap-2 rounded-full border-2 px-4 text-sm font-bold transition-all duration-300",
+            "inline-flex h-11 items-center gap-2 rounded-full border-2 px-4 text-sm font-bold transition duration-300",
             filters.lateOnly
               ? "border-wax-500 bg-wax-500 text-white shadow-[0_8px_20px_-8px_rgb(229_51_127/0.7)]"
               : "border-wax-300 bg-surface text-wax-600 hover:bg-wax-50",

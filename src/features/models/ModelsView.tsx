@@ -119,7 +119,7 @@ export function ModelsView(): React.ReactElement {
                       onClick={() => setCategory(c)}
                       aria-pressed={category === c}
                       className={cx(
-                        "inline-flex h-9 items-center rounded-full border px-4 text-sm font-semibold transition-all hover:-translate-y-0.5 pointer-coarse:h-11",
+                        "inline-flex h-9 items-center rounded-full border px-4 text-sm font-semibold transition hover:-translate-y-0.5 pointer-coarse:h-11",
                         category === c ? "border-transparent bg-flamme-gradient text-white shadow-soft" : "border-outline bg-surface text-ink-soft hover:border-flamme-300",
                       )}
                     >
@@ -158,12 +158,12 @@ export function ModelsView(): React.ReactElement {
                       <button
                         type="button"
                         onClick={() => setViewing(m)}
-                        className="group flex w-full flex-col overflow-hidden rounded-xl border border-outline bg-surface text-left shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"
+                        className="group flex w-full flex-col overflow-hidden rounded-xl border border-outline bg-surface text-left shadow-soft transition-transform duration-200 hover:-translate-y-1 hover:shadow-lift"
                       >
                         <span className="relative grid aspect-[3/4] w-full place-items-center overflow-hidden bg-surface-2">
                           {cover ? (
                             // eslint-disable-next-line @next/next/no-img-element -- lien signé privé
-                            <img src={cover.url} alt={m.title} loading="lazy" className="size-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                            <img src={cover.url} alt={m.title} loading="lazy" className="size-full object-cover transition-transform duration-300 group-hover:scale-105" />
                           ) : (
                             <Shirt className="size-10 text-ink-faint" aria-hidden="true" />
                           )}
@@ -412,7 +412,7 @@ function ModelDialog({
               type="button"
               onClick={() => void share()}
               disabled={busy}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-azur-600 px-5 text-sm font-semibold text-white shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift disabled:opacity-60"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-azur-600 px-5 text-sm font-semibold text-white shadow-soft transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lift disabled:opacity-60"
             >
               <Share2 className="size-4" aria-hidden="true" />
               {busy ? "Préparation…" : "Envoyer au client"}

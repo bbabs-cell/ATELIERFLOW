@@ -15,7 +15,7 @@ export type ButtonSize = "sm" | "md" | "lg";
 
 const base =
   "shine inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold " +
-  "rounded-full touch-manipulation select-none transition-all duration-200 ease-out " +
+  "rounded-full touch-manipulation select-none transition duration-200 ease-out " +
   "hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] " +
   "disabled:pointer-events-none disabled:opacity-50 ";
 

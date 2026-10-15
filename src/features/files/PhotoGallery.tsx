@@ -161,7 +161,7 @@ export function PhotoGallery({ category, entityId, title = "Photos", className }
           <button
             type="button"
             onClick={() => input.current?.click()}
-            className="mt-3 flex w-full flex-col items-center gap-1 rounded-xl border-2 border-dashed border-flamme-200 px-4 py-6 text-sm text-ink-soft transition-all duration-300 hover:-translate-y-0.5 hover:border-flamme-400 hover:bg-flamme-50"
+            className="mt-3 flex w-full flex-col items-center gap-1 rounded-xl border-2 border-dashed border-flamme-200 px-4 py-6 text-sm text-ink-soft transition duration-300 hover:-translate-y-0.5 hover:border-flamme-400 hover:bg-flamme-50"
           >
             <ImagePlus className="size-6 text-flamme-500 animate-float" aria-hidden="true" />
             Prendre ou choisir une photo
@@ -176,11 +176,11 @@ export function PhotoGallery({ category, entityId, title = "Photos", className }
               <button
                 type="button"
                 onClick={() => setViewing(file)}
-                className="group block aspect-square w-full overflow-hidden rounded-xl border border-outline bg-surface shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift"
+                className="group block aspect-square w-full overflow-hidden rounded-xl border border-outline bg-surface shadow-soft transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lift"
                 aria-label="Agrandir la photo"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element -- lien signé R2, hors optimiseur d'images */}
-                <img src={file.url} alt="" loading="lazy" className="size-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                <img src={file.url} alt="" loading="lazy" className="size-full object-cover transition-transform duration-300 group-hover:scale-110" />
               </button>
             </li>
           ))}
@@ -206,7 +206,7 @@ export function PhotoGallery({ category, entityId, title = "Photos", className }
       >
         {viewing ? (
           // eslint-disable-next-line @next/next/no-img-element -- lien signé R2
-          <img src={viewing.url} alt="" className="mx-auto max-h-[60vh] w-auto rounded-xl object-contain animate-scale-in" />
+          <img src={viewing.url} alt="" className="mx-auto max-h-[60vh] w-auto rounded-xl object-contain" />
         ) : null}
       </Dialog>
     </section>

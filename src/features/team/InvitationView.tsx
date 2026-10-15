@@ -227,7 +227,7 @@ export function InvitationView({ token }: { token: string }) {
                     setError(null);
                   }}
                   className={
-                    "h-10 rounded-full text-sm font-bold transition-all duration-300 " +
+                    "h-10 rounded-full text-sm font-bold transition duration-300 " +
                     (mode === m ? "bg-sunset-gradient text-white shadow-glow" : "text-chocolat-200 hover:text-white")
                   }
                 >

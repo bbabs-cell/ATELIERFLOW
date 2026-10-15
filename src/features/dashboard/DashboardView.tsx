@@ -29,10 +29,10 @@ import { formatCentiUnits } from "@/domain/inventory/units";
 import type { SearchHit } from "@/domain/dashboard/search";
 import { APPOINTMENT_TYPE_META } from "@/features/appointments/constants";
 import { ORDER_STATUS_META } from "@/features/orders/constants";
-import { AmbientBlobs } from "@/ui/composites/AppShell";
 import { getDashboardFacade } from "./facade";
 import { DASHBOARD_PERIOD_OPTIONS, PAYMENT_METHOD_META, SEARCH_ENTITY_LABELS } from "./constants";
 import { useDataChanged } from "@/features/sync/useDataChanged";
+import { peekActiveSession } from "@/application/auth/session";
 import { AlertsInvite } from "@/features/notifications/AlertsInvite";
 
 /**
@@ -50,7 +50,7 @@ const TONES: Record<Tone, { chip: string; glow: string; bar: string }> = {
 };
 
 function AnimatedNumber({ value, format }: { value: number; format: (n: number) => string }) {
-  const shown = useCountUp(value);
+  const shown = useCountUp(value, 600, !kpisShownOnce);
   const text = format(shown);
   // « 100 000 F CFA », « 12,50 m » : l'unité peut passer à la ligne dans une carte étroite,
   // jamais le nombre lui-même.
@@ -83,13 +83,13 @@ function KpiCard({
   const t = TONES[tone];
   const body = (
     <>
-      <span aria-hidden="true" className={cx("absolute -right-8 -top-8 size-28 rounded-full opacity-20 blur-2xl transition-all duration-500 group-hover:scale-150 group-hover:opacity-40", t.glow)} />
+      <span aria-hidden="true" className={cx("absolute -right-8 -top-8 size-28 rounded-full opacity-20 blur-2xl", t.glow)} />
       <span className="relative flex items-start justify-between gap-2">
-        <span className={cx("grid size-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br text-white shadow-soft transition-transform duration-500 group-hover:rotate-[-10deg] group-hover:scale-110", t.chip)}>
+        <span className={cx("grid size-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br text-white shadow-soft transition-transform duration-300 group-hover:rotate-[-10deg] group-hover:scale-110", t.chip)}>
           {icon}
         </span>
         {href ? (
-          <ArrowUpRight aria-hidden="true" className="size-4 text-ink-faint transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-flamme-600" />
+          <ArrowUpRight aria-hidden="true" className="size-4 text-ink-faint transition duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-flamme-600" />
         ) : null}
       </span>
       <span className="relative mt-4 block text-xs font-semibold uppercase tracking-wider text-ink-soft">{title}</span>
@@ -100,7 +100,7 @@ function KpiCard({
     </>
   );
   const className =
-    "group gradient-border @container relative block h-full overflow-hidden rounded-xl border border-outline bg-surface p-4 shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift";
+    "group gradient-border @container relative block h-full overflow-hidden rounded-xl border border-outline bg-surface p-4 shadow-soft transition-transform duration-200 hover:-translate-y-1.5 hover:shadow-lift";
   return (
     <li className="min-w-0">
       {href ? (
@@ -116,7 +116,7 @@ function KpiCard({
 
 function Panel({ title, subtitle, children, className }: { title: string; subtitle?: string; children: React.ReactNode; className?: string }) {
   return (
-    <section className={cx("gradient-border relative rounded-xl border border-outline bg-surface p-5 shadow-soft transition-all duration-300 hover:shadow-lift animate-fade-up", className)}>
+    <section className={cx("gradient-border relative rounded-xl border border-outline bg-surface p-5 shadow-soft transition-transform duration-200 hover:shadow-lift", className)}>
       <h2 className="font-display text-xl text-ink">{title}</h2>
       {subtitle ? <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-flamme-600">{subtitle}</p> : null}
       {children}
@@ -140,10 +140,21 @@ function greeting(): string {
   return "Bonsoir";
 }
 
+/**
+ * Derniers chiffres affichés, par atelier et par période : au retour sur le
+ * tableau de bord, ils s'affichent tout de suite puis sont recalculés en
+ * silence. Sans eux, chaque visite repassait par les blocs de chargement et
+ * le bandeau grandissait à l'arrivée des chiffres (contenu qui saute).
+ */
+const kpiCache = new Map<string, { kpis: DashboardKpis; rangeLabel: string }>();
+/** Le défilement des chiffres depuis 0 n'a lieu qu'une fois par session. */
+let kpisShownOnce = false;
+const cacheKey = (days: number) => `${peekActiveSession()?.tenantId ?? "?"}:${days}`;
+
 export function DashboardView(): React.ReactElement {
-  const [kpis, setKpis] = useState<DashboardKpis | null>(null);
-  const [rangeLabel, setRangeLabel] = useState("");
   const [days, setDays] = useState(30);
+  const [kpis, setKpis] = useState<DashboardKpis | null>(() => kpiCache.get(cacheKey(30))?.kpis ?? null);
+  const [rangeLabel, setRangeLabel] = useState(() => kpiCache.get(cacheKey(30))?.rangeLabel ?? "");
   const [error, setError] = useState<string | null>(null);
   const [forbidden, setForbidden] = useState(false);
 
@@ -165,17 +176,20 @@ export function DashboardView(): React.ReactElement {
         setForbidden(true);
         return;
       }
+      const label = `${new Date(result.range.from).toLocaleDateString("fr-FR")} → ${new Date(
+        result.range.to,
+      ).toLocaleDateString("fr-FR")}`;
+      kpiCache.set(cacheKey(days), { kpis: result.kpis, rangeLabel: label });
       setKpis(result.kpis);
-      setRangeLabel(
-        `${new Date(result.range.from).toLocaleDateString("fr-FR")} → ${new Date(
-          result.range.to,
-        ).toLocaleDateString("fr-FR")}`,
-      );
+      setRangeLabel(label);
     } catch {
       setError("Impossible de charger le tableau de bord.");
     }
   }, [days]);
   useDataChanged(load);
+  useEffect(() => {
+    if (kpis) kpisShownOnce = true;
+  }, [kpis]);
 
   useEffect(() => {
     void (async () => {
@@ -236,8 +250,8 @@ export function DashboardView(): React.ReactElement {
   return (
     <div className="@container mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
       {/* Bandeau d'accueil */}
-      <section className="dot-grid relative overflow-hidden rounded-xl bg-chocolat-900 p-6 text-ivoire-50 shadow-lift animate-scale-in sm:p-8">
-        <AmbientBlobs dark />
+      <section className="dot-grid relative overflow-hidden rounded-xl bg-chocolat-900 p-6 text-ivoire-50 shadow-lift sm:p-8">
+        <div aria-hidden="true" className="ambient-static-dark pointer-events-none absolute inset-0" />
         <div className="relative flex flex-wrap items-end justify-between gap-6">
           <div className="min-w-0">
             <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-champagne-300">
@@ -260,34 +274,35 @@ export function DashboardView(): React.ReactElement {
           </div>
         </div>
         <div className="relative mt-6 flex flex-wrap gap-2">
-          <Link href="/commandes" className="shine inline-flex h-11 items-center gap-2 rounded-full bg-flamme-gradient px-5 text-sm font-semibold text-white shadow-glow transition-all duration-300 hover:-translate-y-0.5">
+          <Link href="/commandes" className="shine inline-flex h-11 items-center gap-2 rounded-full bg-flamme-gradient px-5 text-sm font-semibold text-white shadow-glow transition duration-300 hover:-translate-y-0.5">
             <ClipboardPlus className="size-4" aria-hidden="true" /> Nouvelle commande
           </Link>
-          <Link href="/clients" className="inline-flex h-11 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-semibold text-ivoire-50 transition-all duration-300 hover:-translate-y-0.5 hover:bg-azur-500">
+          <Link href="/clients" className="inline-flex h-11 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-semibold text-ivoire-50 transition duration-300 hover:-translate-y-0.5 hover:bg-azur-500">
             <UserPlus className="size-4" aria-hidden="true" /> Nouveau client
           </Link>
-          <Link href="/rdv" className="inline-flex h-11 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-semibold text-ivoire-50 transition-all duration-300 hover:-translate-y-0.5 hover:bg-azur-500">
+          <Link href="/rdv" className="inline-flex h-11 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-semibold text-ivoire-50 transition duration-300 hover:-translate-y-0.5 hover:bg-azur-500">
             <CalendarPlus className="size-4" aria-hidden="true" /> Rendez-vous
           </Link>
         </div>
-        {ticker.length > 0 ? (
-          <div className="relative -mx-6 mt-6 overflow-hidden border-t border-white/10 pt-4 sm:-mx-8" aria-hidden="true">
-            <div className="flex w-max animate-marquee gap-8 whitespace-nowrap font-mono text-xs uppercase tracking-[0.18em] text-chocolat-200">
-              {[...ticker, ...ticker].map((item, i) => (
-                <span key={i} className="flex items-center gap-8">
-                  {item}
-                  <span className="text-flamme-400">✦</span>
-                </span>
-              ))}
-            </div>
+        {/* Bandeau résumé toujours présent : sa place est réservée avant l'arrivée des chiffres. */}
+        <div className="relative -mx-6 mt-6 overflow-hidden border-t border-white/10 pt-4 sm:-mx-8" aria-hidden="true">
+          <div className="flex w-max gap-8 whitespace-nowrap px-6 font-mono text-xs uppercase tracking-[0.18em] text-chocolat-200 sm:px-8">
+            {ticker.length > 0
+              ? ticker.map((item, i) => (
+                  <span key={i} className="flex items-center gap-8">
+                    {item}
+                    <span className="text-flamme-400">✦</span>
+                  </span>
+                ))
+              : <span className="opacity-0">…</span>}
           </div>
-        ) : null}
+        </div>
       </section>
 
       <AlertsInvite className="mt-6" />
 
       {/* Recherche + période */}
-      <div className="relative z-20 mt-6 flex flex-wrap items-center justify-between gap-3 animate-fade-up">
+      <div className="relative z-20 mt-6 flex flex-wrap items-center justify-between gap-3">
         <div className="relative w-full sm:w-96">
           <Search
             className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-flamme-500"
@@ -295,7 +310,7 @@ export function DashboardView(): React.ReactElement {
           />
           <input
             aria-label="Rechercher dans l'atelier"
-            className="h-12 w-full rounded-full border-2 border-outline bg-surface pl-11 pr-4 text-base font-medium text-ink shadow-soft transition-all duration-300 placeholder:text-ink-faint hover:border-flamme-300 focus:border-flamme-500 focus:shadow-[0_0_0_4px_rgb(245_116_9/0.18)] focus:outline-none"
+            className="h-12 w-full rounded-full border-2 border-outline bg-surface pl-11 pr-4 text-base font-medium text-ink shadow-soft transition duration-300 placeholder:text-ink-faint hover:border-flamme-300 focus:border-flamme-500 focus:shadow-[0_0_0_4px_rgb(245_116_9/0.18)] focus:outline-none"
             placeholder="Rechercher… (clients, commandes, tissus)"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -311,7 +326,7 @@ export function DashboardView(): React.ReactElement {
                   <a
                     key={`${hit.kind}-${hit.id}`}
                     href={hit.href}
-                    className="flex flex-col rounded-lg px-3 py-2 text-sm transition-all duration-200 hover:translate-x-1 hover:bg-flamme-50"
+                    className="flex flex-col rounded-lg px-3 py-2 text-sm transition duration-200 hover:translate-x-1 hover:bg-flamme-50"
                   >
                     <span className="flex items-center gap-2">
                       <Badge tone="primary">{SEARCH_ENTITY_LABELS[hit.kind]}</Badge>
@@ -388,7 +403,7 @@ export function DashboardView(): React.ReactElement {
                             {formatFcfa(p.amount)}
                           </span>
                           <div
-                            className={cx("w-full max-w-12 origin-bottom rounded-t-xl bg-gradient-to-t shadow-soft transition-all duration-300 animate-grow-up group-hover:brightness-110 group-hover:shadow-glow", tone.bar)}
+                            className={cx("w-full max-w-12 origin-bottom rounded-t-xl bg-gradient-to-t shadow-soft transition duration-300 animate-grow-up group-hover:brightness-110 group-hover:shadow-glow", tone.bar)}
                             style={{ height: `${h}%`, animationDelay: `${i * 70}ms` }}
                             title={`${p.label} : ${formatFcfa(p.amount)}`}
                           />
@@ -410,7 +425,7 @@ export function DashboardView(): React.ReactElement {
                       return (
                         <li
                           key={group.method}
-                          className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg bg-surface-2 px-3 py-2.5 text-sm transition-all duration-200 hover:translate-x-1 hover:bg-flamme-50"
+                          className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg bg-surface-2 px-3 py-2.5 text-sm transition duration-200 hover:translate-x-1 hover:bg-flamme-50"
                         >
                           <Badge tone={meta?.tone ?? "neutral"}>{meta?.label ?? group.method}</Badge>
                           <span className="ml-auto font-bold tabular text-ink">{formatFcfa(group.amount)}</span>
@@ -439,7 +454,7 @@ export function DashboardView(): React.ReactElement {
                           </span>
                           <div className="h-3 flex-1 overflow-hidden rounded-full bg-beige-100">
                             <div
-                              className={cx("h-full rounded-full bg-gradient-to-r transition-all duration-1000", tone.bar)}
+                              className={cx("h-full rounded-full bg-gradient-to-r transition duration-1000", tone.bar)}
                               style={{
                                 width: `${Math.min(100, Math.round((b.count / (kpis.ordersByStatus[0]?.count ?? 1)) * 100))}%`,
                               }}
@@ -461,7 +476,7 @@ export function DashboardView(): React.ReactElement {
                     {kpis.appointmentsByType.map((b) => {
                       const meta = APPOINTMENT_TYPE_META[b.type];
                       return (
-                        <li key={b.type} className="flex items-center gap-3 rounded-lg bg-surface-2 px-3 py-2 text-sm transition-all duration-200 hover:translate-x-1 hover:bg-azur-50">
+                        <li key={b.type} className="flex items-center gap-3 rounded-lg bg-surface-2 px-3 py-2 text-sm transition duration-200 hover:translate-x-1 hover:bg-azur-50">
                           <Badge tone={meta.tone}>{meta.label}</Badge>
                           <span className="ml-auto font-bold tabular text-ink">{b.count}</span>
                         </li>

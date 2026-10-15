@@ -66,7 +66,7 @@ export function PlanLimitDialog({ message, onClose }: { message: string | null; 
           <Link
             href="/abonnement"
             onClick={onClose}
-            className="shine inline-flex h-11 items-center justify-center gap-2 rounded-full bg-flamme-gradient px-5 text-sm font-semibold text-white shadow-glow transition-all duration-200 hover:-translate-y-0.5"
+            className="shine inline-flex h-11 items-center justify-center gap-2 rounded-full bg-flamme-gradient px-5 text-sm font-semibold text-white shadow-glow transition duration-200 hover:-translate-y-0.5"
           >
             <Sparkles className="size-4" aria-hidden="true" />
             Voir les plans

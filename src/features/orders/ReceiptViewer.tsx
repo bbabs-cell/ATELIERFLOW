@@ -199,7 +199,7 @@ export function ReceiptViewer({ receiptId, onClose }: ReceiptViewerProps) {
                 href={receiptWhatsappUrl(doc.customer.phone, receiptShareMessage(doc))}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-menthe-600 px-5 text-sm font-semibold text-white shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-menthe-600 px-5 text-sm font-semibold text-white shadow-soft transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lift"
               >
                 <MessageCircle className="size-4" aria-hidden="true" />
                 WhatsApp
@@ -261,7 +261,7 @@ export function ReceiptViewer({ receiptId, onClose }: ReceiptViewerProps) {
                 </button>
               )
             ) : null}
-            <ReceiptSheet doc={doc} logoUrl={branding.logo} className="animate-scale-in" />
+            <ReceiptSheet doc={doc} logoUrl={branding.logo} />
           </div>
         )}
       </Dialog>
@@ -317,7 +317,7 @@ function IdentityForm({
   const set = (key: keyof AtelierIdentity) => (value: string) => setDraft((d) => ({ ...d, [key]: key === "name" ? value : value || null }));
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-outline bg-surface-2/80 p-4 animate-fade-up">
+    <div className="flex flex-col gap-3 rounded-xl border border-outline bg-surface-2/80 p-4">
       <p className="text-sm font-semibold text-ink">En-tête des reçus</p>
       {failure ? (
         <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-sm text-danger">

@@ -78,12 +78,12 @@ export function ClientsList({
           }
         />
       ) : (
-        <ul className="stagger flex flex-col divide-y divide-anthracite-100 overflow-hidden rounded-xl border border-outline bg-surface shadow-soft animate-fade-up">
+        <ul className="stagger flex flex-col divide-y divide-anthracite-100 overflow-hidden rounded-xl border border-outline bg-surface shadow-soft">
           {customers.map((c) => (
             <li key={c.id}>
               <button
                 type="button"
-                className="group flex w-full items-center gap-3 px-4 py-3 text-left transition-all duration-200 hover:bg-azur-50 hover:pl-5"
+                className="group flex w-full items-center gap-3 px-4 py-3 text-left transition duration-200 hover:bg-azur-50 hover:pl-5"
                 onClick={() => onSelect(c)}
               >
                 <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-azur-gradient text-white shadow-soft transition-transform duration-300 group-hover:scale-110">

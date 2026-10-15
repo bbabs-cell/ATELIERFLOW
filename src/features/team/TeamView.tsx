@@ -200,7 +200,7 @@ export function TeamView(): React.ReactElement {
             <div className="mb-4 flex flex-wrap items-center gap-3">
               <input
                 aria-label="Rechercher un membre"
-                className="h-12 w-full max-w-xs rounded-full border-2 border-outline bg-surface/90 px-4 text-base font-medium text-ink shadow-soft transition-all duration-300 placeholder:text-ink-faint hover:border-flamme-300 focus:border-flamme-500 focus:shadow-[0_0_0_4px_rgb(255_94_46/0.18)] focus:outline-none"
+                className="h-12 w-full max-w-xs rounded-full border-2 border-outline bg-surface/90 px-4 text-base font-medium text-ink shadow-soft transition duration-300 placeholder:text-ink-faint hover:border-flamme-300 focus:border-flamme-500 focus:shadow-[0_0_0_4px_rgb(255_94_46/0.18)] focus:outline-none"
                 placeholder="Rechercher un membre…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -234,7 +234,7 @@ export function TeamView(): React.ReactElement {
                   return (
                     <li
                       key={member.id}
-                      className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-outline bg-surface shadow-soft animate-fade-up p-3"
+                      className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-outline bg-surface shadow-soft p-3"
                     >
                       <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-beige-100 font-medium text-chocolat-800">
                         {initials(member.full_name)}

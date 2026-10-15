@@ -126,7 +126,7 @@ export function PlatformView(): React.ReactElement {
         <>
           <PlatformPayments onApproved={() => void load()} />
 
-          <section className="mt-10 animate-fade-up">
+          <section className="mt-10">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <h2 className="font-display text-xl text-ink">
                 Ateliers <span className="text-ink-faint">({tenants.length})</span>
@@ -187,7 +187,7 @@ export function PlatformView(): React.ReactElement {
             </ul>
           </section>
 
-          <section className="mt-10 animate-fade-up">
+          <section className="mt-10">
             <h2 className="font-display text-xl text-ink">Plans</h2>
             <p className="mt-1 text-sm text-ink-soft">
               Prix et limites modifiables à tout moment. Un abonnement en cours garde son prix jusqu&apos;au prochain renouvellement.

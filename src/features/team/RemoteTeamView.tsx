@@ -214,7 +214,7 @@ export function RemoteTeamView(): React.ReactElement {
                     {team.invitations.map((invite) => (
                       <li
                         key={invite.id}
-                        className="flex flex-wrap items-center gap-3 rounded-xl border border-outline bg-surface px-4 py-3 shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lift"
+                        className="flex flex-wrap items-center gap-3 rounded-xl border border-outline bg-surface px-4 py-3 shadow-soft transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lift"
                       >
                         <span className="grid size-10 place-items-center rounded-full bg-chocolat-100 text-chocolat-900 animate-float">
                           <Mail className="size-4" aria-hidden="true" />
@@ -271,14 +271,14 @@ export function RemoteTeamView(): React.ReactElement {
                 href={whatsappShareUrl(message)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="shine inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[linear-gradient(120deg,#25d366,#128c7e)] px-5 text-sm font-semibold text-white shadow-soft transition-all duration-200 hover:-translate-y-0.5"
+                className="shine inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[linear-gradient(120deg,#25d366,#128c7e)] px-5 text-sm font-semibold text-white shadow-soft transition duration-200 hover:-translate-y-0.5"
               >
                 <MessageCircle className="size-4" aria-hidden="true" />
                 Envoyer par WhatsApp
               </a>
               <a
                 href={mailtoUrl(created.email, message)}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-full border-2 border-ink bg-surface px-5 text-sm font-semibold text-ink shadow-neo transition-all duration-200 hover:-translate-y-0.5"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-full border-2 border-ink bg-surface px-5 text-sm font-semibold text-ink shadow-neo transition duration-200 hover:-translate-y-0.5"
               >
                 <Mail className="size-4" aria-hidden="true" />
                 Envoyer par e-mail
@@ -393,14 +393,14 @@ function MemberCard({
   return (
     <li
       className={cx(
-        "gradient-border group relative overflow-hidden rounded-xl border border-outline bg-surface p-4 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lift",
+        "gradient-border group relative overflow-hidden rounded-xl border border-outline bg-surface p-4 shadow-soft transition-transform duration-200 hover:-translate-y-1 hover:shadow-lift",
         member.status === "DEACTIVATED" && "opacity-70 grayscale-[0.4]",
       )}
     >
       <div className="flex items-start gap-3">
         <span
           className={cx(
-            "grid size-12 shrink-0 place-items-center rounded-full font-display text-base font-bold text-white shadow-soft transition-transform duration-500 group-hover:rotate-[-8deg] group-hover:scale-110",
+            "grid size-12 shrink-0 place-items-center rounded-full font-display text-base font-bold text-white shadow-soft transition-transform duration-300 group-hover:rotate-[-8deg] group-hover:scale-110",
             tone,
           )}
         >

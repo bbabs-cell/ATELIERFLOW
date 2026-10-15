@@ -115,7 +115,7 @@ export function AppShell({
             onNavigate?.(item);
           }}
           className={cx(
-            "group relative flex min-h-12 items-center gap-3 overflow-hidden rounded-full px-2 pr-4 text-sm font-semibold transition-all duration-300",
+            "group relative flex min-h-12 items-center gap-3 overflow-hidden rounded-full px-2 pr-4 text-sm font-semibold transition duration-150",
             item.active
               ? cx(TONES[item.tone ?? "brown"].active, "shadow-soft")
               : dark
@@ -152,7 +152,7 @@ export function AppShell({
           type="button"
           onClick={() => setMenuOpen(true)}
           aria-label="Ouvrir le menu"
-          className="grid size-11 place-items-center rounded-full bg-white/10 transition-all duration-300 hover:rotate-90 hover:bg-flamme-500"
+          className="grid size-11 place-items-center rounded-full bg-white/10 transition duration-300 hover:rotate-90 hover:bg-flamme-500"
         >
           <Menu className="size-5" />
         </button>
@@ -161,7 +161,7 @@ export function AppShell({
 
       {/* Navigation latérale desktop */}
       <aside className="dot-grid sticky top-0 hidden h-dvh w-72 shrink-0 flex-col gap-6 overflow-hidden bg-chocolat-900 p-5 text-ivoire-50 lg:flex">
-        {cover ? <CoverBackdrop src={cover} dark /> : <AmbientBlobs dark />}
+        {cover ? <CoverBackdrop src={cover} dark /> : <div aria-hidden="true" className="ambient-static-dark pointer-events-none absolute inset-0" />}
         <div className="relative px-2 pt-2 animate-fade-in">{brand}</div>
         {/* Le menu défile seul quand l'écran est bas ; logo et compte restent visibles. */}
         <div className="relative -mx-2 min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 py-1 [scrollbar-color:rgb(255_255_255/0.25)_transparent] [scrollbar-width:thin]">
@@ -240,10 +240,9 @@ export function AppShell({
       ) : null}
 
       <main className="relative min-w-0 flex-1 overflow-x-clip">
-        {/* Téléphone et tablette : fond en dégradés fixes ; les taches floues animées
-            (filtre de flou recalculé à chaque image) faisaient blanchir l'écran au défilement. */}
-        <div aria-hidden="true" className="ambient-static pointer-events-none fixed inset-0 lg:hidden" />
-        <AmbientBlobs className="fixed max-lg:hidden lg:left-72" />
+        {/* Fond en dégradés fixes : les taches floues animées (filtre de flou recalculé à
+            chaque image) faisaient blanchir l'écran au défilement et alourdissaient le PC. */}
+        <div aria-hidden="true" className="ambient-static pointer-events-none fixed inset-0 lg:left-72" />
         <div className="dot-grid-ink pointer-events-none fixed inset-0 lg:left-72" aria-hidden="true" />
         <div className="relative">{children}</div>
       </main>

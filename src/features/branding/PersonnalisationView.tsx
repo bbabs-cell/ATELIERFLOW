@@ -121,7 +121,7 @@ function ImageCard({ kind, url, editable, className }: { kind: BrandingKind; url
           <label
             htmlFor={`${id}-file`}
             className={cx(
-              "inline-flex h-11 cursor-pointer items-center gap-2 rounded-full bg-flamme-gradient px-5 text-sm font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5",
+              "inline-flex h-11 cursor-pointer items-center gap-2 rounded-full bg-flamme-gradient px-5 text-sm font-semibold text-white shadow-soft transition hover:-translate-y-0.5",
               busy && "pointer-events-none opacity-60",
             )}
           >

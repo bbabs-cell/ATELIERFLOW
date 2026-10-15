@@ -80,7 +80,7 @@ export function OrdersList({
           }
         />
       ) : (
-        <ul className="stagger flex flex-col divide-y divide-anthracite-100 overflow-hidden rounded-xl border border-outline bg-surface shadow-soft animate-fade-up">
+        <ul className="stagger flex flex-col divide-y divide-anthracite-100 overflow-hidden rounded-xl border border-outline bg-surface shadow-soft">
           {orders.map(({ order, customerName }) => {
             const meta = ORDER_STATUS_META[order.status];
             const priority = ORDER_PRIORITY_META[order.priority];
@@ -88,7 +88,7 @@ export function OrdersList({
               <li key={order.id}>
                 <button
                   type="button"
-                  className="group flex w-full flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 text-left transition-all duration-200 hover:bg-flamme-50 hover:pl-5"
+                  className="group flex w-full flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 text-left transition duration-200 hover:bg-flamme-50 hover:pl-5"
                   onClick={() => onSelect(order.id)}
                 >
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-sunset-gradient text-white shadow-soft transition-transform duration-300 group-hover:scale-110">
