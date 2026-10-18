@@ -101,17 +101,32 @@ export async function measure(page) {
           const d = desc(el); if (!seen.has('t' + d)) { seen.add('t' + d); crushed.push(`libellé coupé « ${t} » (${Math.round(r.width)}px pour ${el.scrollWidth}px) ${d}`); }
         }
       }
-      // Texte recouvert par un bouton du même bloc (le montant sous le haut-parleur) :
-      // rien ne déborde, mais on ne peut plus lire.
+      // Texte recouvert par un bouton du même bloc (le montant passé sous le haut-parleur) :
+      // seule compte la partie du texte qui DÉBORDE de sa propre boîte et reste visible
+      // (un texte tronqué « … » est rogné ; un menu déroulant posé par-dessus est voulu).
       if (hasText && !fixedish(el)) {
+        const box = el.getBoundingClientRect();
+        let cl = -Infinity, ct = -Infinity, cr = Infinity, cb = Infinity;
+        for (let p = el; p && p !== document.body; p = p.parentElement) {
+          const ps = getComputedStyle(p);
+          if (ps.overflowX !== 'visible' || ps.overflowY !== 'visible') {
+            const pr = p.getBoundingClientRect();
+            cl = Math.max(cl, pr.left); ct = Math.max(ct, pr.top); cr = Math.min(cr, pr.right); cb = Math.min(cb, pr.bottom);
+          }
+        }
         const range = document.createRange();
         range.selectNodeContents(el);
-        const rects = [...range.getClientRects()].filter((x) => x.width > 0 && x.height > 0);
-        for (const b of pressables) {
+        const out = [];
+        for (const x of range.getClientRects()) {
+          const l = Math.max(x.left, cl), r2 = Math.min(x.right, cr), t = Math.max(x.top, ct), bt = Math.min(x.bottom, cb);
+          if (r2 - l <= 0 || bt - t <= 0) continue;
+          if (r2 > box.right + 2) out.push({ l: Math.max(l, box.right), r: r2, t, b: bt });
+          if (l < box.left - 2) out.push({ l, r: Math.min(r2, box.left), t, b: bt });
+        }
+        for (const b of out.length ? pressables : []) {
           if (b === el || b.contains(el) || el.contains(b) || blockOf(b) !== blockOf(el)) continue;
           const br = b.getBoundingClientRect();
-          const hit = rects.some((x) => Math.min(x.right, br.right) - Math.max(x.left, br.left) > 3 && Math.min(x.bottom, br.bottom) - Math.max(x.top, br.top) > 3);
-          if (hit) {
+          if (out.some((x) => Math.min(x.r, br.right) - Math.max(x.l, br.left) > 3 && Math.min(x.b, br.bottom) - Math.max(x.t, br.top) > 3)) {
             const d = desc(el); if (!seen.has('r' + d)) { seen.add('r' + d); clipped.push(`texte recouvert par ${desc(b)} : ${d}`); }
             break;
           }
