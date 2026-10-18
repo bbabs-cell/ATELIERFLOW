@@ -127,6 +127,19 @@ export const HELP_TOPICS: readonly HelpTopic[] = [
     link: { label: "Ouvrir Commandes", href: "/commandes" },
   },
   {
+    id: "debts",
+    title: "Relancer un client qui doit encore de l'argent",
+    keywords: ["relancer", "relance", "solde", "soldes", "dette", "doit", "qui me doit", "impaye", "reste a payer", "rappel de paiement", "argent du"],
+    steps: [
+      "Ouvrez « Soldes » dans le menu (ou touchez « Reste à encaisser » sur le tableau de bord).",
+      "« Maintenant » montre les clients dont l'habit est prêt ou déjà remis ; « Tous » ajoute les acomptes en cours.",
+      "Touchez « Relancer » : le message est prêt, relisez-le puis « Envoyer sur WhatsApp ».",
+      "Quand le client paie, touchez « Encaisser » : la commande s'ouvre directement sur ses paiements.",
+    ],
+    note: "Le haut-parleur lit le montant et la commande à voix haute. La mention « Relancé » est gardée sur ce téléphone.",
+    link: { label: "Ouvrir Soldes", href: "/soldes" },
+  },
+  {
     id: "receipt",
     title: "Faire un reçu (imprimer, PDF, WhatsApp)",
     keywords: ["recu", "facture", "imprimer", "pdf", "ticket de caisse", "justificatif", "bon de paiement"],

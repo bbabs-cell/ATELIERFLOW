@@ -29,6 +29,8 @@ const scenarios = [
   ['fiche-modele', async (p) => { await go('/modeles', 1500)(p); await p.getByText('Robe wax').first().click(); await p.waitForTimeout(1000); }],
   ['form-modele', async (p) => { await go('/modeles', 1500)(p); await open(/Nouveau modèle/)(p); }],
   ['personnalisation', go('/parametres', 1500)],
+  ['soldes', async (p) => { await go('/soldes', 1500)(p); await p.getByRole('radio', { name: /Tous/ }).click(); await p.waitForTimeout(400); }],
+  ['relance-whatsapp', async (p) => { await go('/soldes', 1500)(p); await p.getByRole('radio', { name: /Tous/ }).click(); await p.waitForTimeout(300); await p.getByRole('button', { name: 'Relancer' }).first().click(); await p.waitForTimeout(600); }],
   ['form-commande-rdv', async (p) => { await go('/commandes')(p); await open(/Nouvelle commande/)(p); await p.fill('#order-expected', '2026-12-24'); await p.waitForTimeout(400); }],
   ['assistant', async (p) => { await go('/dashboard', 1500)(p); await p.getByRole('button', { name: /Ouvrir l'assistant/ }).click(); await p.waitForTimeout(400); await p.getByLabel('Votre question').fill("J'ai combien de commandes et quels sont les plus urgents ?"); await p.getByRole('button', { name: 'Envoyer' }).click(); await p.waitForTimeout(900); }],
   ...(viewport.width >= 820 ? [] : [['menu-mobile', async (p) => { await go('/dashboard', 1500)(p); await p.getByRole('button', { name: /menu/i }).first().click(); await p.waitForTimeout(800); }]]),

@@ -17,6 +17,8 @@ Abonnement) : il tombait sur un refus.
   (droit requis par entrée dans `AuthGate`). Le serveur refuse de toute façon ; on évite
   seulement l'impasse. Rôle inconnu (démo, ancien jeton) : tout reste visible.
 - Sur ordinateur (820 px et plus), rien ne change : barre latérale.
+- Entrée « Soldes » (2026-10-18, droit `payments.read`) : clients qui doivent encore de
+  l'argent, avec la relance WhatsApp — voir `docs/FINANCE.md`. Dans « Plus » au téléphone.
 
 ## Règles et pourquoi
 

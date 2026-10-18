@@ -206,7 +206,7 @@ export function AppShell({
                   onClick={() => onNavigate?.(item)}
                   aria-current={item.active ? "page" : undefined}
                   className={cx(
-                    "flex h-full min-w-0 flex-col items-center justify-center gap-0.5 px-0.5 text-[10px] font-semibold transition-transform active:scale-95 min-[360px]:px-1 min-[360px]:text-[11px]",
+                    "flex h-full min-w-0 flex-col items-center justify-center gap-0.5 px-0 text-[10px] font-semibold tracking-tight transition-transform active:scale-95 min-[360px]:px-0.5 min-[360px]:text-[11px] min-[400px]:px-1 min-[400px]:tracking-normal",
                     item.active ? BOTTOM_ACTIVE[item.tone ?? "brown"] : "text-ink-soft",
                   )}
                 >
@@ -218,6 +218,7 @@ export function AppShell({
                   >
                     <item.icon aria-hidden="true" className="size-5" />
                   </span>
+                  {/* 320 px : 64 px par case, 360 px : 72 px — « Commandes » doit tenir entier (pas de « Command… »). */}
                   <span className="max-w-full truncate">{item.shortLabel ?? item.label}</span>
                 </Link>
               </li>

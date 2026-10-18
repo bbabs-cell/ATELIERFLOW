@@ -95,7 +95,8 @@ export function OrderBoard({ orders, filters, busyId, onOpen, onMove, onRefused 
               )}
             >
               <meta.icon className="size-7" aria-hidden="true" />
-              <span className="max-w-full truncate text-[12px] font-bold">{meta.label}</span>
+              {/* Pas de « … » : à 320 px, « En couture » passe sur deux lignes. */}
+              <span className="max-w-full text-center text-[12px] font-bold leading-tight">{meta.label}</span>
               <span
                 className={cx(
                   "absolute -right-1 -top-1.5 grid min-w-6 place-items-center rounded-full px-1.5 text-xs font-extrabold",
@@ -213,14 +214,15 @@ export function OrderBoard({ orders, filters, busyId, onOpen, onMove, onRefused 
                               onClick={() => onMove(order.id, to)}
                               disabled={busyId === order.id}
                               className={cx(
-                                "flex h-12 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border-2 px-2 text-base font-bold transition active:scale-95 disabled:opacity-50 2xl:h-11 2xl:text-sm",
+                                "flex h-12 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border-2 px-2 text-base font-bold transition active:scale-95 disabled:opacity-50 2xl:h-11 2xl:gap-1 2xl:px-1.5 2xl:text-[13px]",
                                 next === "SEWING" && "border-flamme-300 bg-flamme-50 text-flamme-700",
                                 next === "READY" && "border-menthe-300 bg-menthe-50 text-menthe-600",
                                 next === "DELIVERED" && "border-azur-300 bg-azur-50 text-azur-700",
                               )}
                             >
-                              <NextIcon className="size-5 shrink-0" aria-hidden="true" />
-                              <span className="truncate">{STAGE_META[next].action}</span>
+                              <NextIcon className="size-5 shrink-0 2xl:size-4" aria-hidden="true" />
+                              {/* Colonnes étroites (1280 px) : le verbe passe sur deux lignes plutôt que « Commen… ». */}
+                              <span className="truncate 2xl:whitespace-normal 2xl:text-center 2xl:leading-tight">{STAGE_META[next].action}</span>
                             </button>
                           ) : (
                             <span className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-azur-50 text-sm font-bold text-azur-700">

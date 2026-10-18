@@ -379,7 +379,7 @@ export function DashboardView(): React.ReactElement {
             <ul className="stagger grid grid-cols-2 gap-3 @4xl:grid-cols-4">
               <KpiCard tone="green" href="/commandes" icon={<Wallet className="size-5" aria-hidden="true" />} title="Encaissé" value={kpis.money.revenuePeriod} format={formatFcfa} hint={`sur ${rangeLabel}`} />
               <KpiCard tone="green" href="/commandes" icon={<Banknote className="size-5" aria-hidden="true" />} title="Facturé" value={kpis.money.invoicedPeriod} format={formatFcfa} hint="commandes créées sur la période" />
-              <KpiCard tone="green" href="/commandes" icon={<CircleDollarSign className="size-5" aria-hidden="true" />} title="Reste à encaisser" value={kpis.money.outstanding} format={formatFcfa} hint="hors commandes annulées" />
+              <KpiCard tone="green" href="/soldes" icon={<CircleDollarSign className="size-5" aria-hidden="true" />} title="Reste à encaisser" value={kpis.money.outstanding} format={formatFcfa} hint="hors commandes annulées" />
               <KpiCard tone="red" href="/commandes" icon={<Hourglass className="size-5" aria-hidden="true" />} title="En retard" value={kpis.money.ordersLate} hint="échéance dépassée, non livrée" />
               <KpiCard tone="orange" href="/commandes" icon={<Package className="size-5" aria-hidden="true" />} title="Commandes actives" value={kpis.money.ordersActive} hint={`${kpis.money.ordersReadyPickup} à retirer`} />
               <KpiCard tone="blue" href="/clients" icon={<PackageOpen className="size-5" aria-hidden="true" />} title="Clients actifs" value={kpis.context.customersActive} hint={`${kpis.context.customersNewPeriod} nouveaux sur la période`} />
