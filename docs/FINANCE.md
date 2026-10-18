@@ -67,3 +67,52 @@ annulation visible.
   l'émission ; reçu immuable + contre-avoir pour corrections.
 - Rapprochement du solde à la livraison (`DELIVERED`) et re-calcul serveur (job) phase 04.
 - Float de caisse / relevé quotidien (Prompt 20, tableau de bord).
+## Soldes à encaisser et relance WhatsApp (2026-10-18)
+
+**Le problème** : l'argent qui reste dû est éparpillé dans les fiches commande. Pour savoir
+qui doit encore payer, il fallait ouvrir chaque commande, puis écrire soi-même le message de
+rappel — difficile pour quelqu'un qui lit mal, et l'argent des habits déjà prêts dort.
+
+**Écran `/soldes`** (menu « Soldes », tuile « Reste à encaisser » du tableau de bord)
+- En haut : le total à encaisser en grand, le nombre de clients et ceux à encaisser
+  **maintenant** ; le haut-parleur lit le total à voix haute.
+- Deux choix : **Maintenant** (un habit est prêt ou déjà remis : l'argent est dû) et
+  **Tous** (acomptes en cours compris). Sans choix, l'écran ouvre « Maintenant » s'il y a
+  quelqu'un, sinon « Tous » — jamais une liste vide par défaut.
+- Une carte par client : initiales, nom et numéro, **« Reste »** en grand, jusqu'à 3
+  commandes avec l'image de l'étape (Reçue, En couture, Prête, Livrée), l'habit et le
+  montant restant. Trois gros boutons : **Relancer** (WhatsApp), **Encaisser** (ouvre la
+  commande au plus gros reste, `/commandes?commande=<id>`, d'où l'on encaisse comme
+  d'habitude), **haut-parleur** (lit le client, ce qu'il doit et ses habits).
+- **Relancer** ouvre le message prêt, modifiable, avec le numéro WhatsApp du client
+  (modifiable aussi), « Écouter le message », « Copier » et le bouton principal **« Envoyer
+  sur WhatsApp »** : WhatsApp s'ouvre sur la conversation, il ne reste qu'à appuyer sur
+  Envoyer. La carte affiche ensuite « Relancé aujourd'hui (sur ce téléphone) ».
+
+**Règles et pourquoi**
+- Calcul sur l'appareil, à partir des commandes et paiements déjà synchronisés
+  (`src/domain/orders/debts.ts`) : commandes ni annulées ni supprimées, reste > 0
+  (même calcul que le panneau Paiements, `paymentBalance` — les paiements annulés ne
+  comptent pas). Ordre : dû maintenant d'abord, puis le plus gros montant, puis le plus
+  ancien.
+- Le message dépend de la situation : habit prêt (« bonne nouvelle… passez le récupérer »),
+  déjà remis (« petit rappel… »), encore en couture (« il restera … à la livraison »). Il ne
+  parle que des habits concernés (un habit prêt n'est pas confondu avec celui en couture) ;
+  le montant est tout ce qui reste à payer.
+- Droits : il faut `payments.read` et `orders.read` (sinon l'écran l'explique). Le menu
+  « Soldes » n'apparaît qu'avec `payments.read`.
+- **Aucune migration, aucune table** : l'envoi passe par le lien `wa.me` (comme les rappels
+  de rendez-vous). Rien n'est envoyé sans que la personne appuie sur Envoyer dans WhatsApp.
+- **Limite connue** : la mention « Relancé … » est gardée sur l'appareil seulement
+  (`src/infrastructure/debts/reminderLog.ts`, stockage local) ; un autre téléphone de
+  l'équipe ne la voit pas. La partager demanderait une table (migration) — à faire si le
+  besoin se confirme.
+
+**Tests** : `tests/unit/orders/debts.test.ts` (reste à payer, paiements annulés, commandes
+annulées/supprimées exclues, ordre, regroupement par client, messages selon l'étape, habit
+prêt à côté d'un habit en couture), `tests/unit/assistant/assistant.test.ts` (l'aide répond
+à « relancer un client »). Navigateur à 375 et 1366 px : filtre, message, ouverture de
+WhatsApp, mention « Relancé aujourd'hui », lien Encaisser vers la commande.
+
+**À faire par le propriétaire** : rien. Le menu « Soldes » apparaît après la mise à jour de
+l'application.

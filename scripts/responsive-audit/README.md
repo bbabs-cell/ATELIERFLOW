@@ -3,7 +3,7 @@
 Banc d'audit automatisé : 21 écrans et fenêtres × 20 tailles (16 largeurs en portrait de
 320 à 1920 px + 4 paysages), tactile émulé jusqu'à 1024 px. Mesure, dans le navigateur :
 défilement horizontal de page, éléments hors écran, texte réellement coupé par son
-conteneur, texte tronqué devenu illisible, cibles tactiles < 40 px, boutons écrasés. Plus un parcours
+conteneur, texte tronqué devenu illisible, cibles tactiles < 40 px, boutons écrasés (dont libellé court coupé en « … »), texte recouvert par un bouton. Plus un parcours
 clavier (`kbd.mjs`).
 
 ```bash

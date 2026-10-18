@@ -20,7 +20,7 @@ export interface WhatsAppMessage {
   to: string | null;
   text: string;
   /** Objet métier concerné, pour l'historique et la future API. */
-  context?: { entity: "appointments" | "receipts"; id: string; kind: string };
+  context?: { entity: "appointments" | "receipts" | "customers"; id: string; kind: string };
 }
 
 export type WhatsAppDispatchResult =

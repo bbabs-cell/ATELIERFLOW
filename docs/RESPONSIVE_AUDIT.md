@@ -18,7 +18,8 @@ design). Banc reproductible : `scripts/responsive-audit/` (voir son README).
   coupé par son conteneur (zone du texte comparée à l'ancêtre qui la rogne) ; texte
   tronqué devenu illisible (< 48 px) ; cibles tactiles < 40 px ; boutons écrasés (un
   libellé court cassé sur plus de deux lignes, ou bouton plus étroit que son mot — méthode
-  MagyaPro).
+  MagyaPro) ; depuis le 2026-10-18 : libellé court de bouton coupé en « … » (« Relanc… ») et
+  texte recouvert par un bouton du même bloc (montant passé sous le haut-parleur).
 
 ## Résultat final
 

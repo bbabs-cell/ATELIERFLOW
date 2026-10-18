@@ -48,6 +48,8 @@ est accordée (`customers.read`, `orders.read`, « fabrics.read » ,
   par statut, rendez-vous par type, bloc atelier ;
 - recherche globale avec résultats groupés par entité et liens vers
   `/clients`, `/commandes`, `/stock`, `/rdv`, `/equipe` ;
+- la carte « Reste à encaisser » ouvre `/soldes` (clients qui doivent encore payer,
+  relance WhatsApp — `docs/FINANCE.md`) ;
 - états chargement / erreur / accès refusé.
 
 ## Fichiers

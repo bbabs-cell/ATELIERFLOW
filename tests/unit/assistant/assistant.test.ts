@@ -214,6 +214,8 @@ describe("aide sur l'application", () => {
     expect(topic("comment prendre en photo le tissu du client")).toBe("Ajouter une photo (tissu, client, commande)");
     expect(topic("comment payer l'abonnement ?")).toBe("Changer d'abonnement (payer le plan)");
     expect(topic("comment ajouter un client")).toBe("Ajouter un client");
+    expect(topic("comment relancer un client qui me doit de l'argent ?")).toBe("Relancer un client qui doit encore de l'argent");
+    expect(topic("comment faire avancer une commande")).toBe("Faire avancer une commande (étapes)");
     expect(topic("comment inviter un employé")).toBe("Ajouter un employé ou un apprenti");
     expect(topic("comment ajouter un tissu")).toBe("Gérer le stock de tissus");
     expect(topic("comment prendre un rendez-vous")).toBe("Prendre un rendez-vous et envoyer un rappel");

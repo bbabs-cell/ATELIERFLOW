@@ -115,6 +115,9 @@ export function OrdersView(): React.ReactElement {
     void (async () => {
       try {
         await load("");
+        // Lien direct vers une commande (« Encaisser » depuis les soldes) : /commandes?commande=<id>.
+        const linked = new URLSearchParams(window.location.search).get("commande");
+        if (!cancelled && linked) await selectOrder(linked);
       } catch {
         if (!cancelled) setError("Impossible de charger la liste des commandes.");
       }

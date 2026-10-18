@@ -47,6 +47,20 @@ export async function measure(page) {
       return false;
     };
     const overflow = [], clipped = [], small = [], crushed = [];
+    const fixedCache = new WeakMap();
+    const fixedish = (el) => {
+      if (!el || el === document.body) return false;
+      if (fixedCache.has(el)) return fixedCache.get(el);
+      const v = getComputedStyle(el).position === 'fixed' || fixedish(el.parentElement);
+      fixedCache.set(el, v);
+      return v;
+    };
+    const blockOf = (el) => el.closest('li, article, section, [role=dialog], header, form, nav, aside');
+    const pressables = [...document.querySelectorAll('button, a[href], [role=button]')].filter((b) => {
+      const r = b.getBoundingClientRect();
+      const st = getComputedStyle(b);
+      return r.width > 0 && r.height > 0 && st.visibility !== 'hidden' && st.display !== 'none' && !hiddenDeco(b) && !fixedish(b);
+    });
     const seen = new Set();
     for (const el of document.querySelectorAll('body *')) {
       const s = getComputedStyle(el);
@@ -78,6 +92,30 @@ export async function measure(page) {
       }
       if (hasText && s.textOverflow === 'ellipsis' && el.scrollWidth > el.clientWidth + 2 && r.width < 48) {
         const d = desc(el); if (!seen.has('e' + d)) { seen.add('e' + d); clipped.push('quasi illisible (' + Math.round(r.width) + 'px) ' + d); }
+      }
+      // Libellé de bouton coupé (« Relanc… ») : un nom long peut finir en
+      // points de suspension, un verbe d'action court jamais.
+      if (hasText && s.textOverflow === 'ellipsis' && el.scrollWidth > el.clientWidth + 1 && el.closest('button, a[class*="rounded"], [role=button], [role=tab], [role=radio]')) {
+        const t = (el.textContent || '').trim();
+        if (t.length <= 14) {
+          const d = desc(el); if (!seen.has('t' + d)) { seen.add('t' + d); crushed.push(`libellé coupé « ${t} » (${Math.round(r.width)}px pour ${el.scrollWidth}px) ${d}`); }
+        }
+      }
+      // Texte recouvert par un bouton du même bloc (le montant sous le haut-parleur) :
+      // rien ne déborde, mais on ne peut plus lire.
+      if (hasText && !fixedish(el)) {
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const rects = [...range.getClientRects()].filter((x) => x.width > 0 && x.height > 0);
+        for (const b of pressables) {
+          if (b === el || b.contains(el) || el.contains(b) || blockOf(b) !== blockOf(el)) continue;
+          const br = b.getBoundingClientRect();
+          const hit = rects.some((x) => Math.min(x.right, br.right) - Math.max(x.left, br.left) > 3 && Math.min(x.bottom, br.bottom) - Math.max(x.top, br.top) > 3);
+          if (hit) {
+            const d = desc(el); if (!seen.has('r' + d)) { seen.add('r' + d); clipped.push(`texte recouvert par ${desc(b)} : ${d}`); }
+            break;
+          }
+        }
       }
       // Bouton écrasé (méthode MagyaPro) : sans déborder, un bouton coincé
       // rétrécit jusqu'à casser son libellé lettre par lettre — un audit de
