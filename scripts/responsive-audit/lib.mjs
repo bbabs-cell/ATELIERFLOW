@@ -95,7 +95,7 @@ export async function measure(page) {
       }
       // Libellé de bouton coupé (« Relanc… ») : un nom long peut finir en
       // points de suspension, un verbe d'action court jamais.
-      if (hasText && s.textOverflow === 'ellipsis' && el.scrollWidth > el.clientWidth + 1 && el.closest('button, a[class*="rounded"], [role=button], [role=tab], [role=radio]')) {
+      if (hasText && s.textOverflow === 'ellipsis' && el.scrollWidth > el.clientWidth + 1 && el.closest('button, a[href], [role=button], [role=tab], [role=radio]')) {
         const t = (el.textContent || '').trim();
         if (t.length <= 14) {
           const d = desc(el); if (!seen.has('t' + d)) { seen.add('t' + d); crushed.push(`libellé coupé « ${t} » (${Math.round(r.width)}px pour ${el.scrollWidth}px) ${d}`); }
