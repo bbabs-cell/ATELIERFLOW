@@ -72,3 +72,25 @@ design). Banc reproductible : `scripts/responsive-audit/` (voir son README).
   boutons compacts restent à 36 px ; sur une vraie tablette tactile, `pointer: coarse`
   les passe à 44 px.
 - Les jours du calendrier font 40 px de haut mais ~36 px de large à 320 px (7 colonnes).
+
+## Libellés coupés et textes recouverts (2026-10-18)
+
+Deux contrôles ajoutés au banc (`scripts/responsive-audit/lib.mjs`), après un montant passé
+sous le haut-parleur et un « Relanc… » vus à 375 px sur l'écran Soldes :
+
+- **Libellé coupé** : un texte court (14 lettres au plus) d'un bouton, lien, onglet ou choix
+  qui finit en « … ». Un nom long peut se tronquer ; un verbe d'action jamais.
+- **Texte recouvert** : la partie d'un texte qui déborde de sa propre boîte et passe sous un
+  bouton du même bloc. Un texte tronqué (rogné) et un menu déroulant posé par-dessus ne
+  comptent pas.
+
+Ce qu'ils ont trouvé, et corrigé :
+
+| Où | Taille | Correction |
+|---|---|---|
+| Soldes : total sous le haut-parleur, « Relanc… » | 375 | montant sur sa ligne ; « Relancer » seul sur sa ligne au téléphone |
+| Tableau de l'atelier : « Commen… », « Remise au cl… » | 1280 (4 colonnes) | bouton plus compact, verbe sur deux lignes au besoin |
+| Onglet d'étape « En coutu… » | 320 | libellé sur deux lignes |
+| Barre du bas « Command… » | 320, 360 | marges et espacement des lettres réduits sous 400 px |
+
+Matrice complète (20 tailles × 27 écrans) : 0 défaut.
